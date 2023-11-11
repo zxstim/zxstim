@@ -1,113 +1,397 @@
 import Image from 'next/image'
+// import Link from 'next/link'
+import type { Metadata } from 'next'
+import {
+  ExternalLink,
+  Mail,
+  Layers,
+  Wand2,
+  Facebook,
+  Twitter,
+  Github,
+  MapPin,
+  Hourglass,
+  // Search
+} from 'lucide-react';
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog"
+
+export const metadata: Metadata = {
+  title: 'ZxStim',
+  description: 'Building and shipping software products',
+  metadataBase: new URL('https://www.zxstim.com'),
+  openGraph: {
+    title: 'ZxStim',
+    description: 'Building and shipping software products',
+    url: 'https://www.zxstim.com',
+    siteName: 'ZxStim',
+    images: [
+      {
+        url: '/zxstim-tbn.png',
+        width: 1200,
+        height: 630,
+        alt: 'og-image',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ZxStim',
+    description: 'Building and shipping software products',
+    creator: '@0xstim',
+    images: ['/zxstim-tbn.png'],
+  },
+}
+
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div className="md:col-span-4 flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <Image 
+              src="/zxstim.svg" 
+              alt="ZxStim" 
+              width={100} 
+              height={100}
+              className="rounded-full border-1 p-2 shadow-lg" 
             />
-          </a>
+            <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">ZxStim - <span className="text-muted-foreground">Building and shipping software products.</span></h1>
+            <p className="text-lg font-normal tracking-tight">Experienced Builder adept in bringing forth expertise in all aspects of a company such as sales, marketing, product design, and software development. Also proficient in various web frameworks and Solidity. Able to effectively self-manage during independent projects, as well as collaborate as part of a productive team.</p>
+            <div className="flex flex-row gap-2 items-center mt-2">
+              <div className="bg-green-500 rounded-full p-2 w-fit"></div>
+              <p className="text-sm italic">Open to discuss opportunities</p>
+            </div>
+          </div>
+          <div className="md:col-span-2 grid grid-cols-2 grid-rows-4 gap-4 w-full">
+            <div className="flex flex-row gap-2 justify-center items-center text-center bg-background rounded-2xl p-6 col-span-2">
+              <MapPin size={25} />
+              <p>Ho Chi Minh City</p>
+            </div>
+            <div className="flex flex-row gap-2 justify-center items-center text-center bg-background rounded-2xl p-6 col-span-2">
+              <Mail size={30} />
+              <p>zxstim@gmail.com</p>
+            </div>
+            <a 
+              href="https://www.facebook.com/0xstim/" 
+              target="_blank"
+              >
+              <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
+                <Facebook size={30} />
+                Facebook
+              </div>
+            </a>
+            <a 
+              href="https://x.com/0xStim" 
+              target="_blank"
+              >
+              <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
+                <Twitter size={30} />
+                X
+              </div>
+            </a>
+            <a 
+              href="https://t.me/zxstim" 
+              target="_blank"
+              >
+              <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
+                <Image
+                  src="/telegram.svg"
+                  alt="telegram"
+                  width={30}
+                  height={30}
+                />  
+                Telegram
+              </div>
+            </a>
+            <a 
+              href="https://github.com/0xstim"
+              target="_blank"
+              >
+              <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
+                <Github size={30} />
+                GitHub
+              </div>
+            </a>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+          <div className="flex flex-row gap-2 items-center">
+            <Layers />
+            <h1 className="scroll-m-20 text-lg font-extrabold tracking-tight">TechStack</h1>
+          </div>
+          <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:justify-between">
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">
+                Coding Languages
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  HTML
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  CSS
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  JavaScript
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  TypeScript
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Python
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Rust
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Solidity
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">
+                Frameworks
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  React
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  NextJS
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  ExpressJS
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Django
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Foundry
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Hardhat
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">
+                Other
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  SQL
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  PostgreSQL
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  MongoDB
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Amazon Web Services
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Google Cloud Plaform
+                </div>
+              </div>                
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+          <div className="flex flex-row gap-2 items-center">
+            <Wand2 />
+            <h1 className="scroll-m-20 text-lg font-extrabold tracking-tight">Skills</h1>
+          </div>
+          <div className="flex flex-col gap-8 md:grid md:grid-cols-3 md:justify-between">
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">Business</h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">Hubspot</div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">Content</div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">SEO</div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">Tools</h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">Figma</div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">Canva</div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">Adobe</div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h4 className="text-black text-lg font-bold">Languages</h4>
+              <div className="flex flex-wrap gap-2">
+                <div className="border-2 border-black rounded-lg px-3 py-2">English</div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">Vietnamese</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Editor at <a className="text-blue-600" href="https://www.opentechstack.com"><span className="inline-flex"><span className="mr-1">OpenTechStack</span><ExternalLink /></span></a></h1>
+            <p>A blog covering the expansive modern technical stack.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/ots.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Builder in <a className="text-blue-600" href="https://www.openforbuilders.com"><span className="inline-flex"><span className="mr-1">OpenForBuilders</span><ExternalLink /></span></a></h1>
+            <p>A community initiative and content platform for builders.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/ofb.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Developer Advocate at <a className="text-blue-600" href="https://klaytn.foundation"><span className="inline-flex"><span className="mr-1">Klaytn</span><ExternalLink /></span></a></h1>
+            <p>A leading Layer 1 public blockchain designed for tomorrow&apos;s on-chain world. Offers world-class developer resources and support program.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/klaytn.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
+            <p>Next generation fiat on-ramp backed by a battled-tested payment enterprise with global coverage and over 1000+ payment methods.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/unc.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a></h1>
+            <p>Innovative commercial banking platform for Vietnamese SMEs that help them to accept payments, and scale at a push of button.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/vietpay.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Owner and Operator of <a className="text-blue-600" href="https://www.pyhash.com"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h1>
+            <p>A digital asset management institution providing after market support and treasury management solutions in the blockchain ecosystem.</p>
+            {/* <Dialog>
+              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog> */}
+            <div className="border-2"></div>
+            <div className="relative h-[170px] md:h-[270px] w-full">
+              <Image
+                src="/pyhash.svg"
+                alt="unlimit"
+                fill={true}
+                className="rounded-xl"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 border-2 p-6 border-dashed border-muted-foreground rounded-2xl h-[200px] items-center justify-center mb-8">
+          <Hourglass className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
+          <h1 className="text-md md:text-xl font-semibold text-muted-foreground">New updates are coming soon...</h1>
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   )
 }
