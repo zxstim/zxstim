@@ -255,10 +255,10 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/ots.svg"
-                alt="unlimit"
+                alt="opentechstack"
                 fill={true}
               />
             </div>
@@ -279,10 +279,10 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/ofb.svg"
-                alt="unlimit"
+                alt="openforbuilders"
                 fill={true}
               />
             </div>
@@ -305,10 +305,10 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/klaytn.svg"
-                alt="unlimit"
+                alt="klaytn"
                 fill={true}
               />
             </div>
@@ -329,7 +329,7 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/unc.svg"
                 alt="unlimit"
@@ -353,10 +353,10 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/vietpay.svg"
-                alt="unlimit"
+                alt="vietpay"
                 fill={true}
               />
             </div>
@@ -377,12 +377,11 @@ export default function Home() {
               </DialogContent>
             </Dialog> */}
             <div className="border-2"></div>
-            <div className="relative h-[170px] md:h-[270px] w-full">
+            <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/pyhash.svg"
-                alt="unlimit"
+                alt="pyhash"
                 fill={true}
-                className="rounded-xl"
               />
             </div>
           </div>
