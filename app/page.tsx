@@ -11,16 +11,10 @@ import {
   Github,
   MapPin,
   Hourglass,
+  ArrowDown
   // Search
 } from 'lucide-react';
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog"
+
 
 export const metadata: Metadata = {
   title: 'ZxStim',
@@ -82,7 +76,7 @@ export default function Home() {
               <p>zxstim@gmail.com</p>
             </div>
             <a 
-              href="https://www.facebook.com/0xstim/" 
+              href="https://www.facebook.com/zxstim/" 
               target="_blank"
               >
               <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
@@ -91,7 +85,7 @@ export default function Home() {
               </div>
             </a>
             <a 
-              href="https://x.com/0xStim" 
+              href="https://x.com/zxStim" 
               target="_blank"
               >
               <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
@@ -114,7 +108,7 @@ export default function Home() {
               </div>
             </a>
             <a 
-              href="https://github.com/0xstim"
+              href="https://github.com/zxstim"
               target="_blank"
               >
               <div className="flex flex-col justify-center items-center text-center bg-background rounded-2xl p-6 w-full h-full">
@@ -154,6 +148,9 @@ export default function Home() {
                   Rust
                 </div>
                 <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Go
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
                   Solidity
                 </div>
               </div>
@@ -174,6 +171,9 @@ export default function Home() {
                 </div>
                 <div className="border-2 border-black rounded-lg px-3 py-2">
                   Django
+                </div>
+                <div className="border-2 border-black rounded-lg px-3 py-2">
+                  Gin
                 </div>
                 <div className="border-2 border-black rounded-lg px-3 py-2">
                   Foundry
@@ -242,19 +242,6 @@ export default function Home() {
           <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
             <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Editor at <a className="text-blue-600" href="https://www.opentechstack.com"><span className="inline-flex"><span className="mr-1">OpenTechStack</span><ExternalLink /></span></a></h1>
             <p>A blog covering the expansive modern technical stack.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
             <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/ots.svg"
@@ -266,19 +253,6 @@ export default function Home() {
           <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
             <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Builder in <a className="text-blue-600" href="https://www.openforbuilders.com"><span className="inline-flex"><span className="mr-1">OpenForBuilders</span><ExternalLink /></span></a></h1>
             <p>A community initiative and content platform for builders.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
             <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/ofb.svg"
@@ -292,19 +266,6 @@ export default function Home() {
           <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
             <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Developer Advocate at <a className="text-blue-600" href="https://klaytn.foundation"><span className="inline-flex"><span className="mr-1">Klaytn</span><ExternalLink /></span></a></h1>
             <p>A leading Layer 1 public blockchain designed for tomorrow&apos;s on-chain world. Offers world-class developer resources and support program.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
             <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/klaytn.svg"
@@ -314,69 +275,8 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
-            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
-            <p>Next generation fiat on-ramp backed by a battled-tested payment enterprise with global coverage and over 1000+ payment methods.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
-            <div className="relative h-[180px] md:h-[270px] w-full">
-              <Image
-                src="/unc.svg"
-                alt="unlimit"
-                fill={true}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
-            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a></h1>
-            <p>Innovative commercial banking platform for Vietnamese SMEs that help them to accept payments, and scale at a push of button.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
-            <div className="relative h-[180px] md:h-[270px] w-full">
-              <Image
-                src="/vietpay.svg"
-                alt="vietpay"
-                fill={true}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
             <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Owner and Operator of <a className="text-blue-600" href="https://www.pyhash.com"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h1>
             <p>A digital asset management institution providing after market support and treasury management solutions in the blockchain ecosystem.</p>
-            {/* <Dialog>
-              <DialogTrigger className="flex flex-row items-center gap-2 bg-primary w-fit rounded-lg text-secondary py-2 px-4"><Search className="h-4 w-4" />Inspect</DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                  <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog> */}
-            <div className="border-2"></div>
             <div className="relative h-[180px] md:h-[270px] w-full">
               <Image
                 src="/pyhash.svg"
@@ -389,6 +289,35 @@ export default function Home() {
         <div className="flex flex-row gap-2 border-2 p-6 border-dashed border-muted-foreground rounded-2xl h-[200px] items-center justify-center mb-8">
           <Hourglass className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
           <h1 className="text-md md:text-xl font-semibold text-muted-foreground">New updates are coming soon...</h1>
+        </div>
+        <div className="flex flex-col gap-4 mt-12 mb-6 items-center">
+          <div className="border-2 border-dashed border-muted-foreground w-[100px]"></div>
+          <h1 className="text-md md:text-xl font-semibold text-muted-foreground text-center">Past works below</h1>
+          <ArrowDown className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a></h1>
+            <p>Innovative commercial banking platform for Vietnamese SMEs that help them to accept payments, and scale at a push of button.</p>
+            <div className="relative h-[180px] md:h-[270px] w-full">
+              <Image
+                src="/vietpay.svg"
+                alt="vietpay"
+                fill={true}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 bg-background rounded-2xl p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
+            <p>Next generation fiat on-ramp backed by a battled-tested payment enterprise with global coverage and over 1000+ payment methods.</p>
+            <div className="relative h-[180px] md:h-[270px] w-full">
+              <Image
+                src="/unc.svg"
+                alt="unlimit"
+                fill={true}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </>
