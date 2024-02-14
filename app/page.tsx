@@ -1,5 +1,5 @@
 import Image from 'next/image'
-// import Link from 'next/link'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import {
   ExternalLink,
@@ -53,7 +53,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div className="md:col-span-4 flex flex-col gap-4 bg-background rounded-2xl p-6">
             <Image 
-              src="/zxstim.svg" 
+              src="./zxstim.svg" 
               alt="ZxStim" 
               width={100} 
               height={100}
@@ -64,6 +64,7 @@ export default function Home() {
             <div className="flex flex-row gap-2 items-center mt-2">
               <div className="bg-green-500 rounded-full p-2 w-fit"></div>
               <p className="text-sm italic">Open to discuss opportunities</p>
+              <Link className="flex flex-row items-center text-blue-600 underline" href="/cv">CV</Link>
             </div>
           </div>
           <div className="md:col-span-2 grid grid-cols-2 grid-rows-4 gap-4 w-full">
