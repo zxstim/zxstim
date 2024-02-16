@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge"
 import Image from "next/image";
 import type { Metadata } from 'next';
 import {
-  ArrowLeft
+  ArrowLeft,
+  ExternalLink,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -55,102 +57,144 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div>
-        <div>
-          <div>Projects</div>
-          <h1>OpenForBuilders</h1>
-          <h1>OpenTechStack</h1>
-          <h1>BlockCMD</h1>
-          <h1>Defi.vn</h1>
+      <div className="flex flex-wrap gap-24 mt-8">
+        <div className="max-w-3xl">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-xl font-semibold">Projects</h1>
+            <div className="flex flex-col">
+              <p className="font-md italic text-muted-foreground">2024</p>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.blockcmd.com"><span className="inline-flex"><span className="mr-1">BlockCMD</span><ExternalLink /></span></a></h2>
+                <p>An open source smart contract read and write tool.</p>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <p className="font-md italic text-muted-foreground">2023</p>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Host of <a className="text-blue-600" href="https://www.openforbuilders.com"><span className="inline-flex"><span className="mr-1">OpenForBuilders</span><ExternalLink /></span></a></h2>
+                <p>A community initiative and content platform for builders.</p>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <p className="font-md italic text-muted-foreground">2023</p>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor at <a className="text-blue-600" href="https://www.opentechstack.com"><span className="inline-flex"><span className="mr-1">OpenTechStack</span><ExternalLink /></span></a></h2>
+                <p>A blog covering the expansive modern technical stack.</p>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <p className="font-md italic text-muted-foreground">2022</p>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://www.blockcmd.com"><span className="inline-flex"><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
+                <p>Started out as a small community of DeFi enthusiast and information page, DeFi.vn has evolved into OpenForBuilders community and transitioned into an opensource wiki about DeFi.</p>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <p className="font-md italic text-muted-foreground">2019</p>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Owner of <a className="text-blue-600" href="https://www.pyhash.com"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h2>
+                <p>A digital asset management institution providing after market support and treasury management solutions to token issuers, institutions, investors, and mining operations in the blockchain ecosystem.</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 mt-8">
+            <h1 className="text-xl font-semibold">Employment History</h1>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Advocate for <a className="text-blue-600" href="https://klaytn.foundation"><span className="inline-flex"><span className="mr-1">Klaytn</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <p className="font-md italic text-muted-foreground">May 2023 - Present</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
+                <li>Created sales and marketing strategies to promote user growth</li>
+                <li>Executed the strategies, outreached to contacts, followed up and maintained relationships</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">APAC Head of Sales for <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <p className="font-md italic text-muted-foreground">May 2023 - Nov 2023</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
+                <li>Created sales and marketing strategies to promote user growth</li>
+                <li>Executed the strategies, outreached to contacts, followed up and maintained relationships</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <p className="font-md italic text-muted-foreground">December 2018 - Apr 2023</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Responsible for maintaining the partnership with PVComBank in Vietnam</li>
+                <li>Coordinated Mastercard, Visa and NAPAS system integration</li>
+                <li>Coordinated PVComBank Core Banking system integration with Vietpay Fintech platform</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Advisor at Clovers Solutions <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <p className="font-md italic text-muted-foreground">December 2018 - Mar 2020</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Advised team on outbound sales and proposal drafts</li>
+                <li>Assisted team on strategic directions and daily operations</li>
+                <li>Closed 30+ event and marketing deals for the team</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Co-Founder at AM Blockchain <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <p className="font-md italic text-muted-foreground">February 2018 - November 2018</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Coordinated NEM Vietnam team to promote NEM locally and operate NEM Vietnam Blockchain Hub</li>
+                <li>Organized 20+ events with 200+ attendees each along with a few notable events like CDAD2018</li>
+                <li>Launched marketing campaigns for various cryptocurrency projects to acquire Vietnamese users</li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 mt-8">
+            <h1 className="text-xl font-semibold">Education</h1>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">BSc. in Civil Engineering from <a className="text-blue-600" href="https://unb.ca"><span className="inline-flex"><span className="mr-1">University of New Brunswick</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Fredericton, Canada</Badge></h2>
+              <p className="font-md italic text-muted-foreground">September 2012 - May 2016</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Pre-Masters research thesis in Finite Element Analysis for Steel Joint Connection</li>
+                <li>Graduated with Honors</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div>
-          <div>Employment History</div>
-          <div>Head of Sales for APAC <a href="https://crypto.unlimit.com">at Unlimit</a>, Remote</div>
-          <div>May 2023 - Nov 2023</div>
-          <ul>
-            <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
-            <li>Created sales and marketing strategies to promote user growth</li>
-            <li>Executed the strategies, outreached to contacts, followed up and maintained relationships</li>
-          </ul>
-          <div>Creator of <a href="https://defi.vn">Defi.vn</a>, Vietnam</div>
-          <div>October 2022 - Present</div>
-          <ul>
-            <li>Developed and implemented the complete tech stack (frontend, backend, smart contract)</li>
-            <li>Built content, marketing and sales strategies for the growth of the website (which has reached 30K monthly views)</li>
-            <li>Coordinated with various communities for regular developer focused activities</li>
-          </ul>
-          <div>VP at <a href="https://vietpay.com">Vietpay</a>, Ho Chi Minh, Vietnam</div>
-          <div>December 2018 - Apr 2023</div>
-          <ul>
-            <li>Responsible for maintaining the partnership with PVComBank in Vietnam</li>
-            <li>Coordinated Mastercard, Visa and NAPAS system integration</li>
-            <li>Coordinated PVComBank Core Banking system integration with Vietpay Fintech platform</li>
-          </ul>
-          <div>Owner of <a href="https://pyhash.com">Pyhash</a>, Delaware, USA</div>
-          <div>June 2019 - Present</div>
-          <ul>
-            <li>Developed market making software for cryptocurrency exchanges</li>
-            <li>Developed various trading algorithm for arbitraging, cross-exchange liquidity</li>
-            <li>Open sourced trading software in May 2022 for independent quant-trading teams to use</li>
-          </ul>
-          <div>Advisor at Clovers Solutions</div>
-          <div>December 2018 - Mar 2020</div>
-          <ul>
-            <li>Advised team on outbound sales and proposal drafts</li>
-            <li>Assisted team on strategic directions and daily operations</li>
-            <li>Closed over 20 event and marketing deals for the team</li>
-          </ul>
-          <div>Co-founder at AM Blockchain, Ho Chi Minh, Vietnam</div>
-          <div>February 2018 - November 2018</div>
-          <ul>
-            <li>Coordinated NEM Vietnam team to promote NEM locally and operate NEM Vietnam Blockchain Hub</li>
-            <li>Organized 20+ events with 200+ attendees each along with a few notable events like CDAD2018</li>
-            <li>Launched marketing campaigns for various cryptocurrency projects to acquire Vietnamese users</li>
-          </ul>
-          <div>Education</div>
-          <div>Bachelor of Science in Civil Engineering, University of New Brunswick, Fredericton, Canada</div>
-          <div>September 2012 - May 2016</div>
-          <ul>
-            <li>Pre-Masters research thesis in Finite Element Analysis for Steel Joint Connection</li>
-            <li>Graduated with Honors</li>
-          </ul>
-        </div>
-        <div>
-          <div>
-            <div>Details</div>
-            <div>Ho Chi Minh City</div>
-            <div>Viet Nam</div>
-            <div>+84982792979</div>
-            <a href="mailto:zxstim@gmail.com">zxstim@gmail.com</a>
-          </div>
-          <div>
-            <div>🔗 Links</div>
+        <div className="flex flex-col gap-8 max-w-48">
+          <div className="flex flex-col gap-4">
+            <h1 className="text-xl font-semibold">Details</h1>
             <div>
-              <a href="https://github.com/0xstim">Github</a>
-            </div>
-            <div>
-              <a href="https://twitter.com/0xStim">Twitter</a>
-            </div>
-            <div>
-              <a href="https://t.me/zxstim">Telegram</a>
+              <div>Ho Chi Minh City</div>
+              <div>Viet Nam</div>
+              <div>+84982792979</div>
+              <a className="text-blue-600 underline underline-offset-2" href="mailto:zxstim@gmail.com">zxstim@gmail.com</a>
             </div>
           </div>
-          <div>
-            <div>💻 Skills</div>
-            <div>HTML & CSS</div>
-            <div>SQL</div>
-            <div>Git</div>
-            <div>Python</div>
-            <div>Javascript</div>
-            <div>Django</div>
-            <div>Solidity</div>
-            <div>React</div>
-            <div>Next.js</div>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-xl font-semibold">Links</h1>
+            <div className="flex flex-col">
+              <a className="text-blue-600 underline underline-offset-2" href="https://github.com/zxstim">Github</a>
+              <a className="text-blue-600 underline underline-offset-2" href="https://twitter.com/zxstim">Twitter</a>
+              <a className="text-blue-600 underline underline-offset-2" href="https://www.facebook.com/zxstim">Facebook</a>
+              <a className="text-blue-600 underline underline-offset-2" href="https://t.me/zxstim">Telegram</a>
+            </div>
           </div>
-          <div>
-            <div>🎙️ Languages</div>
-            <div>English</div>
-            <div>Vietnamese</div>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-xl font-semibold">Skills</h1>
+            <div className="flex flex-col">
+              <p>HTML & CSS</p>
+              <p>SQL</p>
+              <p>Python</p>
+              <p>Javascript</p>
+              <p>Django</p>
+              <p>Solidity</p>
+              <p>React</p>
+              <p>Next.js</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <h1 className="text-xl font-semibold">Languages</h1>
+            <div className="flex flex-col">
+              <p>English</p>
+              <p>Vietnamese</p>
+            </div>
           </div>
         </div>
       </div>
