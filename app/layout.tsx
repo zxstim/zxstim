@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Script defer data-domain="zxstim.com" src="https://analytics.pyhash.com/js/script.js"></Script>
         <main className="flex min-h-screen flex-col items-center p-6 md:p-10 bg-muted">
           <div className="flex flex-col max-w-5xl w-full">
             {children}
