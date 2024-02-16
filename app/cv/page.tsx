@@ -55,7 +55,7 @@ export default function Home() {
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2022</p>
               <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://www.blockcmd.com"><span className="inline-flex"><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://defi.vn"><span className="inline-flex"><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
                 <p>Started out as a small community of DeFi enthusiast and information page, DeFi.vn has evolved into OpenForBuilders community and transitioned into an opensource wiki about DeFi.</p>
               </div>
             </div>
