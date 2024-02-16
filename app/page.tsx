@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import type { Metadata } from 'next'
 import {
   ExternalLink,
   Mail,
@@ -14,36 +13,6 @@ import {
   ArrowDown
   // Search
 } from 'lucide-react';
-
-
-export const metadata: Metadata = {
-  title: 'ZxStim',
-  description: 'Building and shipping software products',
-  metadataBase: new URL('https://www.zxstim.com'),
-  openGraph: {
-    title: 'ZxStim',
-    description: 'Building and shipping software products',
-    url: 'https://www.zxstim.com',
-    siteName: 'ZxStim',
-    images: [
-      {
-        url: '/zxstim-tbn.png',
-        width: 1200,
-        height: 630,
-        alt: 'og-image',
-      },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'ZxStim',
-    description: 'Building and shipping software products',
-    creator: '@0xstim',
-    images: ['/zxstim-tbn.png'],
-  },
-}
 
 
 export default function Home() {
