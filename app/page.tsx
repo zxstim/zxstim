@@ -10,9 +10,11 @@ import {
   Github,
   MapPin,
   Hourglass,
-  ArrowDown
+  ArrowDown,
+  FolderClosed
   // Search
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 
 export default function Home() {
@@ -33,7 +35,11 @@ export default function Home() {
             <div className="flex flex-row gap-2 items-center mt-2">
               <div className="bg-green-500 rounded-full p-2 w-fit"></div>
               <p className="text-sm italic">Open to discuss opportunities</p>
-              <Link className="flex flex-row items-center text-blue-600 underline" href="/cv">CV</Link>
+            </div>
+            <div className="flex flex-row gap-2 items-center">
+              <Button variant="outline" asChild>
+                <Link className="flex flex-row gap-2" href="/cv"><FolderClosed size={18} /> CV File</Link>
+              </Button>
             </div>
           </div>
           <div className="md:col-span-2 grid grid-cols-2 grid-rows-4 gap-4 w-full">
