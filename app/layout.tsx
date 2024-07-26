@@ -43,7 +43,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Script defer data-domain="zxstim.com" src="https://analytics.pyhash.com/js/script.js"></Script>
-        <main className="flex min-h-screen flex-col items-center p-6 md:p-10 bg-muted">
+        <main className="flex min-h-screen flex-col items-center p-6 md:p-10 font-mono">
           <div className="flex flex-col max-w-5xl w-full">
             {children}
           </div>
