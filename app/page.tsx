@@ -21,198 +21,38 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div className="md:col-span-4 flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-            <Image 
-              src="./zxstim.svg" 
-              alt="ZxStim" 
-              width={100} 
-              height={100}
-              className="rounded-full border-1 p-2 shadow-lg" 
-            />
-            <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">ZxStim - <span className="text-muted-foreground">Building and shipping software products.</span></h1>
-            <p className="text-lg font-normal tracking-tight">Experienced Builder adept in bringing forth expertise in all aspects of a company such as sales, marketing, product design, and software development. Also proficient in various web frameworks and Solidity. Able to effectively self-manage during independent projects, as well as collaborate as part of a productive team.</p>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <div className="flex flex-row gap-4">
+              <Image 
+                src="./zxstim.svg" 
+                alt="ZxStim" 
+                width={80} 
+                height={80}
+                className="rounded-full border-2 p-2 border-primary" 
+              />
+              <div className="flex flex-col justify-between">
+                <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight">ZxStim</h1>
+                <p>currently on my oss/acc arc</p>
+              </div>
+            </div>
             <div className="flex flex-row gap-2 items-center mt-2">
               <div className="bg-green-500 rounded-full p-2 w-fit"></div>
               <p className="text-sm italic">Open to discuss opportunities</p>
             </div>
-            <div className="flex flex-row gap-2 items-center">
+            <div className="flex flex-wrap gap-2 items-center">
               <Button variant="outline" asChild>
                 <Link className="flex flex-row gap-2" href="/cv"><FolderClosed size={18} /> CV File</Link>
               </Button>
+              <Button className="flex flex-row gap-2 bg-blue-500 text-secondary" variant="outline">
+                <Twitter size={18} /> Twitter
+              </Button>
+              <Button className="flex flex-row gap-2 bg-primary text-secondary" variant="outline">
+                <Github size={18} /> GitHub
+              </Button>
+              <Button className="flex flex-row gap-2 bg-primary text-secondary" variant="outline">
+                <Mail size={18} /> Email
+              </Button>
             </div>
-          </div>
-          <div className="md:col-span-2 grid grid-cols-2 grid-rows-4 gap-4 w-full">
-            <div className="flex flex-row gap-2 justify-center items-center text-center border-2 border-primary rounded-md p-6 col-span-2">
-              <MapPin size={25} />
-              <p>Ho Chi Minh City</p>
-            </div>
-            <div className="flex flex-row gap-2 justify-center items-center text-center border-2 border-primary rounded-md p-6 col-span-2">
-              <Mail size={30} />
-              <p>zxstim@gmail.com</p>
-            </div>
-            <a 
-              href="https://www.facebook.com/zxstim/" 
-              target="_blank"
-              >
-              <div className="flex flex-col justify-center items-center text-center border-2 border-primary rounded-md p-6 w-full h-full">
-                <Facebook size={30} />
-                Facebook
-              </div>
-            </a>
-            <a 
-              href="https://x.com/zxStim" 
-              target="_blank"
-              >
-              <div className="flex flex-col justify-center items-center text-center border-2 border-primary rounded-md p-6 w-full h-full">
-                <Twitter size={30} />
-                X
-              </div>
-            </a>
-            <a 
-              href="https://t.me/zxstim" 
-              target="_blank"
-              >
-              <div className="flex flex-col justify-center items-center text-center border-2 border-primary rounded-md p-6 w-full h-full">
-                <Image
-                  src="/telegram.svg"
-                  alt="telegram"
-                  width={30}
-                  height={30}
-                />  
-                Telegram
-              </div>
-            </a>
-            <a 
-              href="https://github.com/zxstim"
-              target="_blank"
-              >
-              <div className="flex flex-col justify-center items-center text-center border-2 border-primary rounded-md p-6 w-full h-full">
-                <Github size={30} />
-                GitHub
-              </div>
-            </a>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-          <div className="flex flex-row gap-2 items-center">
-            <Layers />
-            <h1 className="scroll-m-20 text-lg font-extrabold tracking-tight">TechStack</h1>
-          </div>
-          <div className="flex flex-col md:grid md:grid-cols-3 gap-8 md:justify-between">
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">
-                Coding Languages
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  HTML
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  CSS
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  JavaScript
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  TypeScript
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Python
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Rust
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Go
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Solidity
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">
-                Frameworks
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  React
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  NextJS
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  ExpressJS
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Django
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Gin
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Foundry
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Hardhat
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">
-                Other
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  SQL
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  PostgreSQL
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  MongoDB
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Amazon Web Services
-                </div>
-                <div className="bg-muted rounded-lg px-3 py-2">
-                  Google Cloud Plaform
-                </div>
-              </div>                
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-          <div className="flex flex-row gap-2 items-center">
-            <Wand2 />
-            <h1 className="scroll-m-20 text-lg font-extrabold tracking-tight">Skills</h1>
-          </div>
-          <div className="flex flex-col gap-8 md:grid md:grid-cols-3 md:justify-between">
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">Business</h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">Hubspot</div>
-                <div className="bg-muted rounded-lg px-3 py-2">Content</div>
-                <div className="bg-muted rounded-lg px-3 py-2">SEO</div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">Tools</h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">Figma</div>
-                <div className="bg-muted rounded-lg px-3 py-2">Canva</div>
-                <div className="bg-muted rounded-lg px-3 py-2">Adobe</div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-black text-lg font-bold">Languages</h4>
-              <div className="flex flex-wrap gap-2">
-                <div className="bg-muted rounded-lg px-3 py-2">English</div>
-                <div className="bg-muted rounded-lg px-3 py-2">Vietnamese</div>
-              </div>
-            </div>
-          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">

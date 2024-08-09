@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Inter } from 'next/font/google'
+import { IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const ibmPlexMono = IBM_Plex_Mono({ weight: "500", subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'ZxStim',
@@ -41,10 +41,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={ibmPlexMono.className}>
         <Script defer data-domain="zxstim.com" src="https://analytics.pyhash.com/js/script.js"></Script>
-        <main className="flex min-h-screen flex-col items-center p-6 md:p-10 font-mono">
-          <div className="flex flex-col max-w-5xl w-full">
+        <main className="flex min-h-screen flex-col items-center p-6 md:p-10">
+          <div className="flex flex-col max-w-3xl">
             {children}
           </div>
         </main>
