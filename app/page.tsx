@@ -85,15 +85,15 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a></h1>
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com" target="_blank"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a></h1>
             <p>Innovative commercial banking platform for Vietnamese SMEs that help them to accept payments, and scale at a push of button.</p>
           </div>
           <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com" target="_blank"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
             <p>Next generation fiat on-ramp backed by a battled-tested payment enterprise with global coverage and over 1000+ payment methods.</p>
           </div>
           <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
-            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Founder at <a className="text-blue-600" href="https://pyhash.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Founder at <a className="text-blue-600" href="https://pyhash.com" target="_blank"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h1>
             <p>Digital asset management institution providing after market support and treasury management solutions.</p>
           </div>
         </div>
