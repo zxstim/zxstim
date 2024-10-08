@@ -34,35 +34,28 @@ export default function Home() {
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2024</p>
               <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.blockcmd.com"><span className="inline-flex"><span className="mr-1">BlockCMD</span><ExternalLink /></span></a></h2>
-                <p>An open source smart contract read and write tool.</p>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.blockcmd.com" target="_blank"><span className="inline-flex"><span className="mr-1">BlockCMD</span><ExternalLink /></span></a></h2>
+                <p>A solo product lab building Web3 toolings and applications.</p>
               </div>
             </div>
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2023</p>
               <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Host of <a className="text-blue-600" href="https://www.openforbuilders.com"><span className="inline-flex"><span className="mr-1">OpenForBuilders</span><ExternalLink /></span></a></h2>
-                <p>A community initiative and content platform for builders.</p>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-md italic text-muted-foreground">2023</p>
-              <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor at <a className="text-blue-600" href="https://www.opentechstack.com"><span className="inline-flex"><span className="mr-1">OpenTechStack</span><ExternalLink /></span></a></h2>
-                <p>A blog covering the expansive modern technical stack.</p>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Core contributor of <a className="text-blue-600" href="https://www.buildstation.org" target="_blank"><span className="inline-flex"><span className="mr-1">buildstation</span><ExternalLink /></span></a></h2>
+                <p>a community of builders that are passionate about building on Web3.</p>
               </div>
             </div>
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2022</p>
               <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://defi.vn"><span className="inline-flex"><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://defi.vn" target="_blank"><span className="inline-flex" ><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
                 <p>Started out as a small community of DeFi enthusiast and information page, DeFi.vn has evolved into OpenForBuilders community and transitioned into an opensource wiki about DeFi.</p>
               </div>
             </div>
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2019</p>
               <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Owner of <a className="text-blue-600" href="https://www.pyhash.com"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h2>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Owner of <a className="text-blue-600" href="https://www.pyhash.com" target="_blank"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h2>
                 <p>A digital asset management institution providing after market support and treasury management solutions to token issuers, institutions, investors, and mining operations in the blockchain ecosystem.</p>
               </div>
             </div>
@@ -70,16 +63,16 @@ export default function Home() {
           <div className="flex flex-col gap-4 mt-8">
             <h1 className="text-xl font-semibold">Employment History</h1>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Advocate for <a className="text-blue-600" href="https://klaytn.foundation"><span className="inline-flex"><span className="mr-1">Klaytn</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Advocate for <a className="text-blue-600" href="https://kaia.io" target="_blank"><span className="inline-flex"><span className="mr-1">Kaia</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
               <p className="font-md italic text-muted-foreground">May 2023 - Present</p>
               <ul className="list-disc list-outside ml-8">
-                <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
-                <li>Created sales and marketing strategies to promote user growth</li>
-                <li>Executed the strategies, outreached to contacts, followed up and maintained relationships</li>
+                <li>Created and implemented a developer grant program to fund community open source contributions</li>
+                <li>Coordinated local meetups within Vietnam to build awareness about Kaia with the local developers</li>
+                <li>Fostered partnerships with local Vietnam projects and onboard them to build on Kaia</li>
               </ul>
             </div>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">APAC Head of Sales for <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">APAC Head of Sales for <a className="text-blue-600" href="https://crypto.unlimit.com" target="_blank"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
               <p className="font-md italic text-muted-foreground">May 2023 - Nov 2023</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
@@ -88,7 +81,7 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com" target="_blank"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
               <p className="font-md italic text-muted-foreground">December 2018 - Apr 2023</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Responsible for maintaining the partnership with PVComBank in Vietnam</li>

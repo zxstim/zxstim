@@ -92,6 +92,10 @@ export default function Home() {
             <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">APAC Head of Sales at <a className="text-blue-600" href="https://crypto.unlimit.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
             <p>Next generation fiat on-ramp backed by a battled-tested payment enterprise with global coverage and over 1000+ payment methods.</p>
           </div>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">Founder at <a className="text-blue-600" href="https://pyhash.com"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a></h1>
+            <p>Digital asset management institution providing after market support and treasury management solutions.</p>
+          </div>
         </div>
       </div>
     </>
