@@ -67,8 +67,8 @@ export default function Home() {
               <p className="font-md italic text-muted-foreground">May 2023 - Present</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Created and implemented a developer grant program to fund community open source contributions</li>
-                <li>Coordinated local meetups within Vietnam to build awareness about Kaia with the local developers</li>
-                <li>Fostered partnerships with local Vietnam projects and onboard them to build on Kaia</li>
+                <li>Coordinated local meetups in multiple regions (Vietnam, Nigeria, Indonesia, etc.) to build awareness about Kaia with the local developers</li>
+                <li>Fostered partnerships with crypto projects and onboard them to build on Kaia</li>
               </ul>
             </div>
             <div>
