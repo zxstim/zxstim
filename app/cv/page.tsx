@@ -37,6 +37,10 @@ export default function Home() {
                 <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.blockcmd.com" target="_blank"><span className="inline-flex"><span className="mr-1">BlockCMD</span><ExternalLink /></span></a></h2>
                 <p>A solo product lab building Web3 toolings and applications.</p>
               </div>
+              <div>
+                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.gmgn.app" target="_blank"><span className="inline-flex"><span className="mr-1">GM GN Wallet</span><ExternalLink /></span></a></h2>
+                <p>A super fast onboarding wallet using Passkey.</p>
+              </div>
             </div>
             <div className="flex flex-col">
               <p className="font-md italic text-muted-foreground">2023</p>
