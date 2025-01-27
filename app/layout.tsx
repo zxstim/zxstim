@@ -42,7 +42,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={ibmPlexMono.className}>
-        <Script defer data-domain="zxstim.com" src="https://analytics.pyhash.com/js/script.js"></Script>
+        <Script 
+          defer 
+          src="https://assets.onedollarstats.com/stonks.js" 
+          id="stonks">
+        </Script>
         <main className="flex min-h-screen flex-col items-center p-6 md:p-10">
           <div className="flex flex-col max-w-3xl">
             {children}
