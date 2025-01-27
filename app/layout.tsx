@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
+import { CSPostHogProvider } from '@/app/providers'
 
 const ibmPlexMono = IBM_Plex_Mono({ weight: "500", subsets: ['latin'] })
 
@@ -42,16 +43,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={ibmPlexMono.className}>
-        <Script 
-          defer 
-          src="https://assets.onedollarstats.com/stonks.js" 
-          id="stonks">
-        </Script>
-        <main className="flex min-h-screen flex-col items-center p-6 md:p-10">
-          <div className="flex flex-col max-w-3xl">
-            {children}
-          </div>
-        </main>
+        <CSPostHogProvider>
+          <main className="flex min-h-screen flex-col items-center p-6 md:p-10">
+            <div className="flex flex-col max-w-3xl">
+              {children}
+            </div>
+          </main>
+        </CSPostHogProvider>
       </body>
     </html>
   )
