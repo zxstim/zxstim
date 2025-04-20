@@ -28,8 +28,19 @@ export default function Home() {
       id: 5,
       name: 'DeFi Vietnam',
       url: 'https://defi.vn'
+    },
+    {
+      id: 6,
+      name: 'Past projects',
+      url: '/past-projects'
+    },
+    {
+      id: 7,
+      name: 'CV',
+      url: '/cv'
     }
   ];
+
 
   const keyboardNavItems = [
     {
@@ -57,6 +68,16 @@ export default function Home() {
       description: 'Sections',
       url: 'https://defi.vn'
     },
+    {
+      keyboard: '6',
+      description: 'Sections',
+      url: '/past-projects'
+    },
+    {
+      keyboard: '7',
+      description: 'Sections',
+      url: '/cv'
+    }
   ];
 
   return (

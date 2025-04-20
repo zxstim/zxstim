@@ -4,7 +4,7 @@ import "./globals.css";
 import { PostHogProvider } from "@/app/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
-
+import Footer from "@/components/footer";
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -53,7 +53,8 @@ export default function RootLayout({
           <PostHogProvider>
             <main className="flex flex-col gap-12 items-center p-6 md:p-10 pb-12">
               <Header />
-                {children}
+              {children}
+              <Footer />
             </main>
           </PostHogProvider>
         </ThemeProvider>

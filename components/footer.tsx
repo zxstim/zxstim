@@ -13,12 +13,12 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-2 border-2 border-primary">
         <div className="flex flex-col">
           <div className="flex flex-col gap-4 border border-primary p-10">
-            <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mb-4">Join our community</h2>
+            <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mb-4">Join the community</h2>
             <div className="flex flex-row gap-6 items-center">
               <Button className="w-fit rounded-none">
-                <a className="flex flex-row gap-2 items-center" href="https://t.me/buildstation" target='blank'>Go to group chat <ExternalLink className="w-4 h-4" /></a>
+                <a className="flex flex-row gap-2 items-center" href="https://t.me/zxstimlabs" target='blank'>Go to chat <ExternalLink className="w-4 h-4" /></a>
               </Button>
-              <a className="flex flex-row gap-2 items-center underline underline-offset-2" target='blank' href="https://x.com/buildstationorg"><Rss className="w-4 h-4" />Feed</a>
+              <a className="flex flex-row gap-2 items-center underline underline-offset-2" target='blank' href="https://x.com/zxstim"><Rss className="w-4 h-4" />Feed</a>
             </div>
           </div>
           <div className="border border-primary p-10 grow">
@@ -46,23 +46,23 @@ export default function Footer() {
         <div className="flex flex-col">
           <div className="grow border border-primary p-10">
             <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">For builders</h2>
-            <p className="leading-7 [&:not(:first-child)]:mt-6 mb-6">So you are ready to build stuffs, huh? Go to buildstation GitHub and join the global hacker movement!</p>
-            <a className="flex flex-row gap-2 items-center dark:text-blue-400 text-blue-500 underline underline-offset-4" href="https://github.com/buildstationorg" target="_blank">
-              Explore our repositories <ExternalLink className="w-4 h-4" />
+            <p className="leading-7 [&:not(:first-child)]:mt-6 mb-6">So you are ready to build stuffs, huh? Go to buildstation and join the global hacker movement!</p>
+            <a className="flex flex-row gap-2 items-center dark:text-blue-400 text-blue-500 underline underline-offset-4" href="https://buildstation.org" target="_blank">
+              Explore and Build <ExternalLink className="w-4 h-4" />
             </a>
           </div>
           <div className="grid grid-cols-3 border border-primary [&>*:not(:last-child)]:border-r [&>*]:border-primary">
-            <a target="_blank" href="https://x.com/buildstationorg">
+            <a target="_blank" href="https://x.com/zxstim">
               <div className="flex py-6 items-center justify-center text-primary-foreground">
                 <Image className="dark:invert" src="/x.svg" alt="X" width={28} height={28} />
               </div>
             </a>
-            <a target="_blank" href="https://github.com/buildstationorg">
+            <a target="_blank" href="https://github.com/zxstim">
               <div className="flex py-6 items-center justify-center text-primary-foreground">
                 <Image className="dark:invert" src="/github.svg" alt="github" width={28} height={28} />
               </div>
             </a>
-            <a target="_blank" href="https://youtube.com/@buildstationorg">
+            <a target="_blank" href="https://youtube.com/@zxstim">
               <div className="flex py-6 items-center justify-center text-primary-foreground">
                 <Image className="dark:invert" src="/youtube.svg" alt="youtube" width={28} height={28} />
               </div>
