@@ -1,103 +1,208 @@
 import Image from "next/image";
+import Link from "next/link";
+import {
+  ExternalLink,
+  Mail,
+  Layers,
+  Wand2,
+  Facebook,
+  Twitter,
+  Github,
+  MapPin,
+  Hourglass,
+  ArrowDown,
+  FolderClosed,
+  // Search
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+          <div className="flex flex-row gap-4">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="./zxstim.svg"
+              alt="ZxStim"
+              width={80}
+              height={80}
+              className="rounded-full border-2 p-2 border-primary"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className="flex flex-col justify-between">
+              <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight">
+                ZxStim
+              </h1>
+              <p>currently on my oss/acc arc</p>
+            </div>
+          </div>
+          <div className="flex flex-row gap-2 items-center mt-2">
+            <div className="bg-green-500 rounded-full p-2 w-fit"></div>
+            <p className="text-sm italic">Open to discuss opportunities</p>
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button variant="outline" asChild>
+              <Link className="flex flex-row gap-2" href="/cv">
+                <FolderClosed size={18} /> CV File
+              </Link>
+            </Button>
+            <Button
+              asChild
+              className="flex flex-row gap-2 bg-blue-500 text-secondary"
+              variant="outline"
+            >
+              <a href="https://x.com/zxstim">
+                <Twitter size={18} /> Twitter
+              </a>
+            </Button>
+            <Button
+              asChild
+              className="flex flex-row gap-2 bg-primary text-secondary"
+              variant="outline"
+            >
+              <a href="https://github.com/zxstim">
+                <Github size={18} /> GitHub
+              </a>
+            </Button>
+            <Button
+              asChild
+              className="flex flex-row gap-2 bg-primary text-secondary"
+              variant="outline"
+            >
+              <a href="mailto:zxstim@gmail.com">
+                <Mail size={18} /> Email
+              </a>
+            </Button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              Developer at{" "}
+              <a className="text-blue-600" href="https://www.blockcmd.com">
+                <span className="inline-flex">
+                  <span className="mr-1">BlockCMD</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>A product lab specializing in crypto and onchain protocols</p>
+          </div>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              Core contributor in{" "}
+              <a className="text-blue-600" href="https://www.buildstation.org">
+                <span className="inline-flex">
+                  <span className="mr-1">buildstation</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>A community initiative and grant platform for builders.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              Developer Advocate at{" "}
+              <a className="text-blue-600" href="https://kaia.io">
+                <span className="inline-flex">
+                  <span className="mr-1">Kaia</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>
+              A leading Layer 1 public blockchain designed for tomorrow&apos;s
+              on-chain world.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              Editor at{" "}
+              <a className="text-blue-600" href="https://www.defi.vn">
+                <span className="inline-flex">
+                  <span className="mr-1">DeFi.vn</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>A wikipedia about decentralized finance for Vietnamese</p>
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 border-2 p-6 border-dashed border-muted-foreground rounded-md h-[200px] items-center justify-center mb-8">
+          <Hourglass className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
+          <h1 className="text-md md:text-xl font-semibold text-muted-foreground">
+            New updates are coming soon...
+          </h1>
+        </div>
+        <div className="flex flex-col gap-4 mt-12 mb-6 items-center">
+          <div className="border-2 border-dashed border-muted-foreground w-[100px]"></div>
+          <h1 className="text-md md:text-xl font-semibold text-muted-foreground text-center">
+            Past works below
+          </h1>
+          <ArrowDown className="text-muted-foreground h-6 w-6 md:h-8 md:w-8" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              VP of Product and Sales at{" "}
+              <a
+                className="text-blue-600"
+                href="https://vietpay.com"
+                target="_blank"
+              >
+                <span className="inline-flex">
+                  <span className="mr-1">Vietpay</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>
+              Innovative commercial banking platform for Vietnamese SMEs that
+              help them to accept payments, and scale at a push of button.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              APAC Head of Sales at{" "}
+              <a
+                className="text-blue-600"
+                href="https://crypto.unlimit.com"
+                target="_blank"
+              >
+                <span className="inline-flex">
+                  <span className="mr-1">Unlimit Crypto</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>
+              Next generation fiat on-ramp backed by a battled-tested payment
+              enterprise with global coverage and over 1000+ payment methods.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
+            <h1 className="scroll-m-20 text-xl font-extrabold tracking-tight">
+              Founder at{" "}
+              <a
+                className="text-blue-600"
+                href="https://pyhash.com"
+                target="_blank"
+              >
+                <span className="inline-flex">
+                  <span className="mr-1">Pyhash</span>
+                  <ExternalLink />
+                </span>
+              </a>
+            </h1>
+            <p>
+              Digital asset management institution providing after market
+              support and treasury management solutions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
