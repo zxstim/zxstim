@@ -16,7 +16,7 @@ export default function Home() {
     },
     {
       id: 3,
-      name: 'GM GN',
+      name: 'GMGN app',
       url: 'https://gmgn.app'
     },
     {
@@ -31,8 +31,8 @@ export default function Home() {
     },
     {
       id: 6,
-      name: 'Past projects',
-      url: '/past-projects'
+      name: 'Works',
+      url: '/works'
     },
     {
       id: 7,
@@ -71,7 +71,7 @@ export default function Home() {
     {
       keyboard: '6',
       description: 'Sections',
-      url: '/past-projects'
+      url: '/works'
     },
     {
       keyboard: '7',

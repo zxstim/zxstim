@@ -25,20 +25,22 @@ export default function Footer() {
             <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight mb-6">Here are some links</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 justify-between gap-6">
               <div className="flex flex-col gap-1">
-                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Team</h3>
-                <Link href="/our-story" className="text-muted-foreground text-sm">Our story</Link>
-                <Link href="/treasury" className="text-muted-foreground text-sm">Treasury</Link>
-                <Link href="/contributors" className="text-muted-foreground text-sm">Contributors</Link>
+                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Projects</h3>
+                <Link href="https://intern.xyz" className="text-muted-foreground text-sm">Intern app</Link>
+                <Link href="https://buildstation.org" className="text-muted-foreground text-sm">buildstation</Link>
+                <Link href="https://gmgn.app" className="text-muted-foreground text-sm">GMGN app</Link>
+                <Link href="https://zekae.com" className="text-muted-foreground text-sm">Zekae</Link>
+                <Link href="https://defi.vn" className="text-muted-foreground text-sm">DeFi Vietnam</Link>
               </div>
               <div className="flex flex-col gap-1">
-                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Legal</h3>
-                <Link href="/privacy" className="text-muted-foreground text-sm">Privacy policy</Link>
-                <Link href="/community-rules" className="text-muted-foreground text-sm">Community rules</Link>
+                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Communities</h3>
+                <Link href="https://t.me/buildstation" className="text-muted-foreground text-sm">buildstation</Link>
+                <Link href="https://x.com/i/communities/1896019968392904883" className="text-muted-foreground text-sm">ethstation</Link>
               </div>
               <div className="flex flex-col gap-1">
-                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Job board</h3>
-                <Link href="/core" className="text-muted-foreground text-sm">Core</Link>
-                <Link href="/form-a-team" className="text-muted-foreground text-sm">Form a team</Link>
+                <h3 className="scroll-m-20 text-lg font-semibold tracking-tight mb-2">Other</h3>
+                <Link href="/works" className="text-muted-foreground text-sm">Works</Link>
+                <Link href="/cv" className="text-muted-foreground text-sm">CV</Link>
               </div>
             </div>
           </div>
