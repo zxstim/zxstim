@@ -1,55 +1,63 @@
-import type { Metadata } from 'next'
-import { IBM_Plex_Mono } from 'next/font/google'
-import './globals.css'
-import { PostHogProvider } from '@/app/providers'
+import type { Metadata } from "next";
+import { JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { PostHogProvider } from "@/app/providers";
+import { ThemeProvider } from "@/components/theme-provider";
+import Header from "@/components/header";
 
-const ibmPlexMono = IBM_Plex_Mono({ weight: "500", subsets: ['latin'] })
+const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ZxStim',
-  description: 'Building and shipping software products',
-  metadataBase: new URL('https://www.zxstim.com'),
+  title: "ZxStim",
+  description: "Building and shipping software products",
+  metadataBase: new URL("https://www.zxstim.com"),
   openGraph: {
-    title: 'ZxStim',
-    description: 'Building and shipping software products',
-    url: 'https://www.zxstim.com',
-    siteName: 'ZxStim',
+    title: "ZxStim",
+    description: "Building and shipping software products",
+    url: "https://www.zxstim.com",
+    siteName: "ZxStim",
     images: [
       {
-        url: '/zxstim-tbn.png',
+        url: "/zxstim-tbn.png",
         width: 1200,
         height: 630,
-        alt: 'og-image',
+        alt: "og-image",
       },
     ],
-    locale: 'en_US',
-    type: 'website',
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'ZxStim',
-    description: 'Building and shipping software products',
-    creator: '@0xstim',
-    images: ['/zxstim-tbn.png'],
+    card: "summary_large_image",
+    title: "ZxStim",
+    description: "Building and shipping software products",
+    creator: "@0xstim",
+    images: ["/zxstim-tbn.png"],
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={ibmPlexMono.className}>
-        <PostHogProvider>
-          <main className="flex min-h-screen flex-col items-center p-6 md:p-10">
-            <div className="flex flex-col max-w-3xl">
-              {children}
-            </div>
-          </main>
+    <html lang="en" suppressHydrationWarning>
+      <body className={jetBrainsMono.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <PostHogProvider>
+            <main className="flex flex-col gap-12 items-center p-6 md:p-10 pb-12">
+              <Header />
+                {children}
+            </main>
           </PostHogProvider>
+        </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

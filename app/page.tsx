@@ -2,13 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ExternalLink,
-  Mail,
-  Layers,
-  Wand2,
-  Facebook,
-  Twitter,
-  Github,
-  MapPin,
   Hourglass,
   ArrowDown,
   FolderClosed,
@@ -23,11 +16,11 @@ export default function Home() {
         <div className="flex flex-col gap-4 border-2 border-primary rounded-md p-6">
           <div className="flex flex-row gap-4">
             <Image
-              src="./zxstim.svg"
+              src="/zxstim.svg"
               alt="ZxStim"
               width={80}
               height={80}
-              className="rounded-full border-2 p-2 border-primary"
+              className="rounded-full border-2 border-primary"
             />
             <div className="flex flex-col justify-between">
               <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight">
@@ -52,7 +45,7 @@ export default function Home() {
               variant="outline"
             >
               <a href="https://x.com/zxstim">
-                <Twitter size={18} /> Twitter
+                Twitter
               </a>
             </Button>
             <Button
@@ -61,7 +54,7 @@ export default function Home() {
               variant="outline"
             >
               <a href="https://github.com/zxstim">
-                <Github size={18} /> GitHub
+                GitHub
               </a>
             </Button>
             <Button
@@ -70,7 +63,7 @@ export default function Home() {
               variant="outline"
             >
               <a href="mailto:zxstim@gmail.com">
-                <Mail size={18} /> Email
+                Email
               </a>
             </Button>
           </div>
