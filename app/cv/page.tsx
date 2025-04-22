@@ -29,41 +29,6 @@ export default function Home() {
       </div>
       <div className="flex flex-wrap gap-24 mt-8">
         <div className="max-w-3xl">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-xl font-semibold">Projects</h1>
-            <div className="flex flex-col">
-              <p className="font-md italic text-muted-foreground">2024</p>
-              <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.blockcmd.com" target="_blank"><span className="inline-flex"><span className="mr-1">BlockCMD</span><ExternalLink /></span></a></h2>
-                <p>A solo product lab building Web3 toolings and applications.</p>
-              </div>
-              <div className="mt-2">
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer of <a className="text-blue-600" href="https://www.gmgn.app" target="_blank"><span className="inline-flex"><span className="mr-1">GM GN Wallet</span><ExternalLink /></span></a></h2>
-                <p>A super fast onboarding wallet using Passkey.</p>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-md italic text-muted-foreground">2023</p>
-              <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Core contributor of <a className="text-blue-600" href="https://www.buildstation.org" target="_blank"><span className="inline-flex"><span className="mr-1">buildstation</span><ExternalLink /></span></a></h2>
-                <p>a community of builders that are passionate about building on Web3.</p>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-md italic text-muted-foreground">2022</p>
-              <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Editor of <a className="text-blue-600" href="https://defi.vn" target="_blank"><span className="inline-flex" ><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a></h2>
-                <p>Started out as a small community of DeFi enthusiast and information page, DeFi.vn has evolved into OpenForBuilders community and transitioned into an opensource wiki about DeFi.</p>
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <p className="font-md italic text-muted-foreground">2019</p>
-              <div>
-                <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Owner of <a className="text-blue-600" href="https://www.pyhash.com" target="_blank"><span className="inline-flex"><span className="mr-1">Pyhash</span><ExternalLink /></span></a></h2>
-                <p>A digital asset management institution providing after market support and treasury management solutions to token issuers, institutions, investors, and mining operations in the blockchain ecosystem.</p>
-              </div>
-            </div>
-          </div>
           <div className="flex flex-col gap-4 mt-8">
             <h1 className="text-xl font-semibold">Employment History</h1>
             <div>
@@ -91,24 +56,6 @@ export default function Home() {
                 <li>Responsible for maintaining the partnership with PVComBank in Vietnam</li>
                 <li>Coordinated Mastercard, Visa and NAPAS system integration</li>
                 <li>Coordinated PVComBank Core Banking system integration with Vietpay Fintech platform</li>
-              </ul>
-            </div>
-            <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Advisor at Clovers Solutions <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
-              <p className="font-md italic text-muted-foreground">December 2018 - Mar 2020</p>
-              <ul className="list-disc list-outside ml-8">
-                <li>Advised team on outbound sales and proposal drafts</li>
-                <li>Assisted team on strategic directions and daily operations</li>
-                <li>Closed 30+ event and marketing deals for the team</li>
-              </ul>
-            </div>
-            <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Co-Founder at AM Blockchain <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
-              <p className="font-md italic text-muted-foreground">February 2018 - November 2018</p>
-              <ul className="list-disc list-outside ml-8">
-                <li>Coordinated NEM Vietnam team to promote NEM locally and operate NEM Vietnam Blockchain Hub</li>
-                <li>Organized 20+ events with 200+ attendees each along with a few notable events like CDAD2018</li>
-                <li>Launched marketing campaigns for various cryptocurrency projects to acquire Vietnamese users</li>
               </ul>
             </div>
           </div>
