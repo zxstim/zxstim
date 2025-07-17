@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { PostHogProvider } from "@/app/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+
+
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -43,6 +45,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Script
+        defer
+        src="https://analytics.zxstim.com/script.js"
+        data-website-id="080aeece-b99a-4b88-9369-037c76d8e8c6"
+      />
       <body className={jetBrainsMono.className}>
         <ThemeProvider
           attribute="class"
@@ -50,13 +57,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <PostHogProvider>
             <main className="flex flex-col gap-12 items-center p-6 md:p-10 pb-12">
               <Header />
               {children}
               <Footer />
             </main>
-          </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>
