@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <Link className="flex flex-row gap-2 text-blue-600 underline" href="/"><ArrowLeft />Home</Link>
+        <Link className="flex flex-row gap-2 text-blue-400 underline" href="/"><ArrowLeft />Home</Link>
         <div className="flex flex-row gap-2 items-start">
           <Image
             src="./zxstim.svg"
@@ -30,9 +30,37 @@ export default function Home() {
       <div className="flex flex-wrap gap-24 mt-8">
         <div className="max-w-3xl">
           <div className="flex flex-col gap-4 mt-8">
+            <h1 className="text-xl font-semibold">Projects</h1>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Maxi <a className="text-blue-400" href="https://www.eth34.vn" target="_blank"><span className="inline-flex"><span className="mr-1">ETH34</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <p className="font-md italic text-muted-foreground">August 2025 - Present</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Ethereum resources for Vietnamese</li>
+                <li>Created videos, interviews, explainers, etc. about Ethereum</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Host <a className="text-blue-400" href="https://www.defi.vn" target="_blank"><span className="inline-flex"><span className="mr-1">DeFi.vn</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <p className="font-md italic text-muted-foreground">May 2025 - Present</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Curated contents for Vietnamese investors about DeFi</li>
+                <li>Make Youtube videos about DeFi</li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 mt-8">
             <h1 className="text-xl font-semibold">Employment History</h1>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Advocate for <a className="text-blue-600" href="https://kaia.io" target="_blank"><span className="inline-flex"><span className="mr-1">Kaia</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Relations Engineer for <a className="text-blue-400" href="https://bifrost.io" target="_blank"><span className="inline-flex"><span className="mr-1">Bifrost</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <p className="font-md italic text-muted-foreground">Dec 2024 - Present</p>
+              <ul className="list-disc list-outside ml-8">
+                <li>Created and implemented a developer grant program to fund community open source contributions</li>
+                <li>Coordinated DeFi campaign on the EVM ecosystems</li>
+                <li>Created and excuted content creation strategy on social media channels</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">Developer Advocate for <a className="text-blue-400" href="https://kaia.io" target="_blank"><span className="inline-flex"><span className="mr-1">Kaia</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
               <p className="font-md italic text-muted-foreground">May 2023 - Present</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Created and implemented a developer grant program to fund community open source contributions</li>
@@ -41,7 +69,7 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">APAC Head of Sales for <a className="text-blue-600" href="https://crypto.unlimit.com" target="_blank"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">APAC Head of Sales for <a className="text-blue-400" href="https://crypto.unlimit.com" target="_blank"><span className="inline-flex"><span className="mr-1">Unlimit Crypto</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Remote</Badge></h2>
               <p className="font-md italic text-muted-foreground">May 2023 - Nov 2023</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Led the product strategy for an on-ramp cryptocurrency platform</li>
@@ -50,7 +78,7 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">VP of Product and Sales at <a className="text-blue-600" href="https://vietpay.com" target="_blank"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">VP of Product and Sales at <a className="text-blue-400" href="https://vietpay.com" target="_blank"><span className="inline-flex"><span className="mr-1">Vietpay</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">HCMC, Vietnam</Badge></h2>
               <p className="font-md italic text-muted-foreground">December 2018 - Apr 2023</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Responsible for maintaining the partnership with PVComBank in Vietnam</li>
@@ -62,7 +90,7 @@ export default function Home() {
           <div className="flex flex-col gap-4 mt-8">
             <h1 className="text-xl font-semibold">Education</h1>
             <div>
-              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">BSc. in Civil Engineering from <a className="text-blue-600" href="https://unb.ca"><span className="inline-flex"><span className="mr-1">University of New Brunswick</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Fredericton, Canada</Badge></h2>
+              <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">BSc. in Civil Engineering from <a className="text-blue-400" href="https://unb.ca"><span className="inline-flex"><span className="mr-1">University of New Brunswick</span><ExternalLink /></span></a> <Badge className="bg-muted-foreground">Fredericton, Canada</Badge></h2>
               <p className="font-md italic text-muted-foreground">September 2012 - May 2016</p>
               <ul className="list-disc list-outside ml-8">
                 <li>Pre-Masters research thesis in Finite Element Analysis for Steel Joint Connection</li>
@@ -78,16 +106,16 @@ export default function Home() {
               <div>Ho Chi Minh City</div>
               <div>Viet Nam</div>
               <div>+84982792979</div>
-              <a className="text-blue-600 underline underline-offset-2" href="mailto:zxstim@gmail.com">zxstim@gmail.com</a>
+              <a className="text-blue-400 underline underline-offset-2" href="mailto:zxstim@gmail.com">zxstim@gmail.com</a>
             </div>
           </div>
           <div className="flex flex-col gap-4">
             <h1 className="text-xl font-semibold">Links</h1>
             <div className="flex flex-col">
-              <a className="text-blue-600 underline underline-offset-2" href="https://github.com/zxstim">Github</a>
-              <a className="text-blue-600 underline underline-offset-2" href="https://twitter.com/zxstim">Twitter</a>
-              <a className="text-blue-600 underline underline-offset-2" href="https://www.facebook.com/zxstim">Facebook</a>
-              <a className="text-blue-600 underline underline-offset-2" href="https://t.me/zxstim">Telegram</a>
+              <a className="text-blue-400 underline underline-offset-2" href="https://github.com/zxstim">Github</a>
+              <a className="text-blue-400 underline underline-offset-2" href="https://twitter.com/zxstim">Twitter</a>
+              <a className="text-blue-400 underline underline-offset-2" href="https://www.facebook.com/zxstim">Facebook</a>
+              <a className="text-blue-400 underline underline-offset-2" href="https://t.me/zxstim">Telegram</a>
             </div>
           </div>
           <div className="flex flex-col gap-4">
@@ -96,11 +124,12 @@ export default function Home() {
               <p>HTML & CSS</p>
               <p>SQL</p>
               <p>Python</p>
-              <p>Javascript</p>
+              <p>Typescript</p>
               <p>Django</p>
               <p>Solidity</p>
               <p>React</p>
               <p>Next.js</p>
+              <p>Rust</p>
             </div>
           </div>
           <div className="flex flex-col gap-4">
