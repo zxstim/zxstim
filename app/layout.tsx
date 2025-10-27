@@ -3,8 +3,6 @@ import Script from "next/script";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Header from "@/components/header";
-import Footer from "@/components/footer";
 
 
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"] });
@@ -58,9 +56,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
             <main className="flex flex-col gap-12 items-center p-6 md:p-10 pb-12">
-              <Header />
               {children}
-              <Footer />
             </main>
         </ThemeProvider>
       </body>

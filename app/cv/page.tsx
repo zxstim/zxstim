@@ -1,8 +1,6 @@
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image";
 import {
-  ArrowLeft,
   ExternalLink,
 } from 'lucide-react';
 
@@ -12,7 +10,6 @@ export default function Home() {
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <Link className="flex flex-row gap-2 text-blue-400 underline" href="/"><ArrowLeft />Home</Link>
         <div className="flex flex-row gap-2 items-start">
           <Image
             src="/zxstim-mini.png"
