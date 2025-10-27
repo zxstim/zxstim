@@ -15,7 +15,7 @@ export default function Home() {
         <Link className="flex flex-row gap-2 text-blue-400 underline" href="/"><ArrowLeft />Home</Link>
         <div className="flex flex-row gap-2 items-start">
           <Image
-            src="./zxstim.svg"
+            src="/zxstim-mini.png"
             alt="ZxStim"
             width={75}
             height={75}

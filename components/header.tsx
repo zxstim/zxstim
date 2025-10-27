@@ -8,7 +8,7 @@ export default function Header() {
     <div className="flex flex-col gap-2 md:flex-row items-center justify-between w-full">
       <Link className="flex flex-row gap-2" href="/">
         <Image
-          src="/zxstim.svg"
+          src="/zxstim-mini.png"
           alt="ZxStim Logo"
           width={30}
           height={30}

@@ -6,8 +6,8 @@ export default function Home() {
   const menuItems = [
     {
       id: 1,
-      name: 'Intern app',
-      url: 'https://intern.xyz'
+      name: 'UnitMetal',
+      url: 'https://unitmetal.com'
     },
     {
       id: 2,
@@ -16,26 +16,21 @@ export default function Home() {
     },
     {
       id: 3,
-      name: 'GMGN app',
-      url: 'https://gmgn.app'
-    },
-    {
-      id: 4,
-      name: 'Zekae Finance',
-      url: 'https://zekae.com'
-    },
-    {
-      id: 5,
       name: 'DeFi Vietnam',
       url: 'https://defi.vn'
     },
     {
-      id: 6,
+      id: 4,
+      name: 'ETH34',
+      url: 'https://eth34.vn'
+    },
+    {
+      id: 5,
       name: 'Works',
       url: '/works'
     },
     {
-      id: 7,
+      id: 6,
       name: 'CV',
       url: '/cv'
     }
@@ -46,7 +41,7 @@ export default function Home() {
     {
       keyboard: '1',
       description: 'Sections',
-      url: 'https://intern.xyz'
+      url: 'https://unitmetal.com'
     },
     {
       keyboard: '2',
@@ -56,25 +51,20 @@ export default function Home() {
     {
       keyboard: '3',
       description: 'Sections',
-      url: 'https://gmgn.app'
+      url: 'https://defi.vn'
     },
     {
       keyboard: '4',
       description: 'Sections',
-      url: 'https://zekae.com'
+      url: 'https://eth34.vn'
     },
     {
       keyboard: '5',
       description: 'Sections',
-      url: 'https://defi.vn'
-    },
-    {
-      keyboard: '6',
-      description: 'Sections',
       url: '/works'
     },
     {
-      keyboard: '7',
+      keyboard: '6',
       description: 'Sections',
       url: '/cv'
     }
@@ -90,7 +80,7 @@ export default function Home() {
         <h1 className="text-xl md:text-3xl font-bold">Currently on oss arc</h1>
         <div className="flex flex-col gap-12 mt-4">
           <p className="text-md">Long time Ethereum holder. Crash of 2018 survivor. DeFi summer survivor. NFT mania survivor. FTX survivor.</p>
-          <p className="text-md">Currently, I am building open source UX software for onchain developers and DeFi protocols for the masses.</p>
+          <p className="text-md">Currently, I am building open source software products for developers and DeFi protocols.</p>
           <p className="text-md">I firmly believe that the future of the internet is onchain, that we can build a better money for everyone, and that our conviction will make a lasting impact.</p>
         </div>
       </div>
