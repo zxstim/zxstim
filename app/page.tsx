@@ -32,6 +32,11 @@ export default function Home() {
     },
     {
       id: 6,
+      name: "Labs",
+      url: "/labs",
+    },
+    {
+      id: 7,
       name: "CV",
       url: "/cv",
     },
@@ -65,6 +70,11 @@ export default function Home() {
     },
     {
       keyboard: "6",
+      description: "Sections",
+      url: "/labs",
+    },
+    {
+      keyboard: "7",
       description: "Sections",
       url: "/cv",
     },

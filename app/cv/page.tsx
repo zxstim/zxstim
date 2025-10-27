@@ -3,6 +3,7 @@ import Image from "next/image";
 import {
   ExternalLink,
 } from 'lucide-react';
+import Link from "next/link";
 
 
 export default function Home() {
@@ -11,13 +12,15 @@ export default function Home() {
     <div>
       <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-2 items-start">
-          <Image
-            src="/zxstim-mini.png"
-            alt="ZxStim"
-            width={75}
-            height={75}
-            className='border-2 border-foreground'
-          />
+          <Link href="/">
+            <Image
+              src="/zxstim-mini.png"
+              alt="ZxStim"
+              width={75}
+              height={75}
+              className='border-2 border-foreground'
+            />
+          </Link>
           <div className="flex flex-col gap-1">
             <h1 className="text-foreground text-xl font-bold">Victor Luong (ZxStim)</h1>
             <h2 className="text-muted-foreground text-md font-medium">Experienced Builder that can deliver a project start to finish</h2>
