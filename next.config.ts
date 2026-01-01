@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  assetPrefix: "/writing",
-
   // Rewrite rules for the writing domain
   async rewrites() {
     return [
