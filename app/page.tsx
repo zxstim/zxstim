@@ -35,6 +35,11 @@ export default function Home() {
       name: "CV",
       url: "/cv",
     },
+    {
+      id: 7,
+      name: "Writing",
+      url: "/writing",
+    },
   ];
 
   const keyboardNavItems = [
@@ -67,6 +72,11 @@ export default function Home() {
       keyboard: "6",
       description: "Sections",
       url: "/cv",
+    },
+    {
+      keyboard: "7",
+      description: "Sections",
+      url: "/writing",
     },
   ];
 
