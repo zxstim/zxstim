@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -43,11 +42,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Script
-        defer
-        src="https://analytics.zxstim.com/script.js"
-        data-website-id="080aeece-b99a-4b88-9369-037c76d8e8c6"
-      />
       <body className={jetBrainsMono.className}>
         <ThemeProvider
           attribute="class"

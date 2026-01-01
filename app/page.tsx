@@ -12,31 +12,26 @@ export default function Home() {
     },
     {
       id: 2,
-      name: "buildstation",
-      url: "https://buildstation.org",
-    },
-    {
-      id: 3,
       name: "DeFi Vietnam",
       url: "https://defi.vn",
     },
     {
-      id: 4,
+      id: 3,
       name: "ETH34",
       url: "https://eth34.vn",
     },
     {
-      id: 5,
+      id: 4,
       name: "Works",
       url: "/works",
     },
     {
-      id: 6,
+      id: 5,
       name: "Labs",
       url: "/labs",
     },
     {
-      id: 7,
+      id: 6,
       name: "CV",
       url: "/cv",
     },
@@ -51,30 +46,25 @@ export default function Home() {
     {
       keyboard: "2",
       description: "Sections",
-      url: "https://buildstation.org",
+      url: "https://defi.vn",
     },
     {
       keyboard: "3",
       description: "Sections",
-      url: "https://defi.vn",
+      url: "https://eth34.vn",
     },
     {
       keyboard: "4",
       description: "Sections",
-      url: "https://eth34.vn",
+      url: "/works",
     },
     {
       keyboard: "5",
       description: "Sections",
-      url: "/works",
-    },
-    {
-      keyboard: "6",
-      description: "Sections",
       url: "/labs",
     },
     {
-      keyboard: "7",
+      keyboard: "6",
       description: "Sections",
       url: "/cv",
     },
