@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/writing/:path+",
-        destination: `${process.env.WRITING_DOMAIN_URL}/:path+`,
+        destination: `${process.env.WRITING_DOMAIN_URL}/writing/:path+`,
       },
       {
         source: "/writing/_next/:path+",
