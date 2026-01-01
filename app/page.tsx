@@ -39,7 +39,7 @@ export default function Home() {
       id: 7,
       name: "Writing",
       url: "/writing",
-    },
+    }
   ];
 
   const keyboardNavItems = [
@@ -77,7 +77,7 @@ export default function Home() {
       keyboard: "7",
       description: "Sections",
       url: "/writing",
-    },
+    }
   ];
 
   return (

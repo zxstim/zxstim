@@ -10,13 +10,13 @@ const nextConfig: NextConfig = {
         destination: `${process.env.WRITING_DOMAIN_URL}`,
       },
       {
-        source: '/writing/docs/:path+',
-        destination: `${process.env.WRITING_DOMAIN_URL}/docs/:path+`,
+        source: "/writing/:path+",
+        destination: `${process.env.WRITING_DOMAIN_URL}/:path+`,
       },
       {
-        source: '/writing/blog/:path+',
-        destination: `${process.env.WRITING_DOMAIN_URL}/blog/:path+`,
-      }
+        source: "/writing/_next/:path+",
+        destination: `${process.env.WRITING_DOMAIN_URL}/writing/_next/:path+`,
+      },
     ];
   },
 };
