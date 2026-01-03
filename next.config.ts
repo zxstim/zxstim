@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         source: "/writing/_next/:path+",
         destination: `${process.env.WRITING_DOMAIN_URL}/writing/_next/:path+`,
       },
+      {
+        source: "/api/search",
+        destination: `${process.env.WRITING_DOMAIN_URL}/api/search`,
+      },
     ];
   },
 };

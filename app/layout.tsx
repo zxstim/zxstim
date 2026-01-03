@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ZxStim",
     description: "Building and shipping software products",
-    creator: "@0xstim",
+    creator: "@zxstim",
     images: ["/zxstim-tbn.png"],
   },
 };
