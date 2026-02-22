@@ -8,17 +8,17 @@ export default function Home() {
     {
       id: 1,
       name: "UnitMetal",
-      url: "https://unitmetal.com",
+      url: "https://www.unitmetal.com",
     },
     {
       id: 2,
       name: "DeFi Vietnam",
-      url: "https://defi.vn",
+      url: "https://www.defi.vn",
     },
     {
       id: 3,
-      name: "ETH34",
-      url: "https://eth34.vn",
+      name: "WETH Vietnam",
+      url: "https://www.weth.vn",
     },
     {
       id: 4,
@@ -38,8 +38,8 @@ export default function Home() {
     {
       id: 7,
       name: "Writing",
-      url: "/writing",
-    }
+      url: "https://writing.zxstim.com",
+    },
   ];
 
   const keyboardNavItems = [
@@ -51,12 +51,12 @@ export default function Home() {
     {
       keyboard: "2",
       description: "Sections",
-      url: "https://defi.vn",
+      url: "https://www.defi.vn",
     },
     {
       keyboard: "3",
       description: "Sections",
-      url: "https://eth34.vn",
+      url: "https://www.weth.vn",
     },
     {
       keyboard: "4",
@@ -76,8 +76,8 @@ export default function Home() {
     {
       keyboard: "7",
       description: "Sections",
-      url: "/writing",
-    }
+      url: "https://writing.zxstim.com",
+    },
   ];
 
   return (
