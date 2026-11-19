@@ -4,21 +4,25 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { isExternalUrl, shortLinkLabel } from "@/lib/links";
-import type { TerminalLink } from "@/components/terminal/project-list";
+import { siteLinks, type TerminalLink } from "@/lib/site-nav";
 
 const entry =
-  "whitespace-nowrap px-1 outline-none hover:bg-primary-foreground hover:text-primary focus-visible:bg-primary-foreground focus-visible:text-primary";
+  "whitespace-nowrap px-1 outline-none hover:bg-primary-foreground hover:text-primary focus-visible:bg-primary-foreground focus-visible:text-primary aria-[current=page]:font-bold";
 
 /**
- * tmux-style status line. Lists the window shortcuts (0 = index, 1..n = the
- * given links) as real links, and wires up the matching keyboard shortcuts.
+ * tmux-style status line: `0:index` plus one numbered "window" per site link,
+ * the current page marked with `*`. Entries are real links, and the same
+ * numbers work as keyboard shortcuts.
  */
 export function StatusBar({
-  session,
-  items,
+  current = "/",
+  session = "zxstim",
+  items = siteLinks,
 }: {
-  session: string;
-  items: TerminalLink[];
+  /** Path of the page being shown, e.g. "/works". */
+  current?: string;
+  session?: string;
+  items?: TerminalLink[];
 }) {
   const { back, forward } = useKeyboardShortcuts(
     items.map((item, index) => ({ key: String(index + 1), url: item.url })),
@@ -26,17 +30,18 @@ export function StatusBar({
 
   return (
     <nav
-      aria-label="Keyboard shortcuts"
-      className="flex items-center gap-3 overflow-x-auto bg-primary px-2 py-1 text-sm text-primary-foreground"
+      aria-label="Site navigation and keyboard shortcuts"
+      className="flex items-center gap-3 overflow-x-auto bg-primary px-2 py-1 text-sm text-primary-foreground print:hidden"
     >
       <span className="whitespace-nowrap bg-primary-foreground px-1 font-bold text-primary">
         [{session}]
       </span>
-      <Link href="/" className={entry} aria-current="page">
-        0:index*
+      <Link href="/" className={entry} aria-current={current === "/" ? "page" : undefined}>
+        0:index{current === "/" && "*"}
       </Link>
       {items.map((item, index) => {
         const external = isExternalUrl(item.url);
+        const active = item.url === current;
         return (
           <Link
             key={item.url}
@@ -44,9 +49,11 @@ export function StatusBar({
             target={external ? "_blank" : undefined}
             rel={external ? "noopener noreferrer" : undefined}
             className={entry}
+            aria-current={active ? "page" : undefined}
             aria-label={`${index + 1}: ${item.name}`}
           >
             {index + 1}:{shortLinkLabel(item.url)}
+            {active && "*"}
           </Link>
         );
       })}

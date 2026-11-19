@@ -16,9 +16,12 @@ export function TerminalWindow({
   return (
     <section
       aria-label={title}
-      className={cn("flex w-full flex-col border-2 border-primary", className)}
+      className={cn(
+        "flex w-full flex-col border-2 border-primary print:border-0",
+        className,
+      )}
     >
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 bg-primary px-3 py-1.5 text-primary-foreground">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 bg-primary px-3 py-1.5 text-primary-foreground print:hidden">
         {/* Decorative window controls, kept square to match the site. */}
         <div aria-hidden className="flex gap-1.5">
           <span className="size-3 border-2 border-primary-foreground" />
@@ -35,18 +38,55 @@ export function TerminalWindow({
   );
 }
 
-/** One shell prompt line: `zxstim@web:~$ <command>`, optionally with a cursor. */
+/** Two side-by-side panes (stacked on mobile) separated by a rule. */
+export function TerminalPanes({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 divide-primary max-md:divide-y-2 md:grid-cols-2 md:divide-x-2",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Padding/stacking for the content of one pane. */
+export function TerminalPane({
+  className,
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn("flex min-w-0 flex-col gap-4 p-4 md:p-6", className)}>
+      {children}
+    </div>
+  );
+}
+
+/** One shell prompt line: `zxstim@web:~/path$ <command>`, optionally with a cursor. */
 export function Prompt({
+  path = "~",
   command,
   cursor = false,
 }: {
+  path?: string;
   command?: string;
   cursor?: boolean;
 }) {
   return (
-    <p className="flex flex-wrap items-baseline gap-x-2">
+    <p className="flex flex-wrap items-baseline gap-x-2 print:hidden">
       <span className="text-muted-foreground">
-        <span className="font-bold text-foreground">zxstim@web</span>:~$
+        <span className="font-bold text-foreground">zxstim@web</span>:{path}$
       </span>
       {command && <span>{command}</span>}
       {cursor && (
