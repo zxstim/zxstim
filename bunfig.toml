@@ -1,0 +1,7 @@
+[install]
+# Save exact versions (no ^ or ~ ranges) when running `bun add`.
+exact = true
+
+# Only install package versions published at least 7 days ago (in seconds).
+# Guards against freshly published compromised releases.
+minimumReleaseAge = 604800
