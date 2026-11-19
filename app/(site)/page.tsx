@@ -7,38 +7,33 @@ export default function Home() {
   const menuItems = [
     {
       id: 1,
-      name: "UnitMetal",
-      url: "https://www.unitmetal.com",
-    },
-    {
-      id: 2,
       name: "DeFi Vietnam",
       url: "https://www.defi.vn",
     },
     {
-      id: 3,
-      name: "WETH Vietnam",
-      url: "https://www.weth.vn",
+      id: 2,
+      name: "ETH Vietnam",
+      url: "https://www.eth.vn",
     },
     {
-      id: 4,
+      id: 3,
       name: "Works",
       url: "/works",
     },
     {
-      id: 5,
+      id: 4,
       name: "Labs",
       url: "/labs",
     },
     {
-      id: 6,
+      id: 5,
       name: "CV",
       url: "/cv",
     },
     {
-      id: 7,
+      id: 6,
       name: "Writing",
-      url: "https://writing.zxstim.com",
+      url: "/writing",
     },
   ];
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import { JetBrains_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -42,17 +42,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-mono", jetbrainsMono.variable)}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-            <main className="flex flex-col gap-12 items-center p-6 md:p-10 pb-12">
-              {children}
-            </main>
-        </ThemeProvider>
+      <body className="flex flex-col min-h-screen">
+        {/* Same next-themes setup as before (class, system default, no transition flash). */}
+        <RootProvider>{children}</RootProvider>
       </body>
     </html>
   );

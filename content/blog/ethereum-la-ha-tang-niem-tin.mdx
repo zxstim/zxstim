@@ -1,0 +1,19 @@
+---
+title: Ethereum Là Hạ Tầng Niềm Tin
+author: zxstim
+date: 2026-07-31
+language: vi
+thumbnail: ethereum-la-ha-tang-niem-tin.png
+status: published
+---
+
+Tớ vừa có một buổi tư vấn cực kỳ thú vị. Một công ty Fintech nước ngoài tìm đến tớ để hỏi về giải pháp sử dụng Ethereum để tạo ra một công cụ hỗ trợ kiểm toán dữ liệu giao dịch và số dư. Tớ cảm thấy đây có thể là một nhu cầu chung của nhiều công ty fintech, và kể cả ngân hàng, công ty tài chính truyền thống.
+
+Một nỗi lo của những công ty trong ngành tài chính truyền thống là rủi ro nhân sự (từ cấp cao đến cấp thấp). Vì thế mọi người mới nghe nhiều về cụm từ "tuân thủ" (compliant). Căn bản là những doanh nghiệp tài chính truyền thống sẽ tìm cách phân quyền quản trị của các nhân sự, và có những nhân sự độc lập theo dõi để phát hiện sớm những vấn đề gian lận của những người có quyền truy cập hệ thống lõi. Chẳng hạn như một phó giám đốc khối công nghệ thông tin lạm dụng quyền hạn để thay đổi số dư một số tài khoản trong cơ sở dữ liệu hệ thống, hoặc lén lút thay đổi một số cấu hình hệ thống để tiếp tay cho tội phạm.
+
+Đến đây thì tớ nhớ có một bài phát biểu của Vitalik (trích dẫn 1) về đúng cái giải pháp này. Vitalik đề xuất về việc Merkl hoá, nôm na là hash + kết hợp dữ liệu khách hàng với nhau để tạo ra một chuỗi dữ liệu mã hoá dính liền mà có thể dùng để xác minh dữ liệu có bị thay đổi hay không, sau đó đưa lên môi trường Ethereum onchain thì những bằng chứng này sẽ tồn tại mãi mãi mà không thay đổi được. Ethereum đóng vai trò cung cấp hạ tầng niềm tin cho doanh nghiệp, mà chi phí cũng không đắt. Tớ giả dụ và tính nhẩm thử với Claude thì với 50.000 khách hàng, 50.000 bản ghi số dư và 500.000 giao dịch hằng ngày, và bạn muốn gửi dữ liệu lên hằng ngày, thì tổng chi phí sẽ là ~$10/năm (dựa trên giá gas và kích cỡ hiện tại); căn bản là một con số không đáng kể. Lúc này bạn có thể cắt giảm chi phí bằng việc bớt nhiều công đoạn vận hành, hoặc bớt nhân sự tuân thủ, nhưng vẫn có thể đảm bảo dấu vết kiểm toán. 
+
+Tớ nghĩ đây là một ý tưởng hay mà [ETH.vn](https://www.eth.vn) sẽ nghiên cứu thêm để cung cấp giải pháp.
+
+---------
+- [1] [Trích bài phát biểu của Vitalik](https://x.com/Etherealize_io/status/2068320462065869276)
