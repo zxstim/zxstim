@@ -1,6 +1,6 @@
 ---
-title: Rủi ro và trách nhiệm
-description: Khóa của cơ quan là con dấu số. Phí phải trả bằng ETH. Giá trị pháp lý do luật quyết định. Nhiều thí điểm đã dừng. Những điều cần tính trước khi bắt đầu.
+title: Risks and accountability
+description: The agency's key is its digital seal. Fees must be paid in ETH. Legal validity is decided by law. Many pilots have stopped. Things to plan for before you start.
 sources:
   - https://publicsector.ethereum.foundation/case-studies/
   - https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf
@@ -8,79 +8,79 @@ sources:
   - https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/
 ---
 
-## Khóa là con dấu
+## The key is the official seal
 
-Trên Ethereum, cơ quan được nhận diện bằng một địa chỉ, và mọi bản ghi được ký bằng **khóa riêng tư** của địa chỉ đó. Xem [Địa chỉ và khóa](../basics/how-it-works/addresses-and-keys.mdx).
+On Ethereum, an agency is identified by an address, and every record is signed with that address's **private key**. See [Addresses and keys](../basics/how-it-works/addresses-and-keys.mdx).
 
-- **Mất khóa:** không đăng được bản ghi mới, không thu hồi được giấy tờ đã cấp.
-- **Lộ khóa:** người khác đăng thay cơ quan, và bản ghi giả không xóa được.
-- **Cách giảm rủi ro:**
-  - dùng ví **nhiều chữ ký** (multisig) để mỗi bản ghi quan trọng cần vài cán bộ cùng ký (xem [Ví thông minh](../basics/using-ethereum/smart-wallets.mdx));
-  - giữ khóa trong thiết bị chuyên dụng;
-  - có quy trình bàn giao khi đổi người;
-  - có kế hoạch đổi khóa và cách thông báo địa chỉ mới.
-- **Người dân** giữ giấy tờ trong ví cũng cần cách khôi phục khi mất điện thoại. Các trang của EF về OpenCerts, Canada và Bhutan đều nêu vấn đề quản lý khóa.
+- **Losing the key:** the agency can't publish new records or revoke documents it has issued.
+- **Leaking the key:** someone else can publish in the agency's name, and the fake records can't be deleted.
+- **Ways to reduce the risk:**
+  - use a **multisig** wallet so each important record needs several officials to sign (see [Smart wallets](../basics/using-ethereum/smart-wallets.mdx));
+  - keep keys on dedicated devices;
+  - have a handover procedure when staff change;
+  - have a plan for rotating keys and for announcing the new address.
+- **Citizens** who keep documents in a wallet also need a way to recover them if they lose their phone. The EF's pages on OpenCerts, Canada and Bhutan all raise the issue of key management.
 
-## Phải giữ ETH để trả phí
+## You have to hold ETH to pay fees
 
-Mỗi lần ghi tốn [phí gas](../basics/how-it-works/gas.mdx), trả bằng ETH. Ở Singapore, các trường tham gia OpenCerts phải tự trả phí này. Với một cơ quan nhà nước, việc này đặt ra các câu hỏi:
+Every write costs a [gas fee](../basics/how-it-works/gas.mdx), paid in ETH. In Singapore, the schools taking part in OpenCerts had to pay this fee themselves. For a government agency, this raises some questions:
 
-- **Dự toán:** giá ETH biến động, mức phí cũng biến động.
-- **Hạch toán:** ghi nhận và quyết toán khoản ETH như thế nào.
-- **Quy định:** cơ quan có được nắm giữ tài sản mã hóa hay không. Cần đối chiếu với quy định hiện hành về ngân sách, kế toán và tài sản mã hóa.
+- **Budgeting:** the price of ETH moves, and so do fees.
+- **Accounting:** how to record and settle the ETH spent.
+- **Regulation:** whether the agency is allowed to hold crypto assets at all. Check against the current rules on budgets, accounting and crypto assets.
 
-Cách giảm chi phí: dùng Layer 2 có phí thấp hơn, gộp nhiều bản ghi vào một giao dịch, hoặc để một bên khác trả phí thay. Bên trả phí thay vẫn là người phải giữ ETH.
+Ways to cut costs: use a Layer 2 with lower fees, bundle many records into one transaction, or have another party pay the fees for you. The party paying the fees still has to hold ETH.
 
-## Giá trị pháp lý
+## Legal validity
 
-Không tài liệu nào của EF mà wiki đã đọc dẫn ra một đạo luật công nhận giá trị pháp lý của bản ghi trên chuỗi. Chính hướng dẫn của EF lưu ý rằng các ngân hàng trung ương coi **tính cuối cùng của thanh toán** (settlement finality) là khái niệm pháp lý, không chỉ là chuyện kỹ thuật. Một bản ghi trên Ethereum có giá trị chứng cứ hay không là do pháp luật quy định.
+None of the EF material this wiki has read cites a law that recognizes the legal validity of onchain records. The EF's own guidance notes that central banks treat **settlement finality** as a legal concept, not just a technical matter. Whether a record on Ethereum counts as evidence is decided by law.
 
-## Dữ liệu cá nhân
+## Personal data
 
-Dữ liệu trên mạng chính công khai và không xóa được, trong khi luật trao cho người dân quyền chỉnh sửa và yêu cầu xóa dữ liệu của mình. Xem [Đưa gì lên chuỗi, giữ gì ngoài chuỗi](./what-goes-onchain.mdx).
+Data on mainnet is public and can't be deleted, while the law gives citizens the right to correct their data and to request its deletion. See [What goes onchain, what stays offchain](./what-goes-onchain.mdx).
 
-## Phụ thuộc nhà cung cấp và nguồn dữ liệu
+## Dependence on vendors and data sources
 
-Dùng một mạng không ai sở hữu không có nghĩa là hết phụ thuộc:
+Using a network that no one owns doesn't mean you no longer depend on anyone:
 
-- **Oracle:** số liệu kinh tế của Hoa Kỳ lên chuỗi qua hai công ty tư nhân (Chainlink và Pyth).
-- **Nguồn dữ liệu:** ở Kenya, khi chính phủ Hoa Kỳ tạm đóng cửa, dữ liệu vệ tinh bị gián đoạn và một đợt chi trả chậm 18 ngày.
-- **Phần mềm và tư vấn:** thí điểm ở Canada dùng phần mềm của một công ty (Bitaccess). Trang của EF về dự án này đặt câu hỏi hệ thống sẽ ra sao sau khi thí điểm kết thúc.
+- **Oracles:** US economic figures go onchain through two private companies (Chainlink and Pyth).
+- **Data sources:** in Kenya, when the US government shut down, the satellite data was interrupted and one payout was delayed by 18 days.
+- **Software and consulting:** the Canadian pilot used software from one company (Bitaccess). The EF's page on this project asks what would happen to the system after the pilot ended.
 
-Nhóm làm việc với khu vực công của EF cũng đặt "độc lập của tổ chức" làm nguyên tắc đầu tiên. Hãy giữ quyền với mã nguồn, dùng tiêu chuẩn mở, và có kế hoạch rút lui ngay từ đầu.
+The EF's public-sector team also puts "institutional independence" as its first principle. Keep the rights to your source code, use open standards, and have an exit plan from the start.
 
-## Thí điểm chưa phải là vận hành
+## A pilot isn't operations
 
-- OpenCerts (Singapore) bỏ mô hình dựa trên Ethereum năm 2025, sau 7 năm.
-- Thí điểm của Canada dừng năm 2019.
-- Giga ở Rwanda kết thúc năm 2025, khi chính phủ tự chi trả phí internet.
-- Kết quả ở Kenya do dự án tự báo cáo.
+- OpenCerts (Singapore) dropped its Ethereum-based model in 2025, after 7 years.
+- Canada's pilot stopped in 2019.
+- Giga in Rwanda ended in 2025, when the government started paying for internet access itself.
+- The results in Kenya were self-reported by the project.
 
-Khi nghe một ví dụ "chạy trên Ethereum", hãy hỏi thêm: dự án còn chạy không, chạy trên mạng nào, và có đánh giá độc lập không. Một số ví dụ hay được nhắc thực ra chạy trên Polygon hay Celo, là những mạng riêng có trình xác thực riêng.
+When you hear an example "runs on Ethereum", ask further: is the project still running, which network does it run on, and has it been independently evaluated? Some frequently cited examples actually run on Polygon or Celo, which are separate networks with their own validators.
 
-## Rủi ro của chính mạng lưới
+## Risks of the network itself
 
-- **Quy tắc thay đổi qua các đợt nâng cấp.** Các đợt này được lên kế hoạch và bàn công khai, nhưng cơ quan không có quyền quyết định.
-- **Sự cố vẫn xảy ra.** Tháng 5 năm 2023, mạng hai lần tạm ngừng đạt tính cuối cùng, khoảng 25 phút và khoảng một giờ, dù khối mới vẫn được tạo. Con số "chưa từng ngừng hoạt động" trong tài liệu của EF đúng hay không là tùy cách định nghĩa "ngừng".
-- **Lỗi trong hợp đồng thông minh.** Mã của cơ quan cần được kiểm toán độc lập. Các bản thử nghiệm kỹ thuật EF công bố tháng 11 năm 2026 mới chạy trên mạng thử nghiệm và chưa được kiểm toán.
-- **Layer 2 có thêm rủi ro bên vận hành.** Xem [Layer 2](../basics/how-it-works/layer-2.mdx).
+- **The rules change through upgrades.** These are planned and discussed in public, but the agency has no say in the decision.
+- **Incidents still happen.** In May 2023, the network twice temporarily stopped reaching finality, for about 25 minutes and about an hour, though new blocks were still produced. Whether the "never had downtime" claim in EF material is true depends on how you define "downtime".
+- **Bugs in smart contracts.** The agency's code needs an independent audit. The technical prototypes the EF published in November 2026 only run on testnets so far and have not been audited.
+- **Layer 2 adds operator risk.** See [Layer 2](../basics/how-it-works/layer-2.mdx).
 
-## Nguồn tài liệu có lập trường
+## Sources with a point of view
 
-Quỹ Ethereum là bên vận động cho Ethereum. Bản giới thiệu của nhóm EPIC gọi Ethereum là lựa chọn dài hạn thực sự duy nhất cho hạ tầng công. Hướng dẫn của EF dùng những cụm như "đáng tin cậy nhất". Các nghiên cứu điển hình của EF thì thận trọng hơn và tự nêu giới hạn. Với quyết định lớn, hãy tìm thêm đánh giá độc lập.
+The Ethereum Foundation advocates for Ethereum. The EPIC team's brief calls Ethereum the only truly long-term option for public infrastructure. The EF's guidance uses phrases like "most trustworthy". The EF's case studies are more cautious and state their own limits. For big decisions, look for independent assessments as well.
 
-## Tóm tắt
+## Summary
 
-- Khóa của cơ quan là con dấu: cần nhiều chữ ký, thiết bị chuyên dụng, quy trình bàn giao và kế hoạch đổi khóa.
-- Trả phí bằng ETH đặt ra câu hỏi về dự toán, hạch toán và quy định.
-- Giá trị pháp lý của bản ghi do luật quyết định. Dữ liệu cá nhân không lên chuỗi công khai.
-- Nhiều ví dụ là thí điểm đã dừng. Hỏi rõ dự án còn chạy không, chạy trên mạng nào.
+- The agency's key is its seal: it needs multisig, dedicated devices, a handover procedure and a key rotation plan.
+- Paying fees in ETH raises questions about budgeting, accounting and regulation.
+- The legal validity of records is decided by law. Personal data doesn't go on a public chain.
+- Many examples are pilots that have stopped. Ask clearly whether the project is still running, and on which network.
 
-## Đọc tiếp
+## Read next
 
-- [Làm việc với Quỹ Ethereum và tài liệu tham khảo](./working-with-the-ef.mdx)
+- [Working with the Ethereum Foundation, and references](./working-with-the-ef.mdx)
 
-## Nguồn
+## Sources
 
-- Quỹ Ethereum: [nghiên cứu điển hình](https://publicsector.ethereum.foundation/case-studies/), [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf), [EPIC Mandate Brief](https://publicsector.ethereum.foundation/docs/epic-mandate-brief.pdf)
-- Prysm: [báo cáo sự cố mạng chính](https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/) tháng 5 năm 2023
+- Ethereum Foundation: [case studies](https://publicsector.ethereum.foundation/case-studies/), [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf), [EPIC Mandate Brief](https://publicsector.ethereum.foundation/docs/epic-mandate-brief.pdf)
+- Prysm: [mainnet incident reports](https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/), May 2023

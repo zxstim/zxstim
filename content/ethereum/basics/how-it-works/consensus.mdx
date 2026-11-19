@@ -1,6 +1,6 @@
 ---
-title: Đồng thuận
-description: Làm sao hàng nghìn máy tính không quen biết, không tin nhau, vẫn thống nhất được một cuốn sổ chung. Từ bài toán các vị tướng Byzantine tới bằng chứng công việc và bằng chứng cổ phần.
+title: Consensus
+description: How thousands of computers that don't know or trust each other can still agree on one shared ledger. From the Byzantine Generals Problem to proof of work and proof of stake.
 sources:
   - https://ethereum.org/developers/docs/consensus-mechanisms/
   - https://ethereum.org/developers/docs/consensus-mechanisms/pow/
@@ -11,89 +11,89 @@ sources:
   - https://ethereum.org/videos/blockchain-eth-build/
 ---
 
-[Chuỗi khối](./blockchain.mdx) chỉ có ý nghĩa khi mọi nút giữ cùng một bản. Nhưng không có máy chủ trung tâm nào quyết định bản nào đúng. Các nút nhận giao dịch theo thứ tự khác nhau, mạng có lúc chậm, và một số nút có thể cố tình nói dối.
+A [blockchain](./blockchain.mdx) only means something if every node keeps the same copy. But there's no central server deciding which copy is right. Nodes receive transactions in different orders, the network is sometimes slow, and some nodes may lie on purpose.
 
-Cách để cả mạng lưới đi đến thống nhất gọi là **cơ chế đồng thuận** (consensus mechanism): toàn bộ luật lệ, phần thưởng và hình phạt giúp các nút đồng ý với nhau về trạng thái của chuỗi khối.
+The way the whole network comes to agree is called a **consensus mechanism**: the full set of rules, rewards and penalties that helps nodes agree on the state of the blockchain.
 
-## Bài toán các vị tướng Byzantine
+## The Byzantine Generals Problem
 
-Năm 1982, ba nhà khoa học máy tính Leslie Lamport, Robert Shostak và Marshall Pease mô tả vấn đề này bằng một câu chuyện, gọi là [bài toán các vị tướng Byzantine](https://lamport.azurewebsites.net/pubs/byz.pdf) (Byzantine Generals Problem):
+In 1982, three computer scientists, Leslie Lamport, Robert Shostak and Marshall Pease, described this problem with a story known as the [Byzantine Generals Problem](https://lamport.azurewebsites.net/pubs/byz.pdf):
 
-- Nhiều cánh quân bao vây một thành. Cùng tấn công thì thắng, đánh lẻ tẻ thì thua.
-- Các tướng chỉ liên lạc được bằng người đưa tin.
-- Trong số họ có kẻ phản bội. Kẻ đó có thể nói với người này một đằng, với người kia một nẻo.
+- Several armies surround a city. If they attack together, they win. If they attack piecemeal, they lose.
+- The generals can only communicate through messengers.
+- Some of them are traitors. A traitor can tell one general one thing and another general something else.
 
-Làm sao để các tướng trung thành vẫn cùng chọn một kế hoạch?
+How can the loyal generals still settle on the same plan?
 
 <ByzantineScene />
 
-Lời giải có ba ý chính, và chuỗi khối dùng đúng ba ý này:
+The solution has three key ideas, and blockchains use exactly these three:
 
-1. **Gửi cho tất cả.** Mỗi phiếu được gửi tới mọi người, không chuyền tay qua trung gian.
-2. **Ký tên vào từng phiếu.** Với [chữ ký số](./digital-signatures.mdx), không ai giả được lời người khác, và ai nói hai lời trái nhau sẽ bị bắt quả tang.
-3. **Đủ đa số áp đảo thì quyết.** Trên một mạng như internet, nơi tin nhắn có thể đến chậm, nhóm chỉ đồng thuận an toàn được khi hơn 2/3 thành viên trung thực. Đó là lý do Ethereum cần 2/3 số phiếu.
+1. **Send to everyone.** Every vote is sent to everyone directly, not passed hand to hand through middlemen.
+2. **Sign every vote.** With [digital signatures](./digital-signatures.mdx), nobody can fake someone else's words, and anyone who says two contradictory things gets caught red-handed.
+3. **Decide by an overwhelming majority.** On a network like the internet, where messages can arrive late, a group can only reach consensus safely if more than 2/3 of its members are honest. That's why Ethereum needs 2/3 of the votes.
 
-Một hệ thống vẫn chạy đúng dù có thành viên gian dối gọi là có **khả năng chịu lỗi Byzantine** (Byzantine fault tolerance).
+A system that keeps working correctly even when some of its members cheat is said to have **Byzantine fault tolerance**.
 
-## Ai được bỏ phiếu?
+## Who gets to vote?
 
-Trong câu chuyện, số tướng là cố định. Trên một mạng mở như Ethereum, ai cũng tham gia được, và một người có thể tạo ra hàng nghìn danh tính giả để bỏ phiếu thay cho cả đám đông. Kiểu gian lận này gọi là **tấn công Sybil** (Sybil attack).
+In the story, the number of generals is fixed. On an open network like Ethereum, anyone can join, and one person can create thousands of fake identities to vote as if they were a whole crowd. This kind of cheating is called a **Sybil attack**.
 
-Vì vậy không thể đếm phiếu theo đầu người. Mỗi lá phiếu phải tốn một thứ khó làm giả. Theo ethereum.org, đó là việc của bằng chứng công việc và bằng chứng cổ phần: chúng chống tấn công Sybil và chọn ai được viết khối tiếp theo. Một luật chọn nhánh đi kèm để các nút cùng chọn một chuỗi.
+So votes can't be counted per head. Each vote has to cost something that's hard to fake. According to ethereum.org, that's the job of proof of work and proof of stake: they resist Sybil attacks and pick who gets to write the next block. They come paired with a fork-choice rule so that all the nodes pick the same chain.
 
-## Bằng chứng công việc
+## Proof of work
 
-Năm 2009, Bitcoin đưa ra lời giải thực tế đầu tiên: **bằng chứng công việc** (proof of work).
+In 2009, Bitcoin introduced the first practical solution: **proof of work**.
 
-- Các **thợ đào** (miner) cho máy tính đoán hàng tỷ con số mỗi giây, tìm một con số làm mã băm của khối nhỏ hơn một ngưỡng cho trước. Tìm ra rất khó, nhưng kiểm tra thì rất dễ.
-- Ai tìm ra trước được thêm khối và nhận thưởng. Các nút đi theo chuỗi có nhiều công sức tính toán nhất.
-- Lá phiếu ở đây là sức mạnh tính toán. Muốn gian lận phải nắm hơn một nửa sức mạnh tính toán của cả mạng, gọi là **tấn công 51%**.
+- **Miners** have their computers guess billions of numbers every second, looking for one that makes the block's hash smaller than a given threshold. Finding it is very hard, but checking it is very easy.
+- Whoever finds it first gets to add the block and collect the reward. Nodes follow the chain with the most computing work behind it.
+- Here, a vote is computing power. To cheat, you'd need to control more than half of the whole network's computing power, which is called a **51% attack**.
 
-Ethereum dùng bằng chứng công việc từ khi ra mắt tháng 7 năm 2015. Cái giá phải trả là điện năng: các ước tính trước năm 2022 cho thấy Ethereum dùng hàng chục terawatt giờ điện mỗi năm. Bitcoin đến nay vẫn dùng bằng chứng công việc.
+Ethereum used proof of work from its launch in July 2015. The price was electricity: estimates from before 2022 put Ethereum's use at tens of terawatt-hours of electricity per year. Bitcoin still uses proof of work today.
 
 <ConsensusScene />
 
-## Bằng chứng cổ phần
+## Proof of stake
 
-Ý tưởng **bằng chứng cổ phần** (proof of stake) có từ sớm, nhưng phải mất nhiều năm nghiên cứu mới đủ an toàn để dùng thật:
+The idea of **proof of stake** has been around for a long time, but it took years of research before it was safe enough for real use:
 
-- **Ngày 1 tháng 12 năm 2020:** Beacon Chain ra mắt, chạy bằng chứng cổ phần song song với Ethereum.
-- **Ngày 15 tháng 9 năm 2022:** sự kiện **The Merge** chuyển hẳn Ethereum sang bằng chứng cổ phần. Không mất lịch sử nào, và người giữ ETH không phải làm gì.
+- **December 1, 2020:** the Beacon Chain launched, running proof of stake alongside Ethereum.
+- **September 15, 2022:** **The Merge** switched Ethereum over to proof of stake for good. No history was lost, and ETH holders didn't have to do anything.
 
-Thay cho thợ đào là các [trình xác thực](./validators.mdx), những người khóa ETH làm tiền cọc. Mỗi khe 12 giây, một trình xác thực được chọn ngẫu nhiên để đề xuất khối, các trình xác thực khác kiểm tra và bỏ phiếu. Lá phiếu tính theo số ETH đặt cọc. Khi hai mốc liên tiếp nhận phiếu từ 2/3 tổng số ETH đặt cọc, khối đạt **tính cuối cùng** (finality).
+Miners were replaced by [validators](./validators.mdx), people who lock up ETH as a stake. In each 12-second slot, one validator is chosen at random to propose a block, and the other validators check it and vote. Votes are weighted by the amount of ETH staked. Once two consecutive checkpoints receive votes from 2/3 of all staked ETH, the block reaches **finality**.
 
-Điều gì xảy ra nếu có kẻ tấn công nắm nhiều tiền cọc?
+What happens if an attacker controls a lot of the stake?
 
-| Kẻ tấn công nắm | Có thể làm gì |
+| The attacker controls | What they can do |
 |---|---|
-| Hơn 1/3 tiền cọc | Làm chậm tính cuối cùng |
-| Hơn 1/2 tiền cọc | Kiểm duyệt giao dịch, điều khiển các khối sắp tới |
-| Hơn 2/3 tiền cọc | Đảo ngược cả những khối đã đạt tính cuối cùng |
+| More than 1/3 of the stake | Delay finality |
+| More than 1/2 of the stake | Censor transactions, control the upcoming blocks |
+| More than 2/3 of the stake | Reverse even blocks that have already reached finality |
 
-Nhưng mỗi lần tấn công bị phát hiện, kẻ tấn công bị cắt tiền cọc và bị loại. Muốn thử lại phải mua lại ETH và xếp hàng từ đầu. Với bằng chứng công việc, kẻ tấn công vẫn giữ máy đào để dùng tiếp. Và nếu mọi cách khác đều thất bại, cộng đồng vẫn có thể phối hợp tách chuỗi để loại kẻ tấn công.
+But every time an attack is detected, the attacker gets slashed and kicked out. To try again, they'd have to buy ETH all over again and get back in line from the start. With proof of work, an attacker keeps their mining machines to use again. And if everything else fails, the community can still coordinate to split the chain and cut out the attacker.
 
-## So sánh nhanh
+## Quick comparison
 
-| | Bằng chứng công việc | Bằng chứng cổ phần |
+| | Proof of work | Proof of stake |
 |---|---|---|
-| Ai tạo khối | Thợ đào giải đố nhanh nhất | Trình xác thực được chọn ngẫu nhiên |
-| Thứ phải bỏ ra | Máy đào và tiền điện | ETH khóa làm tiền cọc |
-| Thời gian ra khối | Ngẫu nhiên (Ethereum trước đây khoảng 13 giây) | Đúng 12 giây mỗi khe |
-| Tính cuối cùng | Chỉ chắc chắn dần theo số khối chồng lên | Rõ ràng, sau khoảng 13 tới 19 phút |
-| Điện năng của Ethereum | Rất lớn | Giảm khoảng 99,95% sau The Merge |
-| Gian lận bị gì | Tốn tiền điện, giữ được máy | Bị cắt tiền cọc và loại khỏi mạng lưới |
+| Who creates blocks | The miner who solves the puzzle fastest | A randomly chosen validator |
+| What you have to put in | Mining machines and electricity | ETH locked up as a stake |
+| Block time | Random (about 13 seconds on Ethereum back then) | Exactly 12 seconds per slot |
+| Finality | Only grows more certain as more blocks pile on top | Clear-cut, after about 13 to 19 minutes |
+| Ethereum's energy use | Very high | Down about 99.95% after The Merge |
+| What cheaters lose | Electricity costs, but they keep their machines | They get slashed and removed from the network |
 
-<Callout type="warn" title="Cảnh báo">
-Không có đồng "ETH2" nào. The Merge không đổi ETH của bạn thành thứ gì khác. Ai mời bạn "nâng cấp" hay "đổi" ETH sang ETH2 là lừa đảo.
+<Callout type="warn" title="Warning">
+There is no "ETH2" coin. The Merge didn't turn your ETH into anything else. Anyone inviting you to "upgrade" or "swap" your ETH for ETH2 is a scammer.
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Bài toán các vị tướng Byzantine: làm sao cả nhóm thống nhất khi có kẻ nói dối. Lời giải: gửi cho tất cả, ký từng phiếu, cần hơn 2/3 trung thực.
-- Trên mạng mở, phiếu phải tốn một thứ khó làm giả. Bằng chứng công việc dùng điện năng, bằng chứng cổ phần dùng tiền cọc.
-- Ethereum dùng bằng chứng công việc từ 2015 tới 2022, rồi chuyển sang bằng chứng cổ phần, giảm khoảng 99,95% điện năng.
+- The Byzantine Generals Problem asks how a group can agree when some members lie. The solution: send to everyone, sign every vote, and require more than 2/3 to be honest.
+- On an open network, a vote has to cost something that's hard to fake. Proof of work uses electricity; proof of stake uses staked ETH.
+- Ethereum used proof of work from 2015 to 2022, then switched to proof of stake, cutting its energy use by about 99.95%.
 
-## Đọc tiếp
+## Read next
 
-- [Trình xác thực](./validators.mdx): ai đang giữ an toàn cho Ethereum, và họ ở đâu
-- [Chuỗi khối là gì?](./blockchain.mdx)
+- [Validators](./validators.mdx): who keeps Ethereum secure, and where they are
+- [What is a blockchain?](./blockchain.mdx)

@@ -1,6 +1,6 @@
 ---
-title: Kiểm chứng thay vì tin
-description: Trên Ethereum, đối tác, kiểm toán viên và khách hàng tự kiểm tra được số dư, lịch sử và quy tắc, không cần tin lời bên nào. Layer 2 thừa hưởng điều này nhờ dữ liệu và bằng chứng gửi về Ethereum.
+title: Verify instead of trust
+description: On Ethereum, partners, auditors and customers can check balances, history and rules for themselves, without taking anyone's word for it. Layer 2s inherit this through the data and proofs they send back to Ethereum.
 sources:
   - https://ethereum.org/organizations/enterprise/
   - https://ethereum.org/organizations/enterprise/enterprise-l2s/
@@ -10,59 +10,59 @@ sources:
   - https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf
 ---
 
-Trong kinh doanh, nhiều chi phí sinh ra chỉ vì các bên phải tin nhau: đối chiếu sổ sách giữa hai công ty, kiểm toán, xác nhận số dư với ngân hàng, chờ thanh toán quốc tế. Ethereum thay câu "hãy tin tôi" bằng "hãy tự kiểm tra".
+In business, many costs exist only because the parties have to trust each other: reconciling books between two companies, audits, confirming balances with a bank, waiting on international payments. Ethereum replaces "trust me" with "check for yourself."
 
-## Ai cũng tự kiểm tra được
+## Anyone can check for themselves
 
-- **Dữ liệu công khai.** Mọi giao dịch, số dư và mã hợp đồng đều đọc được. Xem [Đọc một giao dịch](../basics/using-ethereum/reading-a-transaction.mdx).
-- **Tự chạy nút.** Một máy tính phổ thông với ổ SSD 2 TB đủ để chạy một nút, tự tính lại toàn bộ lịch sử mà không cần xin phép ai. Xem [Nút](../basics/how-it-works/nodes.mdx).
-- **Quy tắc là mã công khai.** Ai cũng đọc được mã của [hợp đồng thông minh](../basics/how-it-works/smart-contracts.mdx), và mọi nút chạy ra cùng một kết quả.
-- **Kết quả không đảo ngược được.** Sau khoảng 15 phút, giao dịch đạt **tính cuối cùng** (finality). Muốn đảo ngược thì kẻ tấn công phải chịu mất một phần rất lớn số ETH đang đặt cọc. Hướng dẫn của Quỹ Ethereum (tháng 3 năm 2026) ước chi phí đó khoảng 50,7 tỷ USD. Đây là ước tính theo mô hình, thay đổi theo giá ETH.
+- **Public data.** Every transaction, balance and piece of contract code can be read. See [Reading a transaction](../basics/using-ethereum/reading-a-transaction.mdx).
+- **Run your own node.** An ordinary computer with a 2 TB SSD is enough to run a node and recompute the entire history yourself, without asking anyone's permission. See [Nodes](../basics/how-it-works/nodes.mdx).
+- **The rules are public code.** Anyone can read the code of a [smart contract](../basics/how-it-works/smart-contracts.mdx), and every node gets the same result.
+- **Results can't be reversed.** After about 15 minutes, a transaction reaches **finality**. To reverse it, an attacker would have to lose a very large share of the staked ETH. The Ethereum Foundation's guide (March 2026) estimates that cost at about 50.7 billion USD. This is a model-based estimate and changes with the price of ETH.
 
-## Ý nghĩa với doanh nghiệp
+## What it means for businesses
 
-- **Bớt đối chiếu.** Hai bên cùng nhìn một cuốn sổ, nên không cần so hai bộ sổ riêng.
-- **Kiểm toán độc lập.** Kiểm toán viên tự đọc dữ liệu trên chuỗi, không phụ thuộc vào số liệu doanh nghiệp tự trích xuất.
-- **Đối tác tự kiểm tra.** Ví dụ: số token đang lưu hành của một quỹ, hay các khoản chuyển của một tài khoản ký quỹ.
-- **Khách hàng tin vào mã, không vào lời hứa.** Điều khoản viết trong hợp đồng thông minh chạy đúng như mã đã công bố.
+- **Less reconciliation.** Both parties look at the same ledger, so there is no need to compare two separate sets of books.
+- **Independent audits.** Auditors read the onchain data themselves, instead of relying on figures the business extracted on its own.
+- **Partners check for themselves.** For example: how many tokens of a fund are in circulation, or the transfers out of an escrow account.
+- **Customers trust the code, not a promise.** Terms written into a smart contract run exactly as the published code says.
 
-## Layer 2 thừa hưởng tính kiểm chứng thế nào
+## How Layer 2 inherits verifiability
 
-Một [rollup](../basics/how-it-works/layer-2.mdx) chạy giao dịch bên ngoài Ethereum nhưng gửi về Ethereum những gì cần để người khác kiểm tra:
+A [rollup](../basics/how-it-works/layer-2.mdx) runs transactions outside Ethereum but sends back to Ethereum what others need in order to check them:
 
-- **Dữ liệu giao dịch** được đăng lên Ethereum, nên ai cũng tính lại được số dư trên Layer 2.
-- **Bằng chứng:** ZK-rollup gửi **bằng chứng hợp lệ** (validity proof) để hợp đồng trên Ethereum kiểm tra. Rollup lạc quan cho khoảng 7 ngày để ai cũng nộp được **bằng chứng gian lận** (fraud proof).
-- **Lối thoát** (escape hatch): nếu bên vận hành ngừng chạy hoặc từ chối giao dịch, người dùng vẫn rút được tài sản qua hợp đồng trên Ethereum.
+- **Transaction data** is posted to Ethereum, so anyone can recompute the balances on the Layer 2.
+- **Proofs:** a ZK-rollup sends a **validity proof** for a contract on Ethereum to check. An optimistic rollup allows about 7 days for anyone to submit a **fraud proof**.
+- **Escape hatch:** if the operator stops running or refuses transactions, users can still withdraw their assets through the contract on Ethereum.
 
-Không phải Layer 2 nào cũng đủ cả ba:
+Not every Layer 2 has all three:
 
-- Theo ethereum.org, nhiều rollup vẫn dựa vào một nhóm nhỏ bên tạo bằng chứng đã biết trước, và hợp đồng của chúng còn nâng cấp được. Kiểm tra từng mạng trên [ETHBEAT](https://ethbeat.org) (trước đây là L2BEAT).
-- **Validium** và các chuỗi riêng kiểu "dữ liệu giữ kín, bằng chứng công khai" không đăng dữ liệu lên Ethereum. Người ngoài kiểm tra được rằng phép tính đúng, nhưng không tự tính lại được số dư. Theo ethereum.org, nếu bên giữ dữ liệu không công bố, người dùng có thể bị kẹt tiền.
+- According to ethereum.org, many rollups still rely on a small, known set of provers, and their contracts can still be upgraded. Check each network on [ETHBEAT](https://ethbeat.org) (formerly L2BEAT).
+- **Validiums** and private chains of the "data kept private, proofs public" kind don't post their data to Ethereum. Outsiders can check that the computation is correct, but can't recompute the balances themselves. According to ethereum.org, if the party holding the data doesn't publish it, users' funds can get stuck.
 
-## So sánh
+## Comparison
 
-| | Ai tự kiểm tra được | Ghi chú |
+| | Who can check for themselves | Notes |
 |---|---|---|
-| Ethereum | Bất kỳ ai | Dữ liệu công khai |
-| Rollup | Bất kỳ ai | Dữ liệu và bằng chứng gửi về Ethereum. Mức độ chín muồi khác nhau |
-| Validium, chuỗi riêng có bằng chứng | Bất kỳ ai kiểm tra được bằng chứng; chỉ bên được phép xem dữ liệu | Giữ kín được dữ liệu, đổi lại phụ thuộc bên giữ dữ liệu |
-| Chuỗi riêng (cấp phép) | Thành viên | Người ngoài phải tin các thành viên |
-| Hệ thống truyền thống | Bên vận hành; kiểm toán theo kỳ | Người ngoài phải tin bên vận hành |
+| Ethereum | Anyone | Data is public |
+| Rollup | Anyone | Data and proofs are sent back to Ethereum. Maturity levels vary |
+| Validium, private chain with proofs | Anyone can check the proofs; only authorized parties can see the data | Data can be kept private, at the cost of depending on whoever holds the data |
+| Private (permissioned) chain | Members | Outsiders have to trust the members |
+| Traditional system | The operator; periodic audits | Outsiders have to trust the operator |
 
-Bảng so sánh trên trang doanh nghiệp của ethereum.org theo hướng có lợi cho Ethereum, và các cột về chuỗi khác không dẫn nguồn. Bảng trên đây chỉ so một điều: ai tự kiểm tra được.
+The comparison table on ethereum.org's enterprise page leans in Ethereum's favor, and its columns about other chains cite no sources. The table above compares only one thing: who can check for themselves.
 
-## Tóm tắt
+## Summary
 
-- Trên Ethereum, ai cũng tự kiểm tra được dữ liệu, quy tắc và kết quả, không cần tin một bên nào.
-- Doanh nghiệp bớt đối chiếu, kiểm toán dễ hơn, đối tác và khách hàng tự kiểm tra được.
-- Rollup thừa hưởng điều này nhờ dữ liệu, bằng chứng và lối thoát trên Ethereum. Validium và chuỗi riêng đổi một phần tính kiểm chứng để giữ kín dữ liệu.
+- On Ethereum, anyone can check the data, rules and results for themselves, without trusting any one party.
+- Businesses reconcile less, audits get easier, and partners and customers can check for themselves.
+- Rollups inherit this through data, proofs and an escape hatch on Ethereum. Validiums and private chains trade some verifiability for keeping data private.
 
-## Đọc tiếp
+## Read next
 
-- [Layer 2 cho doanh nghiệp](./layer-2-for-enterprise.mdx)
-- [Layer 2](../basics/how-it-works/layer-2.mdx): rollup lạc quan và ZK-rollup
+- [Layer 2 for enterprise](./layer-2-for-enterprise.mdx)
+- [Layer 2](../basics/how-it-works/layer-2.mdx): optimistic rollups and ZK-rollups
 
-## Nguồn
+## Sources
 
-- ethereum.org: [Ethereum cho doanh nghiệp](https://ethereum.org/organizations/enterprise/), [Layer 2 cho doanh nghiệp](https://ethereum.org/organizations/enterprise/enterprise-l2s/), [Why build on Ethereum](https://ethereum.org/latest/why-build-on-ethereum/), [Chạy một nút](https://ethereum.org/run-a-node/), [Validium](https://ethereum.org/developers/docs/scaling/validium/)
-- Quỹ Ethereum: [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)
+- ethereum.org: [Ethereum for enterprise](https://ethereum.org/organizations/enterprise/), [Layer 2 for enterprise](https://ethereum.org/organizations/enterprise/enterprise-l2s/), [Why build on Ethereum](https://ethereum.org/latest/why-build-on-ethereum/), [Run a node](https://ethereum.org/run-a-node/), [Validium](https://ethereum.org/developers/docs/scaling/validium/)
+- Ethereum Foundation: [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)

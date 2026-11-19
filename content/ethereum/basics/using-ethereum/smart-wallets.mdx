@@ -1,6 +1,6 @@
 ---
-title: Ví thông minh
-description: Tài khoản thường do một khóa duy nhất điều khiển. Ví thông minh cho tài khoản của bạn luật riêng như hạn mức, khôi phục qua người thân, gộp lệnh, nhờ trả phí, nhưng cũng có rủi ro mới cần biết.
+title: Smart wallets
+description: A regular account is controlled by a single key. A smart wallet gives your account its own rules, such as spending limits, social recovery, batched actions and sponsored fees, but it also brings new risks you need to know about.
 sources:
   - https://ethereum.org/roadmap/account-abstraction/
   - https://ethereum.org/roadmap/pectra/7702/
@@ -9,43 +9,43 @@ sources:
   - https://ethereum.org/wallets/find-wallet/
 ---
 
-Tài khoản bạn tạo bằng một ví bình thường là tài khoản do khóa riêng tư điều khiển (EOA, xem [Địa chỉ và khóa](../how-it-works/addresses-and-keys.mdx)). Theo ethereum.org: có khóa là làm được mọi thứ, không có khóa là không làm được gì. Mất khóa thì không lấy lại được; lộ khóa thì kẻ gian lấy hết ngay lập tức.
+The account you create with an ordinary wallet is controlled by a private key (an EOA, see [Addresses and keys](../how-it-works/addresses-and-keys.mdx)). As ethereum.org puts it: with the key you can do everything, without the key you can do nothing. Lose the key and you can't get it back; leak the key and a thief takes everything instantly.
 
-**Ví thông minh** (smart wallet, smart account) thay đổi điều đó: tài khoản của bạn có thêm mã của một [hợp đồng thông minh](../how-it-works/smart-contracts.mdx), nên bạn đặt được luật cho chính nó. Hướng phát triển này gọi là **trừu tượng hóa tài khoản** (account abstraction).
+**Smart wallets** (smart accounts) change that: your account gains the code of a [smart contract](../how-it-works/smart-contracts.mdx), so you can set rules for the account itself. This direction of development is called **account abstraction**.
 
 <SmartWalletScene />
 
-## Ví thông minh làm được gì?
+## What can a smart wallet do?
 
-- **Khôi phục qua người thân** (social recovery): chọn trước vài người hoặc vài thiết bị bạn tin. Mất điện thoại thì họ cùng xác nhận để gắn khóa mới vào tài khoản. Không còn cảnh mất một mảnh giấy là mất hết.
-- **Nhiều chữ ký** (multisig): giao dịch lớn cần nhiều khóa cùng ký, ví dụ 2 trên 3 thiết bị.
-- **Hạn mức và danh sách tin cậy:** mỗi ngày chỉ chuyển tối đa một số tiền, hoặc chỉ chuyển tới những địa chỉ đã duyệt. Kẻ gian lấy được điện thoại cũng không rút hết được.
-- **Gộp lệnh:** cho phép chi tiêu và đổi token trong cùng một giao dịch, thay vì ký hai lần.
-- **Nhờ trả phí:** ứng dụng có thể trả phí gas thay bạn, hoặc bạn trả phí bằng token khác thay vì ETH.
-- **Passkey:** ký bằng vân tay hay khuôn mặt, với khóa nằm trong chip bảo mật của điện thoại. Từ nâng cấp Fusaka (tháng 12 năm 2025), Ethereum hỗ trợ sẵn loại chữ ký này.
+- **Social recovery**: you pick a few people or devices you trust in advance. If you lose your phone, they confirm together to attach a new key to your account. No more losing everything because you lost one piece of paper.
+- **Multisig**: large transactions need several keys to sign together, for example 2 out of 3 devices.
+- **Spending limits and trusted lists:** only move up to a certain amount per day, or only send to addresses you have approved. Even a thief who gets your phone can't drain everything.
+- **Batching:** approve spending and swap tokens in a single transaction, instead of signing twice.
+- **Sponsored fees:** an app can pay the gas fee for you, or you can pay the fee in another token instead of ETH.
+- **Passkeys:** sign with your fingerprint or face, with the key kept in your phone's secure chip. Since the Fusaka upgrade (December 2025), Ethereum supports this type of signature natively.
 
-## Hai cách để có ví thông minh
+## Two ways to get a smart wallet
 
-1. **Tài khoản hợp đồng riêng** (theo tiêu chuẩn ERC-4337, chạy trên mạng chính từ tháng 3 năm 2023). Bạn có một địa chỉ mới, chính là một hợp đồng thông minh. Mọi luật nằm trong hợp đồng đó. Xem [ERC-4337](./erc-4337.mdx).
-2. **Nâng cấp tài khoản thường** (EIP-7702, từ nâng cấp Pectra tháng 5 năm 2025). Bạn giữ nguyên địa chỉ cũ và gắn thêm mã của một hợp đồng để có gộp lệnh, nhờ trả phí… Điểm quan trọng: **khóa riêng tư ban đầu vẫn có toàn quyền**. Gắn mã ví nhiều chữ ký vào tài khoản không biến nó thành ví nhiều chữ ký thật. Nếu cụm từ khôi phục cũ bị lộ, các luật mới không cứu được bạn. Xem [EIP-7702](./eip-7702.mdx).
+1. **A separate contract account** (following the ERC-4337 standard, live on mainnet since March 2023). You get a new address, which is itself a smart contract. All the rules live in that contract. See [ERC-4337](./erc-4337.mdx).
+2. **Upgrading a regular account** (EIP-7702, since the Pectra upgrade in May 2025). You keep your old address and attach a contract's code to get batching, sponsored fees… The key point: **the original private key still has full control**. Attaching multisig wallet code to your account doesn't turn it into a real multisig wallet. If your old recovery phrase leaks, the new rules can't save you. See [EIP-7702](./eip-7702.mdx).
 
-<Callout type="error" title="Thận trọng">
-Kẻ gian có thể dụ bạn "nâng cấp tài khoản" bằng cách gắn mã của một hợp đồng do chúng viết. Ký lệnh đó là trao toàn quyền tài khoản cho kẻ gian. Chỉ nâng cấp qua chính ứng dụng ví của bạn, không bao giờ qua một trang web hay đường dẫn lạ.
+<Callout type="error" title="Caution">
+Scammers may trick you into "upgrading your account" by attaching the code of a contract they wrote. Signing that is handing full control of your account to the scammer. Only upgrade through your own wallet app, never through an unfamiliar website or link.
 </Callout>
 
-## Sắp tới
+## Coming soon
 
-Giao dịch dạng khung (EIP-8141) đã được xếp lịch cho đợt nâng cấp Hegotá. Nó có thể đưa khôi phục, hạn mức và nhờ trả phí vào thẳng giao thức, và mở đường cho chữ ký an toàn trước máy tính lượng tử. Tính tới tháng 11 năm 2026, đề xuất vẫn đang được hoàn thiện và Hegotá chưa có ngày ra mắt, nên đây vẫn là kế hoạch.
+Frame transactions (EIP-8141) have been scheduled for the Hegotá upgrade. They could bring recovery, spending limits and sponsored fees straight into the protocol, and pave the way for quantum-safe signatures. As of November 2026, the proposal is still being finalized and Hegotá has no launch date yet, so this is still a plan.
 
-## Tóm tắt
+## Summary
 
-- Tài khoản thường: một khóa làm mọi thứ, mất khóa là mất hết.
-- Ví thông minh: tài khoản có luật riêng như khôi phục qua người thân, nhiều chữ ký, hạn mức, gộp lệnh, nhờ trả phí, passkey.
-- Nâng cấp tài khoản thường (EIP-7702) giữ địa chỉ cũ, nhưng khóa cũ vẫn có toàn quyền. Chỉ nâng cấp qua ứng dụng ví của bạn.
+- Regular account: one key does everything, and losing the key means losing everything.
+- Smart wallet: an account with its own rules, such as social recovery, multisig, spending limits, batching, sponsored fees and passkeys.
+- Upgrading a regular account (EIP-7702) keeps your old address, but the old key still has full control. Only upgrade through your wallet app.
 
-## Đọc tiếp
+## Read next
 
-- [EIP-7702: ủy quyền mã cho tài khoản thường](./eip-7702.mdx)
-- [ERC-4337: trừu tượng hóa tài khoản](./erc-4337.mdx)
-- [Quyền riêng tư](./privacy.mdx)
-- [Chữ ký số](../how-it-works/digital-signatures.mdx)
+- [EIP-7702: delegating code to regular accounts](./eip-7702.mdx)
+- [ERC-4337: account abstraction](./erc-4337.mdx)
+- [Privacy](./privacy.mdx)
+- [Digital signatures](../how-it-works/digital-signatures.mdx)

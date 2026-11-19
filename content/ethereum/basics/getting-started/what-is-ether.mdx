@@ -1,92 +1,92 @@
 ---
-title: Ether (ETH) là gì?
-description: ETH là tiền mã hóa gốc của Ethereum, dùng để trả phí giao dịch, bảo vệ mạng lưới và thanh toán.
+title: What is ether (ETH)?
+description: ETH is Ethereum's native cryptocurrency, used to pay transaction fees, secure the network and make payments.
 sources:
   - https://ethereum.org/what-is-ether/
   - https://ethereum.org/eth/
   - https://ethereum.org/wrapped-eth/
 ---
 
-**Ether**, viết tắt **ETH**, là tiền mã hóa gốc của Ethereum. Nếu Ethereum là một cỗ máy khổng lồ, thì ETH là nhiên liệu giúp cỗ máy đó chạy.
+**Ether**, or **ETH** for short, is Ethereum's native cryptocurrency. If Ethereum is a giant machine, ETH is the fuel that keeps it running.
 
-ETH ra đời cùng Ethereum năm 2015. Không công ty, tổ chức hay chính phủ nào kiểm soát ETH.
+ETH was born with Ethereum in 2015. No company, organization or government controls ETH.
 
-## ETH dùng để làm gì?
+## What is ETH used for?
 
-| Công dụng | Giải thích |
+| Use | Explanation |
 |---|---|
-| **Trả phí giao dịch** | Mỗi lần gửi tiền hay dùng ứng dụng trên Ethereum, bạn trả một khoản phí nhỏ bằng ETH, gọi là [phí gas](./gas-fees.mdx). |
-| **Bảo vệ mạng lưới** | Trình xác thực khóa ETH làm tiền đặt cọc để được quyền xử lý giao dịch. Làm đúng thì được thưởng, gian lận thì bị phạt. |
-| **Thanh toán** | Bạn có thể gửi ETH cho bất kỳ ai, ở bất kỳ đâu, vào bất kỳ lúc nào, thường chỉ mất vài giây. |
-| **Tài sản thế chấp** | Nhiều ứng dụng tài chính phi tập trung (DeFi) cho phép dùng ETH để vay hoặc cho vay. |
+| **Paying transaction fees** | Every time you send money or use an app on Ethereum, you pay a small fee in ETH, called a [gas fee](./gas-fees.mdx). |
+| **Securing the network** | Validators lock up ETH as a stake to earn the right to process transactions. Doing the job right earns rewards; cheating gets penalized. |
+| **Payments** | You can send ETH to anyone, anywhere, at any time, usually in just a few seconds. |
+| **Collateral** | Many decentralized finance (DeFi) apps let you use ETH to borrow or lend. |
 
-<Callout type="warn" title="Quan trọng">
-Muốn gửi bất kỳ thứ gì trên Ethereum, kể cả stablecoin như USDT hay USDC, ví của bạn phải có một ít ETH để trả phí. Ví có 100 USDT nhưng không có ETH thì không chuyển USDT đi được.
+<Callout type="warn" title="Important">
+To send anything on Ethereum, including stablecoins like USDT or USDC, your wallet needs a little ETH to pay the fee. A wallet with 100 USDT but no ETH can't move that USDT.
 </Callout>
 
-## Đơn vị của ETH
+## Units of ETH
 
-ETH có thể chia rất nhỏ. Hai đơn vị bạn hay gặp:
+ETH can be divided into very small amounts. Two units you'll often see:
 
-| Đơn vị | Bằng | Thường gặp ở đâu |
+| Unit | Equals | Where you'll see it |
 |---|---|---|
-| **gwei** | 0,000000001 ETH (một phần tỷ ETH) | Giá gas trong ví |
-| **wei** | 0,000000000000000001 ETH (đơn vị nhỏ nhất) | Mã nguồn, công cụ cho lập trình viên |
+| **gwei** | 0.000000001 ETH (one billionth of an ETH) | Gas prices in your wallet |
+| **wei** | 0.000000000000000001 ETH (the smallest unit) | Source code, developer tools |
 
-Ví dụ: 1 ETH = 1.000.000.000 gwei.
+For example: 1 ETH = 1,000,000,000 gwei.
 
-## Gửi và nhận ETH
+## Sending and receiving ETH
 
-**Để nhận ETH**, bạn đưa cho người gửi **địa chỉ** của mình: một chuỗi bắt đầu bằng `0x`, dài 42 ký tự, hoặc mã QR của địa chỉ đó.
+**To receive ETH**, give the sender your **address**: a 42-character string starting with `0x`, or a QR code of that address.
 
-**Để gửi ETH**, bạn mở ví, nhập địa chỉ người nhận và số tiền, xem lại phí rồi xác nhận.
+**To send ETH**, open your wallet, enter the recipient's address and the amount, review the fee, then confirm.
 
-- Cứ 12 giây Ethereum tạo một khối mới, nên giao dịch thường được ghi nhận trong vòng 30 giây.
-- Sau khoảng 15 phút, giao dịch đạt **tính cuối cùng** (finality) và không thể bị đảo ngược nữa. Xem [vì sao](../how-it-works/blocks.mdx#khi-nào-khối-không-thể-đảo-ngược).
-- Khi mạng lưới đông, bạn có thể trả phí cao hơn để được xử lý sớm hơn.
+- Ethereum creates a new block every 12 seconds, so transactions are usually recorded within 30 seconds.
+- After about 15 minutes, the transaction reaches **finality** and can no longer be reversed. See [why](../how-it-works/blocks.mdx#when-can-a-block-no-longer-be-reversed).
+- When the network is busy, you can pay a higher fee to get processed sooner.
 
-<Callout type="warn" title="Cảnh báo">
-Giao dịch đã gửi thì không thể hủy hay đòi lại. Gửi nhầm địa chỉ là mất. Hãy kiểm tra kỹ địa chỉ trước khi bấm gửi, và thử gửi một khoản nhỏ trước nếu là lần đầu gửi tới địa chỉ đó.
+<Callout type="warn" title="Warning">
+Once a transaction is sent, it can't be canceled or recalled. Send to the wrong address and the money is gone. Check the address carefully before you hit send, and send a small test amount first if it's your first time sending to that address.
 </Callout>
 
-<Callout type="info" title="Lưu ý">
-Ethereum là sổ cái công khai. Ai biết địa chỉ của bạn đều có thể xem số dư và lịch sử giao dịch của bạn. Họ không lấy được tiền, nhưng bạn nên cân nhắc trước khi chia sẻ địa chỉ.
+<Callout type="info" title="Note">
+Ethereum is a public ledger. Anyone who knows your address can see your balance and transaction history. They can't take your money, but think before you share your address.
 </Callout>
 
-## Nguồn cung ETH
+## ETH supply
 
-Bitcoin có tối đa 21 triệu đồng. ETH thì không có giới hạn cố định, mà thay đổi theo hai cơ chế ngược chiều nhau:
+Bitcoin has a maximum of 21 million coins. ETH has no fixed cap. Instead, its supply changes through two opposing mechanisms:
 
-- **Phát hành:** ETH mới được tạo ra để thưởng cho trình xác thực, với tốc độ do giao thức quy định.
-- **Đốt:** từ năm 2021, phần lớn phí của mỗi giao dịch (phí cơ sở) bị **đốt**, tức là bị xóa vĩnh viễn khỏi nguồn cung.
+- **Issuance:** new ETH is created to reward validators, at a rate set by the protocol.
+- **Burning:** since 2021, most of each transaction's fee (the base fee) is **burned**, meaning it's permanently removed from the supply.
 
 <SupplyScene />
 
-Khi mạng lưới bận rộn, lượng ETH bị đốt có thể nhiều hơn lượng được phát hành, khiến tổng cung giảm. Khi mạng lưới vắng, tổng cung tăng nhẹ.
+When the network is busy, more ETH can be burned than is issued, so the total supply shrinks. When the network is quiet, the total supply grows slightly.
 
-Tổng cung và lượng ETH bị đốt được công khai, bạn có thể theo dõi trên các trang như [Etherscan](https://etherscan.io) hay [ultrasound.money](https://ultrasound.money).
+The total supply and the amount of ETH burned are public. You can track them on sites like [Etherscan](https://etherscan.io) or [ultrasound.money](https://ultrasound.money).
 
-## Wrapped ETH (WETH) là gì?
+## What is wrapped ETH (WETH)?
 
-Nhiều ứng dụng chỉ làm việc với token theo chuẩn **ERC-20**, nhưng ETH lại không phải token ERC-20. **WETH** (wrapped ETH, "ETH được bọc") giải quyết chuyện này: bạn gửi ETH vào một hợp đồng thông minh và nhận lại đúng số WETH tương ứng, theo tỷ lệ 1:1.
+Many apps only work with tokens that follow the **ERC-20** standard, but ETH itself isn't an ERC-20 token. **WETH** (wrapped ETH) solves this: you deposit ETH into a smart contract and get back exactly the same amount of WETH, at a 1:1 ratio.
 
-Bạn có thể đổi WETH về ETH bất cứ lúc nào. Phần lớn ứng dụng tự làm việc này cho bạn.
+You can swap WETH back to ETH at any time. Most apps do this for you automatically.
 
-## Làm sao để có ETH?
+## How do you get ETH?
 
-- **Nhận từ người khác:** người quen gửi cho bạn, hoặc bạn nhận thanh toán bằng ETH.
-- **Mua:** qua sàn giao dịch hoặc ngay trong một số ứng dụng ví.
-- **Kiếm được:** ví dụ đặt cọc ETH để nhận thưởng khi đã có sẵn ETH.
+- **Receive it:** someone you know sends it to you, or you accept payment in ETH.
+- **Buy it:** on an exchange or directly in some wallet apps.
+- **Earn it:** for example, by staking ETH you already have to earn rewards.
 
-<Callout type="error" title="Thận trọng">
-Quy định về tài sản số ở Việt Nam đang thay đổi. Trước khi mua bán, hãy tìm hiểu quy định hiện hành và chỉ dùng nền tảng đáng tin cậy. Trang này chỉ nhằm giải thích, không phải lời khuyên đầu tư.
+<Callout type="error" title="Caution">
+Regulations on digital assets in Vietnam are changing. Before buying or selling, look up the current rules and only use trustworthy platforms. This page is for explanation only and is not investment advice.
 </Callout>
 
-<Callout type="warn" title="Cảnh báo">
-Không có "ETH2", "ETH 2.0" hay bất kỳ phiên bản ETH mới nào để mua hoặc đổi. Ai hứa "gửi ETH để nhận lại gấp đôi" đều là lừa đảo. Xem thêm: [Giữ an toàn](./staying-safe.mdx).
+<Callout type="warn" title="Warning">
+There is no "ETH2", "ETH 2.0" or any other new version of ETH to buy or swap. Anyone promising "send ETH and get double back" is running a scam. See also: [Staying safe](./staying-safe.mdx).
 </Callout>
 
-## Đọc tiếp
+## Read next
 
-- [Ví, tài khoản và cụm từ khôi phục](./wallets-and-accounts.mdx)
-- [Phí gas](./gas-fees.mdx)
+- [Wallets, accounts and recovery phrases](./wallets-and-accounts.mdx)
+- [Gas fees](./gas-fees.mdx)

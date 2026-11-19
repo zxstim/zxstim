@@ -1,95 +1,95 @@
 ---
-title: "ERC-4337: trừu tượng hóa tài khoản"
-description: Từ năm 2023, ERC-4337 cho phép tạo ví thông minh hoàn toàn bằng hợp đồng, không cần nâng cấp mạng lưới. Ví gửi UserOperation, người gom lệnh gói lại, và hợp đồng EntryPoint kiểm tra rồi chạy.
+title: "ERC-4337: account abstraction"
+description: Since 2023, ERC-4337 has made it possible to build smart wallets entirely out of contracts, with no network upgrade needed. The wallet sends a UserOperation, a bundler packages it, and the EntryPoint contract checks it and then runs it.
 sources:
   - https://ethereum.org/roadmap/account-abstraction/
   - https://eips.ethereum.org/EIPS/eip-4337
   - https://docs.erc4337.io/
 ---
 
-Với tài khoản thường, luật là cố định: giao dịch cần chữ ký của một khóa, và phí trả bằng ETH của chính tài khoản đó. **Trừu tượng hóa tài khoản** (account abstraction) là ý tưởng để chính tài khoản quyết định luật: ký bằng gì, cần mấy chữ ký, ai trả phí.
+With a regular account, the rules are fixed: a transaction needs one key's signature, and the fee is paid in that account's own ETH. **Account abstraction** is the idea of letting the account itself decide the rules: what it signs with, how many signatures it needs, who pays the fee.
 
-**ERC-4337** là cách phổ biến nhất để làm điều đó trên Ethereum hiện nay. Nó chạy trên mạng chính từ ngày 1 tháng 3 năm 2023, và không cần thay đổi giao thức: mọi thứ là [hợp đồng thông minh](../how-it-works/smart-contracts.mdx), cộng với một mạng lưới riêng của những người gom lệnh. Những [ví thông minh](./smart-wallets.mdx) có địa chỉ riêng mà bạn gặp hôm nay phần lớn dựa trên nó.
+**ERC-4337** is the most common way to do that on Ethereum today. It has been live on mainnet since March 1, 2023, and it needs no change to the protocol: everything is [smart contracts](../how-it-works/smart-contracts.mdx), plus a separate network of bundlers. Most of the [smart wallets](./smart-wallets.mdx) with their own address that you come across today are built on it.
 
-## Vì sao không sửa thẳng giao thức?
+## Why not change the protocol directly?
 
-Ở tầng giao thức, một giao dịch chỉ hợp lệ khi có chữ ký từ khóa của một tài khoản thường. Đổi luật này cần một đợt [nâng cấp mạng lưới](../how-it-works/upgrades.mdx), mất nhiều năm.
+At the protocol level, a transaction is only valid if it carries a signature from a regular account's key. Changing that rule takes a [network upgrade](../how-it-works/upgrades.mdx), which takes years.
 
-ERC-4337 đi đường vòng. Tài khoản thông minh không tự gửi giao dịch. Một bên khác gửi giao dịch thường thay cho nó, và một hợp đồng dùng chung kiểm tra luật của từng tài khoản trước khi chạy lệnh.
+ERC-4337 takes a detour. The smart account doesn't send transactions itself. Someone else sends a regular transaction on its behalf, and a shared contract checks each account's rules before running its instructions.
 
-## Các thành phần
+## The components
 
-| Thành phần | Là gì |
+| Component | What it is |
 |---|---|
-| **UserOperation** | Lệnh của người dùng: việc tài khoản muốn làm, kèm chữ ký theo luật của tài khoản. Giống một giao dịch, nhưng không gửi thẳng lên mạng lưới |
-| **Người gom lệnh** (bundler) | Nút nhận UserOperation từ một hàng chờ riêng, gói nhiều cái vào một giao dịch thường và trả phí gas trước. ERC-4337 so vai trò này với người xây khối |
-| **EntryPoint** (hợp đồng cổng vào) | Một hợp đồng dùng chung cho mọi tài khoản. Nó kiểm tra từng UserOperation rồi mới chạy |
-| **Tài khoản thông minh** | Hợp đồng giữ tài sản của bạn và tự đặt luật: chữ ký nào hợp lệ, cần mấy chữ ký, hạn mức bao nhiêu |
-| **Hợp đồng tạo tài khoản** (factory) | Tạo tài khoản thông minh của bạn ở lần dùng đầu tiên |
-| **Paymaster** (hợp đồng trả phí hộ) | Trả phí gas thay bạn, do ứng dụng tài trợ, hoặc nhận phí của bạn bằng token như USDC |
+| **UserOperation** | The user's instruction: what the account wants to do, plus a signature that follows the account's rules. It's like a transaction, but it isn't sent directly to the network |
+| **Bundler** | A node that picks up UserOperations from a separate waiting line, packs many of them into one regular transaction and pays the gas fee up front. ERC-4337 compares this role to a block builder |
+| **EntryPoint** | One contract shared by every account. It checks each UserOperation before running it |
+| **Smart account** | The contract that holds your assets and sets its own rules: which signatures are valid, how many are needed, what the spending limit is |
+| **Factory** | Creates your smart account the first time you use it |
+| **Paymaster** | Pays the gas fee for you, sponsored by an app, or accepts your fee in a token such as USDC |
 
-## Một lệnh đi thế nào?
+## How does an instruction travel?
 
 <UserOpScene />
 
-1. **Ví tạo UserOperation** và ký theo luật của tài khoản: bằng passkey, bằng nhiều khóa, hay bằng một khóa phụ có giới hạn. Lệnh được gửi tới hàng chờ riêng của những người gom lệnh, không phải [mempool](../how-it-works/blocks.mdx) thường.
-2. **Người gom lệnh gói lệnh.** Nó gói nhiều UserOperation vào một giao dịch thường gửi tới EntryPoint, và trả phí gas trước bằng ETH của mình.
-3. **Vòng kiểm tra.** EntryPoint hỏi từng tài khoản xem chữ ký có đúng luật không, và hỏi tài khoản (hoặc paymaster) có trả được phí không. Lệnh nào không qua bị loại.
-4. **Vòng chạy.** EntryPoint chạy từng lệnh, rồi lấy phí từ tài khoản hoặc paymaster để hoàn cho người gom lệnh.
+1. **The wallet creates a UserOperation** and signs it according to the account's rules: with a passkey, with several keys, or with a limited secondary key. The instruction goes to the bundlers' separate waiting line, not the regular [mempool](../how-it-works/blocks.mdx).
+2. **The bundler packages instructions.** It packs many UserOperations into one regular transaction sent to the EntryPoint, and pays the gas fee up front with its own ETH.
+3. **The verification loop.** The EntryPoint asks each account whether the signature follows its rules, and asks the account (or the paymaster) whether it can pay the fee. Any instruction that fails is dropped.
+4. **The execution loop.** The EntryPoint runs each instruction, then takes the fee from the account or the paymaster to repay the bundler.
 
-Người gom lệnh chạy thử vòng kiểm tra trước khi gửi, để khỏi trả gas cho lệnh sẽ bị loại. Vì vậy phần kiểm tra của tài khoản chỉ được làm một số việc nhất định, theo bộ luật ERC-7562.
+The bundler simulates the verification loop before sending, so it doesn't pay gas for instructions that will be dropped. That's why the account's verification step is only allowed to do certain things, under the ERC-7562 rule set.
 
-## Địa chỉ có trước khi tài khoản tồn tại
+## The address exists before the account does
 
-Hợp đồng tạo tài khoản dùng một công thức cố định, nên địa chỉ của tài khoản thông minh tính được trước khi nó được tạo. Bạn nhận tiền vào địa chỉ đó được ngay. Tài khoản chỉ thật sự được triển khai trong UserOperation đầu tiên, và phí triển khai gộp vào lệnh đó.
+The factory uses a fixed formula, so a smart account's address can be calculated before the account is created. You can receive money at that address right away. The account is only actually deployed in the first UserOperation, and the deployment fee is included in that instruction.
 
-<Callout type="warn" title="Cảnh báo">
-Tài khoản thông minh là một hợp đồng trên từng mạng. Cùng một địa chỉ trên một mạng khác chỉ là của bạn khi tài khoản được tạo với cùng thiết lập ở mạng đó. Trước khi nhận tiền trên một mạng mới, kiểm tra trong ví rằng tài khoản của bạn dùng được ở đó.
+<Callout type="warn" title="Warning">
+A smart account is a contract on each individual network. The same address on another network is only yours if the account was created there with the same setup. Before receiving money on a new network, check in your wallet that your account works there.
 </Callout>
 
-## Trả phí hộ
+## Paying fees on your behalf
 
-Paymaster là lý do nhiều ứng dụng cho bạn giao dịch "miễn phí": ứng dụng nạp ETH vào paymaster để trả phí thay người dùng. Có paymaster nhận USDC hay token khác làm phí, rồi tự trả bằng ETH. Paymaster tự quyết trả cho ai, ví dụ chỉ cho người dùng của một ứng dụng, hay chỉ vài lệnh mỗi ngày.
+Paymasters are the reason many apps let you transact "for free": the app deposits ETH into a paymaster to pay fees for its users. Some paymasters accept USDC or other tokens as the fee and then pay in ETH themselves. A paymaster decides for itself whom to pay for, for example only users of one app, or only a few instructions per day.
 
-## Đánh đổi
+## Trade-offs
 
-- **Tốn gas hơn.** Mỗi UserOperation phải qua EntryPoint và mã của tài khoản. Theo bảng đo của nhóm viết EntryPoint ([phiên bản 0.9](https://github.com/eth-infinitism/account-abstraction/blob/v0.9.0/reports/gas-checker.txt), tháng 11 năm 2025), một UserOperation đơn giản đi một mình trong lô tốn khoảng 77.700 gas, và mỗi lệnh thêm trong cùng lô khoảng 41.900 gas. Chuyển ETH bằng tài khoản thường tốn 21.000 gas. Vì vậy ERC-4337 được dùng nhiều nhất ở nơi gas rẻ, như Layer 2.
-- **Địa chỉ mới.** Muốn chuyển từ tài khoản thường sang, bạn phải chuyển tài sản sang địa chỉ mới. [EIP-7702](./eip-7702.mdx) tránh được việc này, đổi lại khóa cũ vẫn có toàn quyền.
-- **Rủi ro của mã.** Tài khoản là một hợp đồng, nên lỗi trong mã có thể làm mất tiền. Nhiều tài khoản cho phép nâng cấp mã, nên cần biết ai giữ quyền đó. Dùng ví có mã đã được kiểm toán và được dùng rộng rãi.
-- **Cần người gom lệnh.** Lệnh của bạn cần ít nhất một người gom lệnh chịu nhận. Ví thường lo việc này, nhưng nếu ví chỉ dùng một bên, bên đó có thể làm chậm hoặc chặn lệnh của bạn.
+- **It costs more gas.** Every UserOperation has to go through the EntryPoint and the account's code. According to the measurements published by the team that wrote the EntryPoint ([version 0.9](https://github.com/eth-infinitism/account-abstraction/blob/v0.9.0/reports/gas-checker.txt), November 2025), a simple UserOperation alone in a batch costs about 77,700 gas, and each additional instruction in the same batch about 41,900 gas. Sending ETH from a regular account costs 21,000 gas. That's why ERC-4337 is used most where gas is cheap, such as on Layer 2.
+- **A new address.** To switch over from a regular account, you have to move your assets to a new address. [EIP-7702](./eip-7702.mdx) avoids this, but in exchange the old key keeps full control.
+- **Code risk.** The account is a contract, so a bug in its code can lose you money. Many accounts allow their code to be upgraded, so you need to know who holds that power. Use a wallet whose code has been audited and is widely used.
+- **It needs bundlers.** Your instruction needs at least one bundler willing to take it. Wallets usually handle this, but if a wallet relies on only one provider, that provider can delay or block your instructions.
 
-## Đang được dùng ở đâu?
+## Where is it being used?
 
-Theo [BundleBear](https://www.bundlebear.com/erc4337-overview/all) (đọc ngày 9 tháng 11 năm 2026), từ khi ra mắt đã có khoảng 1,36 tỷ UserOperation, từ khoảng 72 triệu tài khoản. Phần lớn nằm ngoài mạng chính: World Chain khoảng 56% và Base khoảng 24% (đều là Layer 2), Polygon khoảng 10%. Mạng chính Ethereum chỉ chiếm khoảng 0,6%, vì phí ở đó cao hơn.
+According to [BundleBear](https://www.bundlebear.com/erc4337-overview/all) (accessed November 9, 2026), there have been about 1.36 billion UserOperations since launch, from about 72 million accounts. Most of them are outside mainnet: World Chain about 56% and Base about 24% (both are Layer 2s), Polygon about 10%. Ethereum mainnet accounts for only about 0.6%, because fees there are higher.
 
-## Hai cách dùng chung được
+## The two can be used together
 
-Tài khoản thường đã nâng cấp bằng [EIP-7702](./eip-7702.mdx) có thể ủy quyền cho mã tương thích ERC-4337, để dùng chung người gom lệnh và paymaster. EntryPoint hỗ trợ sẵn loại tài khoản này từ phiên bản 0.8 (tháng 3 năm 2025).
+A regular account upgraded with [EIP-7702](./eip-7702.mdx) can delegate to ERC-4337-compatible code, so it can share bundlers and paymasters. The EntryPoint has supported this kind of account natively since version 0.8 (March 2025).
 
 | | ERC-4337 | EIP-7702 |
 |---|---|---|
-| Địa chỉ | Địa chỉ mới | Giữ địa chỉ cũ |
-| Luật | Mọi lệnh phải qua luật của hợp đồng | Khóa ban đầu bỏ qua được luật |
-| Cần nâng cấp mạng lưới? | Không | Có, từ Pectra (2025) |
+| Address | New address | Keeps the old address |
+| Rules | Every instruction has to go through the contract's rules | The original key can bypass the rules |
+| Needs a network upgrade? | No | Yes, since Pectra (2025) |
 
-## Sắp tới
+## Coming soon
 
-Hai đề xuất muốn đưa trừu tượng hóa tài khoản vào thẳng giao thức, để không cần EntryPoint và người gom lệnh riêng:
+Two proposals aim to build account abstraction directly into the protocol, so that a separate EntryPoint and bundlers are no longer needed:
 
-- **RIP-7560**, dành cho rollup. Tính tới tháng 11 năm 2026 vẫn là bản nháp.
-- **Giao dịch dạng khung** (EIP-8141), dành cho mạng chính. Đề xuất đã được xếp lịch cho đợt nâng cấp Hegotá từ tháng 8 năm 2026, nhưng vẫn đang được hoàn thiện. ethereum.org ghi Hegotá dự kiến vào quý 2 năm 2027, chưa chốt ngày.
+- **RIP-7560**, for rollups. As of November 2026 it is still a draft.
+- **Frame transactions** (EIP-8141), for mainnet. The proposal has been scheduled for the Hegotá upgrade since August 2026, but it is still being finalized. ethereum.org lists Hegotá as expected in Q2 2027, with no date set.
 
-Cho tới khi đó, ERC-4337 và EIP-7702 vẫn là hai cách chính để có ví thông minh.
+Until then, ERC-4337 and EIP-7702 remain the two main ways to get a smart wallet.
 
-## Tóm tắt
+## Summary
 
-- ERC-4337 (tháng 3 năm 2023) mang ví thông minh tới Ethereum mà không cần nâng cấp mạng lưới.
-- Ví gửi UserOperation, người gom lệnh gói nhiều lệnh vào một giao dịch, EntryPoint kiểm tra luật của từng tài khoản rồi mới chạy.
-- Paymaster cho phép ứng dụng trả phí thay bạn, hoặc bạn trả phí bằng token khác.
-- Đổi lại: tốn gas hơn, cần địa chỉ mới, và an toàn phụ thuộc vào mã của tài khoản.
+- ERC-4337 (March 2023) brought smart wallets to Ethereum without a network upgrade.
+- The wallet sends a UserOperation, a bundler packs many instructions into one transaction, and the EntryPoint checks each account's rules before running anything.
+- Paymasters let apps pay fees for you, or let you pay fees in another token.
+- The trade-offs: more gas, a new address, and safety that depends on the account's code.
 
-## Đọc tiếp
+## Read next
 
-- [EIP-7702: ủy quyền mã cho tài khoản thường](./eip-7702.mdx)
-- [Ví thông minh](./smart-wallets.mdx)
+- [EIP-7702: delegating code to regular accounts](./eip-7702.mdx)
+- [Smart wallets](./smart-wallets.mdx)
 - [Layer 2](../how-it-works/layer-2.mdx)

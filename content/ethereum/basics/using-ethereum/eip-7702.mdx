@@ -1,80 +1,80 @@
 ---
-title: "EIP-7702: ủy quyền mã cho tài khoản thường"
-description: Từ nâng cấp Pectra (tháng 5 năm 2025), tài khoản thường giữ nguyên địa chỉ mà vẫn dùng được mã của một hợp đồng thông minh, để gộp lệnh hay nhờ trả phí. Nhưng khóa cũ vẫn có toàn quyền.
+title: "EIP-7702: delegating code to regular accounts"
+description: Since the Pectra upgrade (May 2025), a regular account can keep its address and still use a smart contract's code, to batch actions or have someone else pay the fees. But the old key still has full control.
 sources:
   - https://ethereum.org/roadmap/pectra/7702/
   - https://ethereum.org/roadmap/pectra/
   - https://eips.ethereum.org/EIPS/eip-7702
 ---
 
-**EIP-7702** cho phép một tài khoản thường, loại do khóa riêng tư điều khiển (EOA), **ủy quyền** (delegate) cho mã của một [hợp đồng thông minh](../how-it-works/smart-contracts.mdx). Tài khoản giữ nguyên địa chỉ, số dư và lịch sử, nhưng có thêm những khả năng của [ví thông minh](./smart-wallets.mdx): gộp nhiều việc vào một giao dịch, nhờ bên khác trả phí gas, ký bằng passkey.
+**EIP-7702** lets a regular account, the kind controlled by a private key (an EOA), **delegate** to the code of a [smart contract](../how-it-works/smart-contracts.mdx). The account keeps its address, balance and history, but gains the abilities of a [smart wallet](./smart-wallets.mdx): bundling several actions into one transaction, having someone else pay the gas fee, signing with a passkey.
 
-EIP-7702 chạy trên mạng chính từ nâng cấp Pectra, ngày 7 tháng 5 năm 2025.
+EIP-7702 has been live on mainnet since the Pectra upgrade, on May 7, 2025.
 
-## Vì sao cần?
+## Why is it needed?
 
-Trước EIP-7702, muốn có ví thông minh, bạn phải tạo một tài khoản hợp đồng mới, ví dụ theo [ERC-4337](./erc-4337.mdx). Tài khoản mới có địa chỉ mới, nên bạn phải chuyển từng tài sản sang, trả phí cho từng lần chuyển, và báo địa chỉ mới cho mọi người. Vì vậy phần lớn người dùng vẫn ở lại với tài khoản thường.
+Before EIP-7702, if you wanted a smart wallet, you had to create a new contract account, for example following [ERC-4337](./erc-4337.mdx). A new account has a new address, so you had to move your assets over one by one, pay a fee for each transfer, and tell everyone your new address. That's why most users stayed with regular accounts.
 
-EIP-7702 cho tài khoản thường dùng mã của một hợp đồng ngay tại địa chỉ cũ, không phải chuyển nhà.
+EIP-7702 lets a regular account use a contract's code right at its old address, with no need to move house.
 
-## Hoạt động thế nào?
+## How does it work?
 
 <DelegationScene />
 
-1. **Ký lệnh ủy quyền.** Khóa riêng tư của tài khoản ký một **lệnh ủy quyền** (authorization) gồm ba thứ: địa chỉ của hợp đồng có mã muốn dùng, mã số của mạng (chain ID), và [nonce](../how-it-works/digital-signatures.mdx#nonce-mỗi-giao-dịch-chỉ-chạy-một-lần) của tài khoản.
-2. **Gửi trong giao dịch kiểu 4.** Lệnh ủy quyền đi trong một loại giao dịch mới, gọi là giao dịch kiểu 4 (set code transaction). Người gửi giao dịch không nhất thiết là chủ tài khoản: một bên khác có thể gửi và trả phí gas hộ.
-3. **Ghi con trỏ.** Mạng lưới ghi vào tài khoản một **con trỏ** tới hợp đồng: ba byte `0xef0100` nối với địa chỉ của hợp đồng. Mã không bị sao chép, tài khoản chỉ trỏ tới nó.
-4. **Chạy mã trên tài khoản.** Từ đó, khi có ai gọi tới tài khoản, mạng lưới chạy mã của hợp đồng, nhưng trên số dư và dữ liệu của chính tài khoản.
+1. **Sign an authorization.** The account's private key signs an **authorization** containing three things: the address of the contract whose code you want to use, the network's ID number (chain ID), and the account's [nonce](../how-it-works/digital-signatures.mdx#nonce-each-transaction-runs-only-once).
+2. **Send it in a type 4 transaction.** The authorization travels in a new kind of transaction called a type 4 transaction (set code transaction). Whoever sends the transaction doesn't have to be the account owner: another party can send it and pay the gas fee on their behalf.
+3. **Write the pointer.** The network writes a **pointer** to the contract into the account (the delegation designator): the three bytes `0xef0100` followed by the contract's address. The code isn't copied; the account just points to it.
+4. **Run the code on the account.** From then on, whenever someone calls the account, the network runs the contract's code, but on the account's own balance and data.
 
-Ủy quyền không tự hết hạn. Nó giữ nguyên cho tới khi bạn ký một lệnh ủy quyền mới cho hợp đồng khác, hoặc ủy quyền cho địa chỉ 0 để gỡ con trỏ.
+A delegation doesn't expire on its own. It stays in place until you sign a new authorization for a different contract, or delegate to the zero address to remove the pointer.
 
-## Làm được gì?
+## What can it do?
 
-Tùy vào mã mà ví của bạn dùng:
+It depends on the code your wallet uses:
 
-- **Gộp lệnh.** Cho phép chi tiêu và đổi token trong cùng một giao dịch, thay vì ký hai lần. Ứng dụng xin gộp lệnh qua giao diện chuẩn của ví (`wallet_sendCalls`, ERC-5792), không xin bạn ký lệnh ủy quyền.
-- **Nhờ trả phí.** Ứng dụng hay một dịch vụ trả phí gas thay bạn, hoặc bạn trả phí bằng token khác thay vì ETH.
-- **Khóa phụ có giới hạn.** Cấp cho một ứng dụng một khóa phụ chỉ làm được vài việc, ví dụ chỉ chi token mà không chi ETH, hoặc chỉ tương tác với đúng ứng dụng đó.
-- **Passkey.** Ký bằng vân tay hay khuôn mặt, với khóa nằm trong chip bảo mật của điện thoại, nếu mã của ví hỗ trợ.
+- **Batching.** Approve spending and swap tokens in a single transaction, instead of signing twice. Apps ask for batching through the wallet's standard interface (`wallet_sendCalls`, ERC-5792), not by asking you to sign an authorization.
+- **Sponsored fees.** An app or a service pays the gas fee for you, or you pay the fee in another token instead of ETH.
+- **Limited secondary keys.** Give an app a secondary key that can only do a few things, for example spend only tokens and not ETH, or interact only with that specific app.
+- **Passkeys.** Sign with your fingerprint or face, with the key kept in your phone's secure chip, if your wallet's code supports it.
 
-## Khóa cũ vẫn có toàn quyền
+## The old key still has full control
 
-<Callout type="warn" title="Quan trọng">
-Ủy quyền không thay khóa. Khóa riêng tư ban đầu, và cụm từ khôi phục sinh ra nó, vẫn ký được giao dịch thường và vẫn ủy quyền lại cho hợp đồng khác. Luật trong mã, như hạn mức hay nhiều chữ ký, không chặn được khóa đó. Như ethereum.org viết, ủy quyền cho mã của ví nhiều chữ ký không biến tài khoản thành ví nhiều chữ ký.
+<Callout type="warn" title="Important">
+Delegation doesn't replace your key. The original private key, and the recovery phrase it was generated from, can still sign regular transactions and can still re-delegate to another contract. Rules in the code, such as spending limits or multisig, can't stop that key. As ethereum.org puts it, delegating to a multisig wallet's code doesn't turn the account into a multisig wallet.
 </Callout>
 
-Với tài khoản đã ủy quyền, giữ cụm từ khôi phục vẫn quan trọng như trước. Nếu bạn cần luật ràng buộc thật sự, như khôi phục qua người thân hay nhiều chữ ký, hãy dùng một tài khoản hợp đồng riêng theo [ERC-4337](./erc-4337.mdx): ở đó mọi lệnh đều phải qua luật của hợp đồng.
+With a delegated account, keeping your recovery phrase safe matters just as much as before. If you need rules that are truly binding, such as social recovery or multisig, use a separate contract account under [ERC-4337](./erc-4337.mdx): there, every instruction has to go through the contract's rules.
 
-## Rủi ro cần biết
+## Risks to know about
 
-- **Ủy quyền cho mã độc là trao cả tài khoản.** Mã được ủy quyền chạy với toàn bộ tài sản của tài khoản. Theo chính EIP-7702, ứng dụng không được xin người dùng ký lệnh ủy quyền, và ví không nên có giao diện cho việc đó. Ví lớn chỉ cho ủy quyền tới vài hợp đồng mà họ đã kiểm tra. Trang web nào xin bạn "nâng cấp tài khoản" là dấu hiệu lừa đảo.
-- **Một lệnh ủy quyền có thể dùng trên mọi mạng.** Lệnh ủy quyền ghi chain ID bằng 0 có hiệu lực trên mọi mạng tương thích Ethereum, không chỉ mạng bạn đang dùng.
-- **Đổi hợp đồng không xóa dữ liệu cũ.** Dữ liệu hợp đồng cũ đã ghi trong tài khoản vẫn còn khi bạn ủy quyền cho hợp đồng khác. Ví phải tự xử lý chuyện này, nên chỉ đổi qua chính ứng dụng ví.
-- **Kẻ gian cũng dùng EIP-7702.** Vài tuần sau Pectra, nhóm nghiên cứu của Wintermute cho biết hơn 97% lệnh ủy quyền trỏ tới các bản sao của cùng một hợp đồng "quét tiền" (sweeper), theo [Cointelegraph ngày 2 tháng 6 năm 2025](https://cointelegraph.com/news/wintermute-crimeenjoyor-flags-malicious-ethereum-contracts). Đó là những tài khoản đã lộ khóa từ trước: kẻ gian ủy quyền để tự động rút mọi ETH gửi vào. EIP-7702 không làm lộ khóa, nhưng nếu khóa của bạn đã lộ, đừng gửi thêm gì vào địa chỉ đó.
+- **Delegating to malicious code means handing over the whole account.** Delegated code runs with full access to all of the account's assets. According to EIP-7702 itself, apps must not ask users to sign authorizations, and wallets shouldn't offer an interface for doing so. Major wallets only allow delegation to a few contracts they have vetted. Any website asking you to "upgrade your account" is a sign of a scam.
+- **One authorization can be used on every network.** An authorization with a chain ID of 0 is valid on every Ethereum-compatible network, not just the one you're using.
+- **Switching contracts doesn't erase old data.** Data the old contract wrote into the account is still there when you delegate to a different contract. Wallets have to handle this themselves, so only switch through your own wallet app.
+- **Scammers use EIP-7702 too.** A few weeks after Pectra, Wintermute's research team reported that more than 97% of authorizations pointed to copies of the same "sweeper" contract, according to [Cointelegraph on June 2, 2025](https://cointelegraph.com/news/wintermute-crimeenjoyor-flags-malicious-ethereum-contracts). These were accounts whose keys had already leaked: scammers delegated them so that any ETH sent in would be swept out automatically. EIP-7702 doesn't leak keys, but if your key has already leaked, don't send anything more to that address.
 
-<Callout type="error" title="Thận trọng">
-Chỉ ủy quyền qua tính năng của chính ứng dụng ví bạn dùng. Không bao giờ ký lệnh "nâng cấp", "kích hoạt" hay "ủy quyền" tài khoản do một trang web, tin nhắn hay đường dẫn lạ yêu cầu.
+<Callout type="error" title="Caution">
+Only delegate through a feature of the wallet app you actually use. Never sign an account "upgrade", "activation" or "delegation" requested by a website, a message or an unfamiliar link.
 </Callout>
 
-## So với ERC-4337
+## Compared with ERC-4337
 
 | | EIP-7702 | ERC-4337 |
 |---|---|---|
-| Địa chỉ | Giữ địa chỉ cũ | Địa chỉ mới, phải chuyển tài sản sang |
-| Khóa ban đầu | Vẫn có toàn quyền, bỏ qua được luật trong mã | Không có: mọi lệnh phải qua luật của hợp đồng |
-| Cần nâng cấp mạng lưới? | Có, từ Pectra (2025) | Không, chạy bằng hợp đồng từ năm 2023 |
+| Address | Keeps the old address | New address; you have to move your assets over |
+| Original key | Still has full control and can bypass the rules in the code | None: every instruction has to go through the contract's rules |
+| Needs a network upgrade? | Yes, since Pectra (2025) | No, it has run as contracts since 2023 |
 
-Hai cách dùng chung được. Tài khoản đã ủy quyền có thể ủy quyền cho mã tương thích ERC-4337, để dùng chung hạ tầng của ERC-4337 như người gom lệnh và hợp đồng trả phí hộ. Hợp đồng cổng vào (EntryPoint) của ERC-4337 hỗ trợ sẵn tài khoản EIP-7702 từ phiên bản 0.8, tháng 3 năm 2025. Xem [ERC-4337](./erc-4337.mdx).
+The two can be used together. A delegated account can delegate to ERC-4337-compatible code, so it can share ERC-4337's infrastructure such as bundlers and paymasters. ERC-4337's EntryPoint contract has supported EIP-7702 accounts natively since version 0.8, in March 2025. See [ERC-4337](./erc-4337.mdx).
 
-## Tóm tắt
+## Summary
 
-- EIP-7702 (Pectra, tháng 5 năm 2025) cho tài khoản thường ủy quyền cho mã của một hợp đồng, giữ nguyên địa chỉ và số dư.
-- Lệnh ủy quyền được ký bằng khóa của tài khoản, đi trong giao dịch kiểu 4, và giữ nguyên cho tới khi đổi hoặc gỡ.
-- Khóa cũ vẫn có toàn quyền. Luật trong mã không cứu được bạn khi lộ cụm từ khôi phục.
-- Chỉ ủy quyền qua ứng dụng ví của bạn, không bao giờ qua trang web lạ.
+- EIP-7702 (Pectra, May 2025) lets a regular account delegate to a contract's code, while keeping its address and balance.
+- The authorization is signed with the account's key, travels in a type 4 transaction, and stays in place until it is changed or removed.
+- The old key still has full control. Rules in the code can't save you if your recovery phrase leaks.
+- Only delegate through your wallet app, never through an unfamiliar website.
 
-## Đọc tiếp
+## Read next
 
-- [ERC-4337: trừu tượng hóa tài khoản](./erc-4337.mdx)
-- [Ví thông minh](./smart-wallets.mdx)
-- [Chữ ký số](../how-it-works/digital-signatures.mdx)
+- [ERC-4337: account abstraction](./erc-4337.mdx)
+- [Smart wallets](./smart-wallets.mdx)
+- [Digital signatures](../how-it-works/digital-signatures.mdx)

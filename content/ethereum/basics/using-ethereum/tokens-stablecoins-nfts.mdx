@@ -1,6 +1,6 @@
 ---
-title: Token, stablecoin và NFT
-description: Token là những dòng ghi trong một hợp đồng thông minh, không phải đồng xu trong ví. Stablecoin giữ giá nhờ tài sản bảo đảm; NFT ghi ai sở hữu một mã số duy nhất.
+title: Tokens, stablecoins and NFTs
+description: Tokens are entries in a smart contract, not coins sitting in your wallet. Stablecoins hold their price thanks to backing assets; an NFT records who owns a unique ID number.
 sources:
   - https://ethereum.org/developers/docs/standards/tokens/
   - https://ethereum.org/developers/docs/standards/tokens/erc-20/
@@ -12,65 +12,65 @@ sources:
   - https://ethereum.org/guides/how-to-id-scam-tokens/
 ---
 
-Ngoài ETH, trên Ethereum có hàng nghìn loại **token**: đô la số, điểm thưởng, vật phẩm trong game, cổ phần, chứng nhận sở hữu. Tất cả đều do [hợp đồng thông minh](../how-it-works/smart-contracts.mdx) tạo ra và theo dõi.
+Besides ETH, there are thousands of kinds of **tokens** on Ethereum: digital dollars, reward points, in-game items, shares, proofs of ownership. All of them are created and tracked by [smart contracts](../how-it-works/smart-contracts.mdx).
 
 <TokenScene />
 
-## Token nằm ở đâu?
+## Where do tokens live?
 
-Một token là một hợp đồng thông minh giữ **sổ số dư**: địa chỉ nào có bao nhiêu. Tiêu chuẩn phổ biến nhất là **ERC-20**, có từ năm 2015, quy định các chức năng chung như xem số dư, chuyển token, cho phép người khác chi tiêu.
+A token is a smart contract that keeps a **balance ledger**: which address holds how much. The most common standard is **ERC-20**, around since 2015, which defines shared functions such as checking a balance, transferring tokens, and allowing someone else to spend them.
 
-- Token không nằm trong ví. Ví đọc sổ số dư của hợp đồng rồi hiển thị cho bạn. Thứ ví giữ là khóa riêng tư, thứ cho phép bạn ra lệnh cho hợp đồng.
-- Chuyển token là gửi một giao dịch tới hợp đồng token, nhờ nó trừ số dư của bạn và cộng cho người nhận. Phí giao dịch vẫn trả bằng ETH.
-- Gửi token tới địa chỉ của chính hợp đồng token, hay một hợp đồng không biết xử lý token, thường là mất luôn. Theo ethereum.org, tính tới giữa năm 2024 đã có hơn 83 triệu USD token mất theo cách này.
+- Tokens aren't inside your wallet. Your wallet reads the contract's balance ledger and shows it to you. What the wallet holds is your private key, the thing that lets you give orders to the contract.
+- Transferring a token means sending a transaction to the token contract, asking it to subtract from your balance and add to the recipient's. The transaction fee is still paid in ETH.
+- Sending tokens to the token contract's own address, or to a contract that doesn't know how to handle tokens, usually means they are lost for good. According to ethereum.org, more than 83 million USD worth of tokens had been lost this way as of mid-2024.
 
-### Quyền chi tiêu
+### Spending permissions
 
-Để một ứng dụng (như sàn đổi token) dùng token của bạn, bạn phải ký một lệnh **cho phép chi tiêu** (approve), kèm một hạn mức. Nếu bạn cho phép không giới hạn, ứng dụng đó dùng được toàn bộ token loại đó, kể cả khi bạn đã thôi dùng ứng dụng. Nếu ứng dụng bị hack, token của bạn có thể bị rút.
+For an app (such as a token exchange) to use your tokens, you have to sign an **approval** (approve) that lets it spend them, along with a spending limit. If you give unlimited approval, that app can use all of your tokens of that kind, even after you've stopped using the app. If the app gets hacked, your tokens can be drained.
 
-Chỉ cho phép đúng số cần dùng, và định kỳ thu hồi quyền cũ. Xem [Đọc một giao dịch](./reading-a-transaction.mdx#dùng-trình-khám-phá-khối-để-tự-bảo-vệ).
+Only approve the exact amount you need, and revoke old permissions regularly. See [Reading a transaction](./reading-a-transaction.mdx#using-a-block-explorer-to-protect-yourself).
 
-## Stablecoin
+## Stablecoins
 
-**Stablecoin** là token được thiết kế để giữ giá ổn định, thường bằng 1 USD. Mỗi loại giữ giá theo một cách, với rủi ro khác nhau:
+A **stablecoin** is a token designed to hold a steady price, usually 1 USD. Each type holds its price in a different way, with different risks:
 
-| Loại | Giữ giá nhờ | Phải tin vào |
+| Type | Holds its price thanks to | You have to trust |
 |---|---|---|
-| Bảo đảm bằng tiền pháp định (như USDC, USDT) | Bên phát hành giữ tiền thật hoặc tài sản tương đương làm dự trữ, đổi 1:1 | Bên phát hành có giữ đủ dự trữ, có kiểm toán |
-| Bảo đảm bằng tài sản mã hóa (như DAI, USDS) | Thế chấp tài sản mã hóa nhiều hơn giá trị phát hành, ví dụ 2 USD tài sản cho 1 USD stablecoin | Hợp đồng thông minh và giá của tài sản thế chấp |
-| Bảo đảm bằng kim loại quý | Vàng hoặc bạc do bên phát hành cất giữ | Bên phát hành và kho dự trữ |
-| Thuật toán | Một cơ chế tự điều chỉnh cung, không có tài sản bảo đảm | Thuật toán, và thị trường không mất niềm tin |
+| Backed by fiat currency (such as USDC, USDT) | The issuer keeps real money or equivalent assets as reserves and redeems 1:1 | That the issuer really holds enough reserves, and is audited |
+| Backed by crypto assets (such as DAI, USDS) | Crypto assets worth more than what is issued are locked up as collateral, for example 2 USD of assets for 1 USD of stablecoin | The smart contract, and the price of the collateral |
+| Backed by precious metals | Gold or silver stored by the issuer | The issuer and its vault |
+| Algorithmic | A mechanism that adjusts supply on its own, with no backing assets | The algorithm, and the market not losing confidence |
 
-Những điều cần biết:
+Things to know:
 
-- **Giá có thể lệch.** Khi người ta nghi ngờ dự trữ hoặc thị trường hoảng loạn, stablecoin có thể rơi khỏi mức 1 USD.
-- **Bên phát hành có quyền lớn.** Với stablecoin bảo đảm bằng tiền pháp định, như USDC và USDT, bên phát hành có thể đóng băng token ở một địa chỉ.
-- **Chọn đúng mạng.** Cùng tên USDT hay USDC nhưng mỗi mạng (Ethereum, các Layer 2, các chuỗi khác) là token riêng. Gửi nhầm mạng có thể mất tiền.
+- **The price can slip.** When people doubt the reserves or the market panics, a stablecoin can fall below 1 USD.
+- **The issuer has a lot of power.** With fiat-backed stablecoins such as USDC and USDT, the issuer can freeze the tokens at an address.
+- **Pick the right network.** USDT or USDC may have the same name everywhere, but on each network (Ethereum, the Layer 2s, other chains) it is a separate token. Sending on the wrong network can lose you money.
 
-## NFT
+## NFTs
 
-**NFT** (non-fungible token, token không thể thay thế) là token mà mỗi đơn vị là duy nhất. Hợp đồng NFT (theo tiêu chuẩn ERC-721, có từ năm 2018, hoặc ERC-1155) ghi lại mỗi mã số thuộc về ai. Ai cũng kiểm tra được quyền sở hữu đó.
+An **NFT** (non-fungible token) is a token where every unit is unique. An NFT contract (following the ERC-721 standard, around since 2018, or ERC-1155) records who owns each ID number. Anyone can check that ownership.
 
-- **Ảnh thường không nằm trên chuỗi.** Hợp đồng thường chỉ giữ một đường dẫn tới thông tin mô tả và ảnh, lưu ở một máy chủ hay trên mạng lưu trữ như IPFS. Nơi lưu ngừng hoạt động thì ảnh có thể mất, dù bạn vẫn sở hữu NFT.
-- **Sở hữu NFT không có nghĩa là sở hữu bản quyền** của tác phẩm, trừ khi bên bán cam kết như vậy.
-- **Tiền bản quyền cho tác giả** khi NFT được bán lại có thể được ghi trong hợp đồng, nhưng giao thức Ethereum không bắt buộc: tùy sàn có trả hay không.
+- **The image usually isn't onchain.** The contract usually only holds a link to the description and the image, stored on a server or on a storage network such as IPFS. If that storage goes offline, the image can disappear, even though you still own the NFT.
+- **Owning an NFT doesn't mean owning the copyright** to the work, unless the seller commits to that.
+- **Royalties for the creator** when an NFT is resold can be written into the contract, but the Ethereum protocol doesn't enforce them: it's up to each marketplace whether to pay them.
 
-## Token bọc: WETH
+## Wrapped tokens: WETH
 
-ETH có trước tiêu chuẩn ERC-20, nên không theo tiêu chuẩn này. **WETH** (wrapped ETH, ETH được bọc) là ETH được gửi vào một hợp đồng để đổi lấy token ERC-20 tương ứng 1:1. Trả WETH thì nhận lại ETH. Xem thêm ở [Ether (ETH) là gì?](../getting-started/what-is-ether.mdx#wrapped-eth-weth-là-gì).
+ETH came before the ERC-20 standard, so it doesn't follow it. **WETH** (wrapped ETH) is ETH deposited into a contract in exchange for a matching ERC-20 token, 1:1. Hand back the WETH and you get your ETH back. Read more in [What is ether (ETH)?](../getting-started/what-is-ether.mdx#what-is-wrapped-eth-weth).
 
-<Callout type="warn" title="Cảnh báo">
-Ai cũng tạo được token với tên và ký hiệu bất kỳ, kể cả trùng tên token nổi tiếng. Kẻ gian còn tự gửi token giả vào ví của bạn để dụ bạn vào trang lừa đảo. Đừng tương tác với token lạ tự xuất hiện trong ví. Xem [Giữ an toàn](../getting-started/staying-safe.mdx).
+<Callout type="warn" title="Warning">
+Anyone can create a token with any name and symbol, even one identical to a well-known token. Scammers also send fake tokens to your wallet themselves to lure you onto a scam site. Don't interact with unfamiliar tokens that show up in your wallet on their own. See [Staying safe](../getting-started/staying-safe.mdx).
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Token là sổ số dư trong một hợp đồng thông minh. Ví chỉ hiển thị, khóa riêng tư mới là thứ bạn giữ.
-- Chỉ cho phép ứng dụng chi tiêu đúng số cần, và thu hồi quyền cũ.
-- Stablecoin giữ giá nhờ tài sản bảo đảm, nhưng bạn vẫn phải tin bên phát hành hoặc cơ chế của nó.
-- NFT ghi quyền sở hữu một mã số; ảnh thường nằm ngoài chuỗi.
+- A token is a balance ledger inside a smart contract. Your wallet only displays it; the private key is the thing you actually hold.
+- Only let apps spend the exact amount they need, and revoke old permissions.
+- Stablecoins hold their price thanks to backing assets, but you still have to trust the issuer or its mechanism.
+- An NFT records ownership of an ID number; the image usually lives offchain.
 
-## Đọc tiếp
+## Read next
 
-- [Ví thông minh](./smart-wallets.mdx)
-- [Đọc một giao dịch](./reading-a-transaction.mdx)
+- [Smart wallets](./smart-wallets.mdx)
+- [Reading a transaction](./reading-a-transaction.mdx)

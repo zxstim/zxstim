@@ -1,6 +1,6 @@
 ---
-title: Rủi ro và quan điểm khác
-description: Giá ETH từng giảm hơn 90%. Đặt cọc có thể bị phạt. Hợp đồng có thể có lỗi. Và không phải ai cũng đồng ý với luận điểm lưu trữ giá trị. Những điều cần biết trước khi quyết định.
+title: Risks and other views
+description: ETH's price has fallen more than 90%. Staking can be penalized. Contracts can have bugs. And not everyone agrees with the store-of-value argument. What to know before you decide.
 sources:
   - https://ethereum.org/staking/pools/
   - https://ethereum.org/developers/docs/consensus-mechanisms/pos/
@@ -10,64 +10,64 @@ sources:
   - https://coinmetrics.io/community-network-data/
 ---
 
-<Callout type="warn" title="Quan trọng">
-Wiki không đưa lời khuyên đầu tư và không dự đoán giá. Mục này giải thích một luận điểm. Mọi quyết định đầu tư là của bạn, và chỉ nên dùng số tiền bạn chấp nhận mất.
+<Callout type="warn" title="Important">
+This wiki doesn't give investment advice and doesn't predict prices. This section explains an argument. Every investment decision is yours, and you should only use money you can afford to lose.
 </Callout>
 
-## Giá biến động rất mạnh
+## Prices are extremely volatile
 
-Những lần giảm lớn của ETH, tính theo giá đóng cửa hằng ngày (Coin Metrics):
+ETH's biggest drops, based on daily closing prices (Coin Metrics):
 
-| Từ | Tới | Mức giảm |
+| From | To | Drop |
 |---|---|---|
-| Tháng 1 năm 2018 | Tháng 12 năm 2018 | khoảng 94% |
-| Tháng 11 năm 2021 | Tháng 6 năm 2022 | khoảng 79% |
-| 22 tháng 8 năm 2025 (4.831 USD) | 6 tháng 6 năm 2026 (1.565 USD) | khoảng 68% |
+| January 2018 | December 2018 | about 94% |
+| November 2021 | June 2022 | about 79% |
+| August 22, 2025 (4,831 USD) | June 6, 2026 (1,565 USD) | about 68% |
 
-Ngày 7 tháng 11 năm 2026, ETH đóng cửa ở 2.234 USD, thấp hơn mức đóng cửa cao nhất khoảng 54%. Một tài sản lưu trữ giá trị được đo qua nhiều chục năm, nhưng trong ngắn hạn, ETH vẫn biến động mạnh hơn nhiều so với vàng hay cổ phiếu lớn.
+On November 7, 2026, ETH closed at 2,234 USD, about 54% below its highest close. A store of value is judged over many decades, but in the short term ETH is still far more volatile than gold or large-company stocks.
 
-## Lưu trữ giá trị là vị thế phải giành được
+## Being a store of value is a position that has to be earned
 
-Một tài sản chỉ lưu trữ được giá trị khi đủ nhiều người tin như vậy, trong thời gian đủ dài. ETH phải cạnh tranh với vàng, với bitcoin và với các tài sản khác. Luận điểm của Vitalik giải thích vì sao Ethereum có lợi thế, nhưng không bảo đảm thị trường sẽ đồng ý.
+An asset only stores value when enough people believe it does, for long enough. ETH has to compete with gold, with bitcoin and with other assets. Vitalik's argument explains why Ethereum has an advantage, but it doesn't guarantee the market will agree.
 
-## Rủi ro khi đặt cọc
+## Staking risks
 
-- **Bị phạt** khi trình xác thực làm sai, kể cả do lỗi cấu hình. Nếu nhiều trình xác thực cùng sai một lúc, mức phạt có thể lên tới toàn bộ tiền cọc.
-- **Đặt cọc thanh khoản** thêm rủi ro của hợp đồng thông minh, rủi ro token đại diện mất giá so với ETH, rủi ro quản trị và rủi ro tập trung vào vài bên vận hành. Khi bị phạt, người giữ token cùng chịu thiệt.
-- **Tập trung:** riêng Lido nắm khoảng 21 tới 22% số ETH đang đặt cọc (theo báo cáo của chính Lido cho nửa đầu năm 2026, và số liệu trên chuỗi tháng 11 năm 2026). Báo cáo "Trillion Dollar Security" của Quỹ Ethereum coi sự thống trị của các nhóm đặt cọc lớn là một rủi ro.
-- ethereum.org lưu ý các dịch vụ đặt cọc có thể trở thành mục tiêu tấn công hoặc mục tiêu quản lý.
+- **Penalties** when a validator misbehaves, even because of a configuration mistake. If many validators misbehave at the same time, the penalty can reach the entire stake.
+- **Liquid staking** adds smart contract risk, the risk that the representative token loses value relative to ETH, governance risk, and the risk of concentration in a few operators. When penalties hit, the token holders share the loss.
+- **Concentration:** Lido alone holds about 21 to 22% of all staked ETH (according to Lido's own report for the first half of 2026, and onchain data from November 2026). The Ethereum Foundation's "Trillion Dollar Security" report considers the dominance of large staking pools a risk.
+- ethereum.org notes that staking services can become targets for attackers or for regulators.
 
-## Rủi ro kỹ thuật
+## Technical risks
 
-- **Lỗi hợp đồng thông minh:** mã có lỗi, quyền nâng cấp bị lạm dụng, mã chưa được kiểm toán.
-- **Máy tính lượng tử:** theo ethereum.org, nguy cơ chưa cận kề, và việc chuyển sang chữ ký an toàn đang được làm. Xem [ETH được đo bằng tiêu chí nào](./store-of-value-criteria.mdx).
-- **Mất khóa, bị lừa:** phần lớn tiền mất trong tiền mã hóa là do người dùng bị lừa hay mất khóa, không phải do giao thức. Xem [Giữ an toàn](../basics/getting-started/staying-safe.mdx).
+- **Smart contract bugs:** buggy code, misused upgrade permissions, code that hasn't been audited.
+- **Quantum computers:** according to ethereum.org, the threat isn't imminent, and work on switching to safe signatures is underway. See [What ETH should be measured by](./store-of-value-criteria.mdx).
+- **Lost keys, scams:** most of the money lost in crypto is lost because users get scammed or lose their keys, not because of the protocol. See [Staying safe](../basics/getting-started/staying-safe.mdx).
 
-## Pháp lý
+## Legal
 
-Quy định về tài sản mã hóa khác nhau giữa các nước và thay đổi nhanh. Ở Việt Nam, Luật Công nghiệp công nghệ số (số 71/2025/QH15) và Nghị quyết 05/2025/NQ-CP về thí điểm thị trường tài sản mã hóa đặt nền đầu tiên. Hãy đối chiếu với quy định hiện hành, kể cả về thuế.
+Rules on crypto assets differ from country to country and change quickly. In Vietnam, the Law on Digital Technology Industry (No. 71/2025/QH15) and Resolution No. 05/2025/NQ-CP on piloting a crypto asset market lay the first groundwork. Check them against the rules currently in force, including on taxes.
 
-## Quan điểm khác
+## Other views
 
-Không phải ai cũng đồng ý rằng phí bị đốt không quan trọng.
+Not everyone agrees that burned fees don't matter.
 
-- **Phe "tiền siêu âm".** Justin Drake, nhà nghiên cứu của Quỹ Ethereum và người đặt ra khẩu hiệu "tiền siêu âm", cho rằng ETH cần phát hành ít hơn hoặc đốt nhiều hơn để tổng cung giảm trở lại (phát biểu tháng 2 năm 2025). Podcast Bankless từng gọi ETH là tài sản "ba trong một": hàng hóa tiêu dùng (trả phí), tài sản sinh lợi (đặt cọc) và tài sản lưu trữ giá trị.
-- **ethereum.org nhấn mạnh vai trò khác.** Trang so sánh Ethereum với Bitcoin viết rằng ETH vừa là nhiên liệu vừa là tài sản lưu trữ giá trị, nhưng vai trò chính của nó là vận hành cả một hệ sinh thái.
-- **Tổng cung đang tăng.** Hiện phát hành mới khoảng 0,89% mỗi năm, trong khi đốt chỉ bằng vài phần trăm lượng đó. Người coi khan hiếm là điều kiện của tài sản lưu trữ giá trị sẽ thấy đây là điểm yếu. Người theo luận điểm của Vitalik coi luật phát hành ổn định và công khai quan trọng hơn. Xem [Nguồn cung và an ninh](./supply-and-security.mdx).
+- **The "ultrasound money" camp.** Justin Drake, an Ethereum Foundation researcher and the person who coined the "ultrasound money" slogan, argues that ETH needs less issuance or more burning so that total supply shrinks again (remarks from February 2025). The Bankless podcast once called ETH a "three-in-one" asset: a consumable commodity (paying fees), a yield-bearing asset (staking) and a store of value.
+- **ethereum.org emphasizes a different role.** Its page comparing Ethereum with Bitcoin says ETH is both fuel and a store of value, but that its main role is to power an entire ecosystem.
+- **Total supply is growing.** New issuance is currently about 0.89% a year, while the burn is only a few percent of that. People who see scarcity as a requirement for a store of value will see this as a weakness. People who follow Vitalik's argument consider stable, public issuance rules more important. See [ETH supply and security](./supply-and-security.mdx).
 
-## Tóm tắt
+## Summary
 
-- ETH từng giảm 94%, 79% và 68% trong các đợt suy giảm lớn. Lưu trữ giá trị là vị thế phải giành được, không được bảo đảm.
-- Đặt cọc có rủi ro bị phạt, rủi ro hợp đồng và rủi ro tập trung. Lido nắm khoảng một phần năm số ETH đặt cọc.
-- Có những quan điểm khác: phe "tiền siêu âm" coi trọng phí bị đốt, và ethereum.org nhấn mạnh vai trò vận hành hệ sinh thái.
+- ETH has fallen 94%, 79% and 68% in its major downturns. Being a store of value is a position that has to be earned, not a given.
+- Staking carries penalty risk, contract risk and concentration risk. Lido holds about one-fifth of staked ETH.
+- There are other views: the "ultrasound money" camp values burned fees, and ethereum.org emphasizes ETH's role in powering the ecosystem.
 
-## Đọc tiếp
+## Read next
 
-- [ETH: tài sản lưu trữ giá trị](./eth-as-store-of-value.mdx)
-- [Giữ an toàn](../basics/getting-started/staying-safe.mdx)
+- [ETH as a store of value](./eth-as-store-of-value.mdx)
+- [Staying safe](../basics/getting-started/staying-safe.mdx)
 
-## Nguồn
+## Sources
 
-- ethereum.org: [Đặt cọc qua dịch vụ](https://ethereum.org/staking/pools/), [Bằng chứng cổ phần](https://ethereum.org/developers/docs/consensus-mechanisms/pos/), [Trillion Dollar Security](https://ethereum.org/reports/trillion-dollar-security/), [Ethereum và Bitcoin](https://ethereum.org/ethereum-vs-bitcoin/)
-- [Coin Metrics](https://coinmetrics.io/community-network-data/) (giá đóng cửa hằng ngày), [ultrasound.money](https://ultrasound.money)
-- Lido: báo cáo nửa đầu năm 2026; Cointelegraph về phát biểu của Justin Drake (tháng 2 năm 2025)
+- ethereum.org: [Staking through a service](https://ethereum.org/staking/pools/), [Proof of stake](https://ethereum.org/developers/docs/consensus-mechanisms/pos/), [Trillion Dollar Security](https://ethereum.org/reports/trillion-dollar-security/), [Ethereum and Bitcoin](https://ethereum.org/ethereum-vs-bitcoin/)
+- [Coin Metrics](https://coinmetrics.io/community-network-data/) (daily closing prices), [ultrasound.money](https://ultrasound.money)
+- Lido: report for the first half of 2026; Cointelegraph on Justin Drake's remarks (February 2025)

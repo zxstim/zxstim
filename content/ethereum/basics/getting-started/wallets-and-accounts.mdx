@@ -1,113 +1,113 @@
 ---
-title: Ví, tài khoản và cụm từ khôi phục
-description: Ví không giữ tiền của bạn. Hiểu đúng về ví, tài khoản, khóa và cụm từ khôi phục, rồi tạo tài khoản Ethereum đầu tiên.
+title: Wallets, accounts and recovery phrases
+description: Your wallet doesn't hold your money. Get a clear picture of wallets, accounts, keys and recovery phrases, then create your first Ethereum account.
 sources:
   - https://ethereum.org/wallets/
   - https://ethereum.org/guides/how-to-create-an-ethereum-account/
   - https://ethereum.org/guides/how-to-use-a-wallet/
 ---
 
-Để dùng Ethereum, bạn cần một **ví**. Nhưng ví trên Ethereum khác chiếc ví trong túi bạn ở một điểm quan trọng: **ví không chứa tiền**. Tài sản của bạn nằm trên mạng lưới Ethereum. Ví chỉ là công cụ giúp bạn xem và sử dụng tài sản đó.
+To use Ethereum, you need a **wallet**. But an Ethereum wallet differs from the wallet in your pocket in one important way: **a wallet doesn't hold money**. Your assets live on the Ethereum network. The wallet is just a tool that lets you see and use them.
 
-## Bốn khái niệm cần phân biệt
+## Four concepts to tell apart
 
-Hãy so sánh với email:
+Compare them with email:
 
-| Khái niệm | Giống như | Giải thích |
+| Concept | Like | Explanation |
 |---|---|---|
-| **Địa chỉ** | Địa chỉ email | Chuỗi bắt đầu bằng `0x`, dài 42 ký tự. Bạn đưa cho người khác để nhận tiền. Chia sẻ thoải mái. |
-| **Khóa riêng tư** | Mật khẩu email | Dùng để **ký** giao dịch, chứng minh bạn là chủ tài khoản. Tuyệt đối giữ bí mật. |
-| **Tài khoản** | Hộp thư | Một cặp khóa: khóa công khai (tạo ra địa chỉ) và khóa riêng tư. Tài sản gắn với tài khoản. |
-| **Ví** | Ứng dụng đọc email | Ứng dụng dùng khóa của bạn để xem số dư, gửi giao dịch, đăng nhập ứng dụng. |
+| **Address** | Email address | A 42-character string starting with `0x`. You give it to others so they can send you money. Share it freely. |
+| **Private key** | Email password | Used to **sign** transactions, proving you own the account. Keep it absolutely secret. |
+| **Account** | Mailbox | A key pair: a public key (which produces the address) and a private key. Assets belong to the account. |
+| **Wallet** | Email app | An app that uses your keys to show balances, send transactions and sign in to apps. |
 
-Một địa chỉ Ethereum trông như thế này (địa chỉ minh họa, đừng gửi tiền vào):
+An Ethereum address looks like this (an example address, don't send money to it):
 
 ```
 0x5859c049b26bd3882f00a3bbedebba5113abaaf2
 ```
 
-Vì ví chỉ là "ứng dụng đọc", bạn có thể đổi sang ví khác bất cứ lúc nào mà vẫn giữ nguyên tài khoản và tài sản. Một ví cũng có thể quản lý nhiều tài khoản.
+Because a wallet is just a "reader app," you can switch to another wallet at any time and keep the same accounts and assets. One wallet can also manage many accounts.
 
-## Cụm từ khôi phục
+## Recovery phrase
 
-Khi tạo ví mới, ví sẽ cho bạn một **cụm từ khôi phục** (recovery phrase, còn gọi là seed phrase): 12 hoặc 24 từ tiếng Anh theo một thứ tự nhất định. Ví dụ:
+When you create a new wallet, it gives you a **recovery phrase** (also called a seed phrase): 12 or 24 English words in a specific order. For example:
 
 ```
 there aeroplane curve vent formation doge possible product distinct under spirit lamp
 ```
 
-Từ cụm từ này, ví tạo ra khóa riêng tư cho mọi tài khoản của bạn. Điều đó có nghĩa là:
+From this phrase, the wallet generates the private keys for all your accounts. That means:
 
-- **Ai có cụm từ khôi phục, người đó có toàn bộ tài sản của bạn.** Không cần mật khẩu, không cần điện thoại của bạn.
-- **Mất cụm từ khôi phục và mất thiết bị, bạn mất tài sản vĩnh viễn.** Không ai khôi phục giúp bạn được.
-- **Có cụm từ khôi phục, bạn lấy lại được tài sản** trên bất kỳ ví nào hỗ trợ, kể cả khi điện thoại bị mất hay hỏng.
+- **Whoever has your recovery phrase has all your assets.** They don't need your password or your phone.
+- **Lose your recovery phrase and your device, and you lose your assets forever.** No one can recover them for you.
+- **With your recovery phrase, you can get your assets back** in any wallet that supports it, even if your phone is lost or broken.
 
 <RecoveryScene />
 
-Hình trên cho thấy vì sao: số dư không nằm trong điện thoại mà được ghi trên mọi nút của Ethereum. Cụm từ khôi phục cho ra khóa riêng tư, khóa cho ra địa chỉ, nên ai nhập đúng 12 từ cũng có lại đúng địa chỉ đó, dù là bạn hay kẻ gian. Xem [Địa chỉ và khóa](../how-it-works/addresses-and-keys.mdx).
+The animation above shows why: your balance isn't stored on your phone but recorded on every Ethereum node. The recovery phrase produces the private key, and the key produces the address, so anyone who enters the same 12 words gets that same address back, whether it's you or a thief. See [Addresses and keys](../how-it-works/addresses-and-keys.mdx).
 
-<Callout type="warn" title="Cảnh báo">
-Cách giữ cụm từ khôi phục:
-- Viết ra giấy (hoặc khắc lên kim loại) và cất ở nơi an toàn. Có thể giữ hai bản ở hai nơi khác nhau.
-- **Không** chụp màn hình, **không** lưu trong ghi chú điện thoại, email, Google Drive, iCloud hay gửi qua Zalo, Messenger, Telegram.
-- **Không bao giờ** nhập cụm từ khôi phục vào trang web hay đưa cho bất kỳ ai, kể cả người tự xưng là "hỗ trợ kỹ thuật".
+<Callout type="warn" title="Warning">
+How to keep your recovery phrase:
+- Write it on paper (or engrave it in metal) and store it somewhere safe. You can keep two copies in two different places.
+- **Don't** take a screenshot, **don't** save it in phone notes, email, Google Drive or iCloud, and don't send it over Zalo, Messenger or Telegram.
+- **Never** enter your recovery phrase on a website or give it to anyone, including people who claim to be "tech support."
 </Callout>
 
-## Các loại ví
+## Types of wallets
 
-| Loại ví | Ưu điểm | Lưu ý |
+| Wallet type | Pros | Keep in mind |
 |---|---|---|
-| **Ví di động** | Tiện, mang theo mọi lúc, quét mã QR dễ | Điện thoại mất hoặc nhiễm mã độc thì có rủi ro |
-| **Ví tiện ích trình duyệt** | Kết nối nhanh với ứng dụng trên web | Cài đúng tiện ích chính thức, cẩn thận với tiện ích giả |
-| **Ví web** | Không cần cài đặt, mở trình duyệt là dùng | Luôn vào đúng địa chỉ trang, nên lưu dấu trang (bookmark) |
-| **Ví máy tính** | Phù hợp nếu bạn hay dùng máy tính | Máy tính cần sạch mã độc |
-| **Ví cứng** | An toàn nhất: khóa nằm trong thiết bị riêng, không bao giờ lên mạng | Tốn tiền mua thiết bị, chỉ mua từ nhà sản xuất chính hãng |
+| **Mobile wallet** | Convenient, always with you, easy QR scanning | Risky if your phone is lost or infected with malware |
+| **Browser extension wallet** | Connects quickly to web apps | Install the official extension, and watch out for fake ones |
+| **Web wallet** | Nothing to install, just open your browser | Always go to the correct site address; bookmark it |
+| **Desktop wallet** | A good fit if you use a computer a lot | Your computer must be free of malware |
+| **Hardware wallet** | Safest: keys live on a separate device that never goes online | Costs money to buy the device; only buy from the official manufacturer |
 
-Với số tiền lớn, ví cứng là lựa chọn an toàn nhất.
+For large amounts, a hardware wallet is the safest choice.
 
-## Tự giữ hay để trên sàn?
+## Hold it yourself or leave it on an exchange?
 
-Khi bạn mua tiền mã hóa trên sàn giao dịch, sàn thường giữ tài sản giúp bạn. Bạn đăng nhập bằng tên và mật khẩu, quên thì sàn khôi phục được. Đổi lại, bạn phải tin tưởng sàn: nếu sàn bị hack, gặp khó khăn tài chính hay khóa tài khoản, tài sản của bạn gặp rủi ro.
+When you buy crypto on an exchange, the exchange usually holds the assets for you. You log in with a username and password, and if you forget them, the exchange can recover your account. In return, you have to trust the exchange: if it gets hacked, runs into financial trouble or locks your account, your assets are at risk.
 
-Khi dùng ví của riêng mình, bạn **tự lưu ký**: chỉ bạn kiểm soát tài sản, không ai đóng băng được. Nhưng bạn cũng phải tự chịu trách nhiệm giữ cụm từ khôi phục.
+When you use your own wallet, you're in **self-custody**: only you control your assets, and no one can freeze them. But you're also responsible for keeping your recovery phrase safe.
 
-## Tạo tài khoản Ethereum đầu tiên
+## Create your first Ethereum account
 
-Bạn không cần đăng ký ở đâu cả. Ví sẽ tạo tài khoản cho bạn.
+You don't need to sign up anywhere. The wallet creates the account for you.
 
-1. **Chọn ví.** Xem bảng ở trên để chọn loại phù hợp.
-2. **Tải ví từ nguồn chính thức:** trang web của ví, App Store hoặc Google Play. Kiểm tra kỹ tên nhà phát triển, vì có rất nhiều ứng dụng giả.
-3. **Mở ví và chọn "Tạo ví mới"** (Create new wallet). Ví sẽ yêu cầu bạn đặt một mật khẩu. Mật khẩu này chỉ để mở ví trên thiết bị đó, khác với cụm từ khôi phục.
-4. **Chép lại cụm từ khôi phục ra giấy**, đúng thứ tự. Nhiều ví sẽ yêu cầu bạn nhập lại vài từ để chắc chắn bạn đã chép đúng.
-5. **Thử trước với số tiền nhỏ.** Nhận một ít ETH và gửi thử trước khi dùng số tiền lớn.
+1. **Choose a wallet.** Use the table above to pick the right type.
+2. **Download the wallet from an official source:** the wallet's website, the App Store or Google Play. Check the developer's name carefully, because there are many fake apps.
+3. **Open the wallet and choose "Create new wallet."** The wallet will ask you to set a password. This password only unlocks the wallet on that device; it's not the same as your recovery phrase.
+4. **Write your recovery phrase down on paper**, in the correct order. Many wallets will ask you to re-enter a few of the words to make sure you copied it correctly.
+5. **Test with a small amount first.** Receive a little ETH and try sending some before you use large amounts.
 
-Xong. Ví sẽ hiển thị địa chỉ của bạn. Đây chính là tài khoản Ethereum của bạn.
+Done. The wallet will show your address. That's your Ethereum account.
 
-## Một địa chỉ, nhiều mạng
+## One address, many networks
 
-Ngoài Ethereum còn nhiều mạng tương thích, như các [Layer 2](../how-it-works/layer-2.mdx) Arbitrum, Optimism, Base, hay các chuỗi khác như BNB Chain. Cùng một khóa cho bạn cùng một địa chỉ trên tất cả, nhưng mỗi mạng giữ sổ số dư riêng.
+Besides Ethereum, there are many compatible networks, such as the [Layer 2](../how-it-works/layer-2.mdx) networks Arbitrum, Optimism and Base, or other chains like BNB Chain. The same key gives you the same address on all of them, but each network keeps its own record of balances.
 
 <NetworksScene />
 
-- **Ví chỉ hiện mạng đang chọn.** 10 USDC trên Base không hiện ra khi ví đang ở Ethereum. Tiền không mất, chỉ là ở mạng khác.
-- **Chuyển giữa các mạng phải qua cầu nối** (bridge). Gửi thường trên một mạng thì tiền chỉ đi trong mạng đó.
-- **Khi gửi, người gửi và người nhận phải dùng cùng một mạng.** Đặc biệt khi nạp vào sàn giao dịch: chọn đúng mạng mà sàn ghi. Gửi nhầm mạng, tiền tới đúng địa chỉ nhưng ở mạng sàn không theo dõi, và có thể mất.
+- **Your wallet only shows the network you've selected.** 10 USDC on Base won't show up while your wallet is on Ethereum. The money isn't lost; it's just on another network.
+- **Moving between networks requires a bridge.** A regular send on one network only moves money within that network.
+- **When sending, the sender and recipient must use the same network.** This matters most when depositing to an exchange: pick exactly the network the exchange specifies. If you pick the wrong network, the money arrives at the right address but on a network the exchange doesn't monitor, and it may be lost.
 
-## Câu hỏi thường gặp
+## Frequently asked questions
 
-**Địa chỉ Ethereum của tôi có dùng được trên các mạng khác không?**
-Có, với các mạng tương thích Ethereum: bạn có cùng một địa chỉ trên tất cả, nhưng tài sản trên mỗi mạng là riêng biệt. Xem [Một địa chỉ, nhiều mạng](#một-địa-chỉ-nhiều-mạng).
+**Can I use my Ethereum address on other networks?**
+Yes, on Ethereum-compatible networks: you have the same address on all of them, but your assets on each network are separate. See [One address, many networks](#one-address-many-networks).
 
-**Tôi có thể gửi bitcoin tới địa chỉ Ethereum không?**
-Không. Bitcoin và Ethereum là hai mạng lưới riêng biệt với định dạng địa chỉ khác nhau. Gửi nhầm sẽ mất tiền.
+**Can I send bitcoin to an Ethereum address?**
+No. Bitcoin and Ethereum are separate networks with different address formats. If you send to the wrong one, you lose the money.
 
-**Tôi mất điện thoại. Có cần cài lại đúng ví cũ không?**
-Không bắt buộc. Phần lớn ví dùng chung một chuẩn cụm từ khôi phục (BIP-39), nên bạn có thể nhập cụm từ khôi phục vào một ví khác và lấy lại tài khoản.
+**I lost my phone. Do I need to reinstall the same wallet?**
+Not necessarily. Most wallets use the same recovery phrase standard (BIP-39), so you can enter your recovery phrase into a different wallet and get your account back.
 
-**Tôi có thể dùng một tài khoản trên nhiều thiết bị không?**
-Có, bằng cách nhập cùng cụm từ khôi phục vào ví trên từng thiết bị. Nhưng càng nhiều thiết bị giữ khóa, rủi ro càng cao.
+**Can I use one account on several devices?**
+Yes, by entering the same recovery phrase into a wallet on each device. But the more devices hold your keys, the higher the risk.
 
-## Đọc tiếp
+## Read next
 
-- [Phí gas](./gas-fees.mdx)
-- [Giữ an toàn](./staying-safe.mdx)
+- [Gas fees](./gas-fees.mdx)
+- [Staying safe](./staying-safe.mdx)

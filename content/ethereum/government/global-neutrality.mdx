@@ -1,6 +1,6 @@
 ---
-title: Hạ tầng trung lập, không thuộc về cường quốc nào
-description: Mỗi khối Ethereum có chỗ cho giao dịch của bất kỳ ai, ở bất kỳ nước nào. Không chính phủ, công ty hay quỹ nào một mình tắt được mạng, đổi được luật hay chặn được một quốc gia. Vì sao, và giới hạn ở đâu.
+title: Neutral infrastructure no great power owns
+description: Every Ethereum block has room for transactions from anyone, in any country. No government, company or foundation can, on its own, switch off the network, change the rules or block a country. Why, and where the limits are.
 sources:
   - https://ethereum.org/latest/why-build-on-ethereum/
   - https://publicsector.ethereum.foundation/evaluating-ethereum/
@@ -9,68 +9,68 @@ sources:
   - https://ethernodes.org
 ---
 
-Cứ 12 giây, Ethereum tạo một khối mới. Chỗ trong mỗi khối dành cho giao dịch gọi là **không gian khối** (block space). Ai trả phí thì được dùng. Một cơ quan ở Hà Nội, một công ty ở São Paulo hay một người dân ở Nairobi đều theo cùng một luật và cùng một bảng giá. Không ai được ưu tiên hay bị loại vì quốc tịch.
+Every 12 seconds, Ethereum creates a new block. The room in each block set aside for transactions is called **block space**. Anyone who pays the fee can use it. An agency in Hanoi, a company in São Paulo or a citizen in Nairobi all follow the same rules and the same price list. No one gets priority or is shut out because of their nationality.
 
-Với khu vực công, đây là điểm khác biệt lớn nhất: hạ tầng chung này không thuộc về một cường quốc, một tập đoàn hay một quỹ nào.
+For the public sector, this is the biggest difference: this shared infrastructure doesn't belong to any one great power, corporation or foundation.
 
-## Vì sao không một bên nào kiểm soát được
+## Why no single party can control it
 
-- **Nút ở khắp nơi.** Theo Ethernodes (tháng 11 năm 2026), có 8.717 nút lớp thực thi ở 95 quốc gia và vùng lãnh thổ, trong đó 24 nút ở Việt Nam. Ai cũng chạy được một nút, không cần xin phép. Xem [Nút](../basics/how-it-works/nodes.mdx).
-- **Người tạo khối thay nhau theo lượt ngẫu nhiên.** Mỗi khe 12 giây, giao thức chọn ngẫu nhiên một [trình xác thực](../basics/how-it-works/validators.mdx) đề xuất khối. Các trình xác thực chạy máy ở gần trăm quốc gia.
-- **Không có một phần mềm duy nhất.** Lớp thực thi có năm phần mềm chính do các nhóm khác nhau viết: Geth khoảng 50%, Nethermind khoảng 25%, Besu khoảng 9%, Reth khoảng 8%, Erigon khoảng 7% (theo ethereum.org, tháng 5 năm 2026). Không nhóm nào lén đưa được luật mới vào mạng.
-- **Luật chỉ đổi khi mạng lưới chấp nhận.** Mỗi đợt [nâng cấp](../basics/how-it-works/upgrades.mdx) được bàn công khai, và mỗi người vận hành nút tự quyết có cài phiên bản mới hay không.
-- **Không có "nút tắt".** Theo hướng dẫn của Quỹ Ethereum (EF), giao thức không có giao diện quản trị nào để đóng băng tài khoản hay đảo ngược giao dịch. EF cũng tự ghi rõ họ không vận hành hay kiểm soát Ethereum.
-- **Chưa từng ngừng tạo khối** kể từ ngày 30 tháng 7 năm 2015.
+- **Nodes are everywhere.** According to Ethernodes (November 2026), there are 8,717 execution layer nodes in 95 countries and territories, 24 of them in Vietnam. Anyone can run a node without asking permission. See [Nodes](../basics/how-it-works/nodes.mdx).
+- **Block creators take turns at random.** In each 12-second slot, the protocol randomly picks a [validator](../basics/how-it-works/validators.mdx) to propose the block. Validators run machines in close to a hundred countries.
+- **There's no single piece of software.** The execution layer has five main clients written by different teams: Geth about 50%, Nethermind about 25%, Besu about 9%, Reth about 8%, Erigon about 7% (according to ethereum.org, May 2026). No team can sneak new rules into the network.
+- **Rules only change when the network accepts them.** Each [upgrade](../basics/how-it-works/upgrades.mdx) is discussed in public, and each node operator decides for themselves whether to install the new version.
+- **There's no "off switch".** According to Ethereum Foundation (EF) guidance, the protocol has no admin interface for freezing accounts or reversing transactions. The EF also states clearly that it does not run or control Ethereum.
+- **It has never stopped producing blocks** since July 30, 2015.
 
-So sánh: một hệ thống do một công ty hay một quốc gia vận hành, như mạng thanh toán, dịch vụ đám mây hay một chuỗi riêng, có thể bị chính bên đó tắt, đổi điều khoản, hoặc buộc chặn người dùng theo luật của họ. Với Ethereum, muốn làm vậy thì phải thuyết phục được phần lớn những người vận hành ở rất nhiều nước khác nhau.
+By comparison: a system run by one company or one country, such as a payment network, a cloud service or a private chain, can be switched off by that party, have its terms changed, or be forced to block users under that party's laws. With Ethereum, doing that would mean persuading most of the operators across a great many different countries.
 
-## Thử thách thật: lệnh trừng phạt năm 2022
+## A real test: the 2022 sanctions
 
-Đây là lần thử lớn nhất cho tính trung lập của Ethereum, theo ethereum.org:
+This was the biggest test of Ethereum's neutrality so far, according to ethereum.org:
 
-1. Tháng 8 năm 2022, Văn phòng Kiểm soát Tài sản Nước ngoài của Hoa Kỳ (OFAC) đưa Tornado Cash, một hợp đồng trộn tiền để giữ riêng tư, vào danh sách trừng phạt.
-2. Nhiều **relay** MEV-Boost, những nút do bên thứ ba vận hành để chuyển khối từ người xây khối tới trình xác thực, bắt đầu lọc bỏ giao dịch liên quan. Lúc cao điểm (tháng 11 năm 2022), khoảng 79% khối được xây qua các relay có lọc.
-3. Nhưng 21% còn lại không lọc, nên các giao dịch đó vẫn vào chuỗi, chỉ chậm hơn: thời gian chờ trung bình tăng từ khoảng 12 giây lên khoảng một phút.
-4. Các relay mới không lọc ra đời, và không ai ép được mọi trình xác thực dùng relay có lọc. Đầu năm 2023, tỷ lệ khối qua relay có lọc xuống dưới 50%. Suốt phần còn lại của năm 2023, nó dao động từ 27% tới 47%. Tháng 3 năm 2025, Tornado Cash được đưa ra khỏi danh sách trừng phạt.
+1. In August 2022, the US Office of Foreign Assets Control (OFAC) added Tornado Cash, a mixing contract used to keep transactions private, to its sanctions list.
+2. Many MEV-Boost **relays**, nodes run by third parties that pass blocks from block builders to validators, began filtering out related transactions. At the peak (November 2022), about 79% of blocks were built through filtering relays.
+3. But the other 21% didn't filter, so those transactions still got onto the chain, just more slowly: the average wait rose from about 12 seconds to about a minute.
+4. New non-filtering relays appeared, and no one could force every validator to use a filtering relay. By early 2023, the share of blocks going through filtering relays fell below 50%. For the rest of 2023, it ranged from 27% to 47%. In March 2025, Tornado Cash was removed from the sanctions list.
 
-Bài học: một cường quốc có thể làm chậm giao dịch qua những công ty chịu luật của mình, nhưng không chặn hẳn được, khi còn trình xác thực ở nơi khác không làm theo.
+The lesson: a great power can slow transactions down through companies subject to its laws, but it can't block them outright as long as there are validators elsewhere that don't comply.
 
-Relay có lọc vẫn còn. Theo MEV Watch, ngày 7 tháng 11 năm 2026, khoảng 16,7% lượt giao khối qua các relay MEV-Boost đến từ relay có lọc. Con số này đếm theo lượt giao của relay chứ không theo số khối, nên không so trực tiếp được với con số 79% ở trên.
+Filtering relays still exist. According to MEV Watch, on November 7, 2026, about 16.7% of block deliveries through MEV-Boost relays came from filtering relays. This figure counts relay deliveries, not blocks, so it can't be compared directly with the 79% figure above.
 
-Ethereum đang đưa bảo đảm này vào chính giao thức. Nâng cấp **FOCIL** (EIP-7805) thêm **danh sách bắt buộc đưa vào** (inclusion list): một nhóm trình xác thực chọn ngẫu nhiên công bố các giao dịch đang chờ, và khối tiếp theo phải chứa chúng, nếu không mạng lưới sẽ từ chối khối đó. FOCIL đã được xếp vào đợt nâng cấp Hegotá (theo EIP-8081, còn là bản nháp). Tính tới tháng 11 năm 2026, đây vẫn là kế hoạch, chưa có ngày.
+Ethereum is building this guarantee into the protocol itself. The **FOCIL** upgrade (EIP-7805) adds an **inclusion list**: a randomly chosen group of validators publishes pending transactions, and the next block must contain them, or the network will reject that block. FOCIL has been scheduled for the Hegotá upgrade (according to EIP-8081, still a draft). As of November 2026, this is still a plan, with no date.
 
-## Giới hạn của sự trung lập
+## The limits of neutrality
 
-- **Nút tập trung ở vài nước.** Hoa Kỳ chiếm khoảng 30% số nút, Đức khoảng 14% (Ethernodes, tháng 11 năm 2026). Một nước có nhiều nút không tự đổi được luật, nhưng có tiếng nói lớn hơn. Nhiều nút cũng thuê máy của một vài công ty đám mây lớn.
-- **Một phần mềm chiếm gần nửa mạng.** ethereum.org thừa nhận tỷ lệ gần 50% của Geth là điểm yếu thật: một lỗi nặng ở đó ảnh hưởng tới nhiều nút cùng lúc.
-- **Các tầng bên trên có chủ.** Stablecoin do công ty phát hành và có thể bị đóng băng theo luật nơi công ty đăng ký. Layer 2 thường do một công ty vận hành bộ sắp xếp. Sàn giao dịch, dịch vụ lưu ký và oracle cũng vậy. Ethereum trung lập ở tầng giao thức; điều đó không tự động đúng với các tầng này.
-- **Ảnh hưởng mềm vẫn tồn tại.** Các đợt nâng cấp do cộng đồng nhà phát triển bàn bạc, và người có tiếng nói lớn vẫn có sức ảnh hưởng, dù không ai ra lệnh được.
+- **Nodes are concentrated in a few countries.** The United States has about 30% of nodes, Germany about 14% (Ethernodes, November 2026). A country with many nodes can't change the rules on its own, but it has a louder voice. Many nodes also rent machines from a few large cloud companies.
+- **One client runs nearly half the network.** ethereum.org admits that Geth's nearly 50% share is a real weakness: a serious bug there would hit many nodes at once.
+- **The layers on top have owners.** Stablecoins are issued by companies and can be frozen under the laws of the country where the company is registered. Layer 2s usually have one company running the sequencer. The same goes for exchanges, custody services and oracles. Ethereum is neutral at the protocol layer; that doesn't automatically hold for these layers.
+- **Soft influence still exists.** Upgrades are discussed by the developer community, and people with a loud voice still have influence, even though no one can give orders.
 
-<Callout type="info" title="Lưu ý">
-Trung lập không có nghĩa là đứng ngoài pháp luật. Một cơ quan dùng Ethereum vẫn tuân theo luật của mình. Điều Ethereum mang lại là không bên ngoài nào tắt được, sửa được hay chặn được hạ tầng chung mà cơ quan dựa vào.
+<Callout type="info" title="Note">
+Being neutral doesn't mean being above the law. An agency that uses Ethereum still follows its own laws. What Ethereum offers is that no outside party can switch off, change or block the shared infrastructure the agency relies on.
 </Callout>
 
-## Ý nghĩa với một quốc gia
+## What it means for a country
 
-- **Dùng chung mà không phụ thuộc.** Một quốc gia có thể dựa vào Ethereum mà không cần thiện chí của một nước khác hay của một nhà cung cấp.
-- **Tự kiểm tra trong nước.** Cơ quan có thể tự chạy nút đặt tại Việt Nam để tự đối chiếu mọi bản ghi, không phải hỏi ai.
-- **Chọn kỹ các tầng bên trên.** Phần nào nằm trên chính giao thức thì trung lập. Phần nào phụ thuộc một công ty, như stablecoin, Layer 2 hay oracle, thì cần xét xem công ty đó chịu luật của nước nào.
+- **Shared use without dependence.** A country can rely on Ethereum without needing the goodwill of another country or of a vendor.
+- **Checking at home.** An agency can run its own nodes located in Vietnam to check every record for itself, without asking anyone.
+- **Choose the layers on top carefully.** Whatever sits on the protocol itself is neutral. Whatever depends on a company, such as a stablecoin, a Layer 2 or an oracle, needs a look at which country's laws that company is subject to.
 
-## Tóm tắt
+## Summary
 
-- Không gian khối của Ethereum mở cho mọi người ở mọi nước, theo cùng một luật.
-- Không bên nào một mình tắt được mạng, đổi được luật hay chặn hẳn được một giao dịch hợp lệ. Năm 2022, lệnh trừng phạt chỉ làm giao dịch chậm đi chứ không chặn được.
-- Giới hạn: nút tập trung ở Mỹ và Đức, một phần mềm chiếm gần nửa mạng, và các tầng bên trên như stablecoin hay Layer 2 vẫn có chủ.
+- Ethereum's block space is open to everyone in every country, under the same rules.
+- No party can, on its own, switch off the network, change the rules or fully block a valid transaction. In 2022, sanctions only slowed transactions down; they couldn't block them.
+- Limits: nodes are concentrated in the US and Germany, one client runs nearly half the network, and the layers on top, such as stablecoins and Layer 2s, still have owners.
 
-## Đọc tiếp
+## Read next
 
-- [Đưa gì lên chuỗi, giữ gì ngoài chuỗi](./what-goes-onchain.mdx)
-- [Trình xác thực](../basics/how-it-works/validators.mdx): mạng lưới trải rộng tới đâu
+- [What goes onchain, what stays offchain](./what-goes-onchain.mdx)
+- [Validators](../basics/how-it-works/validators.mdx): how far the network reaches
 
-## Nguồn
+## Sources
 
-- ethereum.org: [Why build on Ethereum](https://ethereum.org/latest/why-build-on-ethereum/) (tháng 5 năm 2026), phần về chống kiểm duyệt và đa dạng phần mềm
-- Quỹ Ethereum: [Đánh giá Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/), [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf)
+- ethereum.org: [Why build on Ethereum](https://ethereum.org/latest/why-build-on-ethereum/) (May 2026), the parts on censorship resistance and client diversity
+- Ethereum Foundation: [Evaluating Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/), [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf)
 - [EIP-7805: FOCIL](https://eips.ethereum.org/EIPS/eip-7805), [EIP-8081: Hegotá](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-8081.md)
-- [MEV Watch](https://www.mevwatch.info/), số liệu ngày 7 tháng 11 năm 2026
-- [Ethernodes](https://ethernodes.org), số liệu đọc ngày 8 tháng 11 năm 2026
+- [MEV Watch](https://www.mevwatch.info/), figures from November 7, 2026
+- [Ethernodes](https://ethernodes.org), figures read on November 8, 2026

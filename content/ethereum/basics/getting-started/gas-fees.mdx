@@ -1,89 +1,89 @@
 ---
-title: Phí gas
-description: Mỗi giao dịch trên Ethereum tốn một khoản phí nhỏ gọi là gas. Phí được tính thế nào, ai nhận, và làm sao để trả ít hơn.
+title: Gas fees
+description: Every transaction on Ethereum costs a small fee called gas. How the fee is calculated, who receives it, and how to pay less.
 sources:
   - https://ethereum.org/gas/
 ---
 
-Mỗi lần bạn gửi tiền hay dùng ứng dụng trên Ethereum, bạn trả một khoản phí nhỏ bằng ETH. Khoản phí này gọi là **phí gas**.
+Every time you send money or use an app on Ethereum, you pay a small fee in ETH. This fee is called a **gas fee**.
 
-## Tóm tắt
+## Summary
 
-- Mọi giao dịch đều tốn phí gas, trả bằng ETH.
-- Phí không cố định: mạng lưới càng đông, phí càng cao.
-- Giao dịch càng phức tạp, càng tốn nhiều gas.
-- Layer 2 giúp phí rẻ hơn rất nhiều.
+- Every transaction costs a gas fee, paid in ETH.
+- Fees aren't fixed: the busier the network, the higher the fee.
+- The more complex the transaction, the more gas it uses.
+- Layer 2 makes fees much cheaper.
 
-## Gas là gì?
+## What is gas?
 
-Hãy hình dung Ethereum là một chiếc máy tính khổng lồ mà cả thế giới dùng chung. Mỗi việc bạn nhờ nó làm, từ chuyển tiền đến chạy một hợp đồng thông minh, đều tốn một lượng công sức tính toán. **Gas** là đơn vị đo lượng công sức đó, giống như số lít xăng một chuyến xe cần.
+Picture Ethereum as a giant computer shared by the whole world. Every task you ask it to do, from sending money to running a smart contract, takes a certain amount of computing work. **Gas** is the unit that measures that work, like the liters of fuel a car trip needs.
 
-Việc càng phức tạp thì càng tốn nhiều gas:
+The more complex the task, the more gas it uses:
 
-| Loại giao dịch | Lượng gas (ước tính) |
+| Transaction type | Gas used (estimate) |
 |---|---|
-| Gửi ETH | 21.000 |
-| Gửi token ERC-20 (như USDT, USDC) | khoảng 65.000 |
-| Chuyển một NFT | khoảng 85.000 |
-| Hoán đổi token trên Uniswap | khoảng 185.000 |
+| Send ETH | 21,000 |
+| Send an ERC-20 token (like USDT or USDC) | about 65,000 |
+| Transfer an NFT | about 85,000 |
+| Swap tokens on Uniswap | about 185,000 |
 
-## Phí được tính thế nào?
-
-```
-Phí = Lượng gas dùng × (Phí cơ sở + Phí ưu tiên)
-```
-
-- **Phí cơ sở** (base fee): mức phí tối thiểu do mạng lưới tự đặt, thay đổi sau mỗi khối tùy theo độ đông. Phần này bị **đốt**, tức là bị xóa vĩnh viễn.
-- **Phí ưu tiên** (priority fee): khoản "tiền boa" cho trình xác thực để giao dịch của bạn được xử lý sớm hơn. Phần này trả cho trình xác thực.
-
-Giá gas thường được tính bằng **gwei**. 1 gwei bằng một phần tỷ ETH.
-
-**Ví dụ:** gửi ETH tốn 21.000 gas. Nếu phí cơ sở là 1 gwei và phí ưu tiên là 0,5 gwei:
+## How is the fee calculated?
 
 ```
-21.000 × (1 + 0,5) gwei = 31.500 gwei = 0,0000315 ETH
+Fee = Gas used × (Base fee + Priority fee)
 ```
 
-Bạn không cần tự tính. Ví sẽ ước tính phí và hiển thị trước khi bạn xác nhận. Nhiều ví cho bạn chọn mức **Chậm**, **Thường** hoặc **Nhanh**: trả nhiều hơn để được xử lý sớm hơn.
+- **Base fee**: the minimum fee, set automatically by the network and adjusted after every block depending on how busy it is. This part is **burned**, meaning it's permanently destroyed.
+- **Priority fee**: a "tip" to the validator so your transaction gets processed sooner. This part goes to the validator.
 
-## Vì sao phí lúc cao lúc thấp?
+Gas prices are usually quoted in **gwei**. 1 gwei is one billionth of an ETH.
 
-Mỗi khối chỉ chứa được một lượng tính toán giới hạn, gọi là **giới hạn gas** của khối. Mạng lưới đặt mục tiêu là mỗi khối dùng một nửa giới hạn đó, và tự chỉnh phí cơ sở sau mỗi khối để giữ mục tiêu:
+**Example:** sending ETH uses 21,000 gas. If the base fee is 1 gwei and the priority fee is 0.5 gwei:
+
+```
+21,000 × (1 + 0.5) gwei = 31,500 gwei = 0.0000315 ETH
+```
+
+You don't need to do the math yourself. Your wallet estimates the fee and shows it before you confirm. Many wallets let you choose **Slow**, **Normal** or **Fast**: pay more to get processed sooner.
+
+## Why do fees go up and down?
+
+Each block can only hold a limited amount of computation, called the block's **gas limit**. The network aims for each block to use half of that limit, and adjusts the base fee after every block to stay on target:
 
 <FeeMarketScene />
 
-- Khối dùng **nhiều hơn** mục tiêu thì phí cơ sở của khối sau **tăng**. Khối đầy tới giới hạn làm phí tăng 12,5%, mức tăng lớn nhất.
-- Khối dùng **ít hơn** mục tiêu thì phí cơ sở **giảm**, tối đa 12,5%.
-- Khối dùng đúng mục tiêu thì phí giữ nguyên.
+- If a block uses **more** than the target, the next block's base fee **goes up**. A block filled to the limit raises the fee by 12.5%, the largest possible increase.
+- If a block uses **less** than the target, the base fee **goes down**, by up to 12.5%.
+- If a block uses exactly the target, the fee stays the same.
 
-Khi nhiều người cùng muốn giao dịch, ví dụ lúc một dự án NFT nổi tiếng mở bán hay thị trường biến động mạnh, các khối liên tục đầy và phí cơ sở tăng dần qua từng khối. Phí cao khiến người không vội chờ lúc khác, khối bớt đầy, và phí giảm trở lại.
+When lots of people want to transact at once, for example when a popular NFT project opens its sale or the market swings sharply, blocks keep filling up and the base fee climbs block after block. High fees make people who aren't in a hurry wait, blocks become less full, and fees come back down.
 
-Giá gas có thể thay đổi sau mỗi khối, tức mỗi 12 giây. Vì phí cơ sở của khối sau tính được trước từ khối hiện tại, ví ước tính phí khá sát.
+Gas prices can change after every block, that is, every 12 seconds. Because the next block's base fee can be calculated in advance from the current block, wallets can estimate fees quite accurately.
 
-## Vì sao cần phí gas?
+## Why are gas fees needed?
 
-- **Chống spam:** nếu giao dịch miễn phí, kẻ xấu có thể gửi hàng triệu giao dịch rác làm tê liệt mạng lưới.
-- **Giới hạn tải:** mỗi khối có giới hạn gas, nên mạng lưới không bao giờ bị quá tải.
-- **Trả công:** phí ưu tiên trả cho trình xác thực, những người giữ cho mạng lưới hoạt động.
+- **Preventing spam:** if transactions were free, bad actors could send millions of junk transactions and paralyze the network.
+- **Limiting load:** each block has a gas limit, so the network never gets overloaded.
+- **Paying for the work:** the priority fee goes to validators, the people who keep the network running.
 
-## Làm sao để trả ít phí hơn?
+## How can you pay less in fees?
 
-1. **Dùng Layer 2.** Các mạng như Arbitrum, Optimism hay Base thường có phí dưới 0,01 USD cho một giao dịch đơn giản.
-2. **Chờ lúc vắng.** Nếu không gấp, hãy đợi vài phút hoặc vài giờ. Ethereum thường rẻ hơn khi Bắc Mỹ đang đêm, tức khoảng trưa đến chiều theo giờ Việt Nam.
-3. **Không chọn mức "Nhanh" khi không cần.** Mức "Chậm" hoặc "Thường" vẫn được xử lý, chỉ mất thêm chút thời gian.
+1. **Use Layer 2.** Networks like Arbitrum, Optimism or Base usually charge under $0.01 for a simple transaction.
+2. **Wait for a quiet time.** If it's not urgent, wait a few minutes or a few hours. Ethereum is often cheaper when it's nighttime in North America, which is around noon to afternoon Vietnam time.
+3. **Don't pick "Fast" when you don't need it.** "Slow" or "Normal" still gets processed; it just takes a little longer.
 
-## Câu hỏi thường gặp
+## Frequently asked questions
 
-**Có phải trả phí bằng ETH không?**
-Có. Trên Ethereum, phí gas luôn trả bằng ETH, kể cả khi bạn gửi token khác như USDT. Hãy luôn giữ một ít ETH trong ví.
+**Do I have to pay fees in ETH?**
+Yes. On Ethereum, gas fees are always paid in ETH, even when you send another token like USDT. Always keep a little ETH in your wallet.
 
-**Giao dịch thất bại có mất phí không?**
-Có. Nếu giao dịch thất bại giữa chừng, ví dụ do đặt giới hạn gas quá thấp hay hợp đồng từ chối, phần gas đã dùng vẫn bị tính phí. Ví thường cảnh báo trước nếu giao dịch có khả năng thất bại.
+**Do I lose the fee if a transaction fails?**
+Yes. If a transaction fails partway through, for example because the gas limit was set too low or a contract rejected it, you're still charged for the gas already used. Wallets usually warn you in advance if a transaction is likely to fail.
 
-**Ai nhận phí gas của tôi?**
-Phí cơ sở bị đốt, không ai nhận. Phí ưu tiên được trả cho trình xác thực đã đưa giao dịch của bạn vào khối.
+**Who receives my gas fee?**
+The base fee is burned, so no one receives it. The priority fee goes to the validator that included your transaction in a block.
 
-## Đọc tiếp
+## Read next
 
-- [Giữ an toàn](./staying-safe.mdx)
-- [Ether (ETH) là gì?](./what-is-ether.mdx)
+- [Staying safe](./staying-safe.mdx)
+- [What is ether (ETH)?](./what-is-ether.mdx)

@@ -1,6 +1,6 @@
 ---
-title: Trình xác thực
-description: Những người khóa ETH làm tiền cọc để giữ an toàn cho Ethereum, chạy máy ở gần trăm quốc gia. Làm đúng được thưởng, gian lận mất cọc.
+title: Validators
+description: The people who lock up ETH as a stake to keep Ethereum secure, running machines in nearly a hundred countries. Doing the job right earns rewards; cheating costs the stake.
 sources:
   - https://ethereum.org/staking/
   - https://ethereum.org/developers/docs/consensus-mechanisms/pos/
@@ -10,69 +10,69 @@ sources:
   - https://ethernodes.org/countries
 ---
 
-**Trình xác thực** (validator) là những người giữ an toàn cho Ethereum. Họ là "các vị tướng" trong bài toán [đồng thuận](./consensus.mdx): đề xuất khối mới, kiểm tra khối của người khác và bỏ phiếu. Để được làm việc đó, họ phải đặt cọc ETH.
+**Validators** are the people who keep Ethereum secure. They're the "generals" in the [consensus](./consensus.mdx) problem: they propose new blocks, check other people's blocks and vote. To get that job, they have to stake ETH.
 
-## Phải đặt cọc mới được tham gia
+## You have to stake to take part
 
-Muốn chạy một trình xác thực, bạn khóa ít nhất **32 ETH** vào hợp đồng đặt cọc của Ethereum. Lý do rất đơn giản: người bỏ phiếu phải có thứ để mất nếu gian lận. Không có tiền cọc thì không có phiếu.
+To run a validator, you lock at least **32 ETH** into Ethereum's deposit contract. The reason is simple: anyone who votes must have something to lose if they cheat. No stake, no vote.
 
-- **Vì sao là 32 ETH mà không ít hơn?** Mức tối thiểu càng thấp thì càng nhiều trình xác thực, càng nhiều phiếu phải gửi qua lại mỗi khe, và máy chạy nút càng phải mạnh.
-- **Tối đa bao nhiêu?** Từ nâng cấp Pectra (tháng 5 năm 2025), một trình xác thực có thể giữ tới 2.048 ETH. Người có nhiều ETH không cần chạy hàng chục trình xác thực riêng lẻ nữa.
-- **Bao lâu thì bắt đầu?** Sau khi nạp tiền cọc, trình xác thực phải xếp hàng chờ kích hoạt, từ vài giờ tới vài tuần tùy số người đang chờ.
+- **Why 32 ETH and not less?** The lower the minimum, the more validators there are, the more votes have to be passed back and forth every slot, and the more powerful the machines running nodes have to be.
+- **What's the maximum?** Since the Pectra upgrade (May 2025), a single validator can hold up to 2,048 ETH. People with a lot of ETH no longer need to run dozens of separate validators.
+- **How long before it starts?** After depositing the stake, a validator has to wait in an activation queue, anywhere from a few hours to a few weeks depending on how many others are waiting.
 
-Chỉ chạy một nút để tự kiểm tra chuỗi khối thì không cần ETH nào. Tiền cọc chỉ cần khi bạn muốn bỏ phiếu.
+Running a node just to check the blockchain yourself doesn't need any ETH. You only need a stake if you want to vote.
 
 <ValidatorsScene />
 
-## Trình xác thực làm gì?
+## What do validators do?
 
-- **Đề xuất khối.** Mỗi khe 12 giây, một trình xác thực được chọn ngẫu nhiên để đề xuất khối. Tiền cọc càng nhiều thì càng hay được chọn.
-- **Bỏ phiếu.** Mỗi kỷ nguyên (6,4 phút), mọi trình xác thực đang hoạt động bỏ một phiếu **chứng thực** (attestation) cho khối đầu chuỗi và cho mốc của kỷ nguyên. Phiếu được chia theo từng **ủy ban** (committee) nhỏ, mỗi khe một ủy ban.
+- **Propose blocks.** In each 12-second slot, one validator is chosen at random to propose a block. The bigger the stake, the more often a validator gets chosen.
+- **Vote.** Every epoch (6.4 minutes), each active validator casts one **attestation** vote for the head of the chain and for the epoch's checkpoint. The voting is split among small **committees**, one committee per slot.
 
-## Thưởng và phạt
+## Rewards and penalties
 
-- **Làm đúng được thưởng.** Bỏ phiếu đúng hạn và đề xuất khối thì nhận thêm ETH mới phát hành, cộng với tiền boa từ phí giao dịch. Tỷ lệ thưởng như nhau với mọi người, không phụ thuộc bạn giàu hay nghèo.
-- **Vắng mặt bị trừ một ít.** Máy tắt thì mất khoảng số tiền lẽ ra kiếm được trong thời gian đó. Hoạt động lại một thời gian tương đương là bù được. Vắng mặt không phải là gian lận.
-- **Gian lận bị cắt tiền cọc** (slashing). Có ba lỗi bị coi là gian lận, ví dụ ký hai khối khác nhau cho cùng một khe. Trình xác thực vi phạm bị trừ ngay một phần nhỏ tiền cọc, rồi bị buộc rời mạng lưới sau 36 ngày. Nếu chỉ một mình vi phạm, tổng thiệt hại thường dưới 0,1%. Nếu rất nhiều trình xác thực cùng vi phạm một lúc, như trong một cuộc tấn công có tổ chức, họ có thể mất tới toàn bộ tiền cọc.
+- **Doing the job right earns rewards.** Voting on time and proposing blocks earns newly issued ETH, plus tips from transaction fees. The reward rate is the same for everyone, whether you're rich or poor.
+- **Being absent costs a little.** If your machine is off, you lose roughly what you would have earned during that time. Staying active for about the same length of time makes it back. Being absent isn't cheating.
+- **Cheating gets your stake slashed.** Three kinds of misbehavior count as cheating, for example signing two different blocks for the same slot. A validator that breaks the rules immediately loses a small part of its stake, then is forced to leave the network after 36 days. If it's the only one breaking the rules, the total loss is usually under 0.1%. If a large number of validators break the rules at the same time, as in an organized attack, they can lose up to their entire stake.
 
-Phần lớn các vụ bị cắt tiền cọc tới nay là do sơ suất: chạy cùng một khóa trên hai máy một lúc, khiến khóa đó ký hai lần.
+Most slashings so far have come from carelessness: running the same key on two machines at once, which makes that key sign twice.
 
-## Có những cách đặt cọc nào?
+## What are the ways to stake?
 
-| Cách | Cần bao nhiêu | Đánh đổi |
+| Method | How much you need | Trade-offs |
 |---|---|---|
-| Tự đặt cọc tại nhà | 32 ETH | Tự giữ khóa, nhận đủ phần thưởng, giúp mạng lưới phi tập trung nhất. Phải tự lo máy chạy ổn định |
-| Vận hành nút có thế chấp | Khoảng 1,5 tới 4 ETH | Tự chạy máy, phần tiền cọc còn lại do người khác góp qua một giao thức |
-| Ủy quyền cho dịch vụ | 32 ETH | Bên dịch vụ chạy máy và giữ khóa ký. Bạn giữ quyền rút tiền, nhưng phải tin bên dịch vụ |
-| Đặt cọc chung, đặt cọc thanh khoản | Từ 0,01 ETH | Gom tiền nhiều người qua hợp đồng thông minh. Rủi ro lỗi hợp đồng và rủi ro tập trung vào ít bên vận hành |
-| Qua sàn giao dịch | Bất kỳ | Dễ nhất, nhưng phải tin sàn hoàn toàn và ít giúp ích cho mạng lưới nhất |
+| Solo staking at home | 32 ETH | You hold your own keys, get the full reward and do the most to keep the network decentralized. You have to keep your machine running reliably yourself |
+| Running a node with collateral | About 1.5 to 4 ETH | You run the machine yourself; the rest of the stake is pooled from other people through a protocol |
+| Delegating to a service | 32 ETH | The service runs the machine and holds the signing key. You keep the right to withdraw, but you have to trust the service |
+| Pooled staking, liquid staking | From 0.01 ETH | Pools many people's money through smart contracts. There's the risk of contract bugs and of concentration in a few operators |
+| Through an exchange | Any amount | The easiest, but you have to trust the exchange completely, and it helps the network the least |
 
-<Callout type="error" title="Thận trọng">
-Đây không phải lời khuyên đầu tư. Mọi cách đặt cọc đều có rủi ro, và phần thưởng không được bảo đảm. Cẩn thận với những nơi hứa lãi cao bất thường cho việc "đặt cọc ETH": đó thường là lừa đảo.
+<Callout type="error" title="Caution">
+This isn't investment advice. Every way of staking carries risk, and rewards aren't guaranteed. Be wary of anyone promising unusually high returns for "staking ETH": it's usually a scam.
 </Callout>
 
-## Ethereum toàn cầu đến đâu?
+## How global is Ethereum?
 
-Không có cơ quan nào đếm chính xác số nút, vì ai cũng chạy nút được mà không cần đăng ký. Các công cụ dò tìm chỉ thấy những nút nhận kết nối từ bên ngoài, nên con số thật còn lớn hơn. Theo [Ethernodes](https://ethernodes.org/countries), số liệu xem ngày 8 tháng 11 năm 2026:
+No authority counts the exact number of nodes, because anyone can run one without registering. Crawlers only see nodes that accept connections from outside, so the real number is even higher. According to [Ethernodes](https://ethernodes.org/countries), with data viewed on November 8, 2026:
 
-- Tìm thấy **8.717 nút** lớp thực thi ở **95 quốc gia và vùng lãnh thổ**, và 4.886 nút lớp đồng thuận ở 72 quốc gia và vùng lãnh thổ.
-- Có nút ở đủ các châu lục, từ Mỹ, Đức, Nhật, Singapore tới Brazil, Nam Phi, Úc. Việt Nam có 24 nút.
-- Nhiều nhất là Mỹ (khoảng 30%) và Đức (khoảng 14%), tiếp theo là Anh, Phần Lan và Pháp, mỗi nước khoảng 4%.
+- It found **8,717 execution-layer nodes** in **95 countries and territories**, and 4,886 consensus-layer nodes in 72 countries and territories.
+- There are nodes on every continent, from the US, Germany, Japan and Singapore to Brazil, South Africa and Australia. Vietnam has 24 nodes.
+- The US has the most (about 30%), followed by Germany (about 14%), then the UK, Finland and France at about 4% each.
 
-Mạng lưới trải rộng như vậy nên không quốc gia nào một mình tắt được Ethereum. Miễn là trình xác thực nắm 2/3 tiền cọc còn hoạt động, chuỗi vẫn đạt tính cuối cùng. Nếu quá nhiều trình xác thực ngừng chạy cùng lúc, Ethereum dần trừ tiền cọc của những người vắng mặt cho tới khi những người còn lại đủ 2/3 trở lại.
+Because the network is spread out like this, no single country can shut Ethereum down on its own. As long as validators holding 2/3 of the stake stay online, the chain keeps reaching finality. If too many validators stop running at the same time, Ethereum gradually drains the stake of those who are absent until the ones still online make up 2/3 again.
 
-Nhưng sự phân tán chưa hoàn hảo, và cộng đồng đang theo dõi hai rủi ro:
+But the decentralization isn't perfect, and the community is keeping an eye on two risks:
 
-- **Tập trung về nơi đặt máy.** Gần một nửa số nút nằm ở hai nước, và nhiều nút thuê máy của vài nhà cung cấp đám mây lớn. Người tự chạy nút ở nhà giúp mạng lưới bớt phụ thuộc vào các nơi đó.
-- **Tập trung về phần mềm.** Mỗi nút chạy một trong nhiều phần mềm do các nhóm khác nhau viết. Nếu một phần mềm chiếm quá 2/3 mạng lưới và có lỗi, chuỗi có thể đi sai. Mục tiêu là không phần mềm nào chiếm quá 1/3. Xem tỷ lệ hiện tại ở [clientdiversity.org](https://clientdiversity.org).
+- **Concentration in where machines are located.** Nearly half of all nodes are in two countries, and many nodes rent machines from a handful of big cloud providers. People running nodes at home help the network depend less on those places.
+- **Concentration in software.** Each node runs one of several clients written by different teams. If one client makes up more than 2/3 of the network and has a bug, the chain could go the wrong way. The goal is for no client to have more than 1/3. See the current shares at [clientdiversity.org](https://clientdiversity.org).
 
-## Tóm tắt
+## Summary
 
-- Muốn làm trình xác thực phải đặt cọc ít nhất 32 ETH. Tiền cọc là thứ để mất nếu gian lận.
-- Làm đúng được thưởng, vắng mặt bị trừ ít, gian lận bị cắt tiền cọc và bị loại.
-- Nút Ethereum chạy ở khoảng 95 quốc gia và vùng lãnh thổ, nhưng vẫn tập trung nhiều ở Mỹ và Đức.
+- To be a validator, you have to stake at least 32 ETH. The stake is what you lose if you cheat.
+- Doing the job right earns rewards, being absent costs a little, and cheating gets your stake slashed and you removed.
+- Ethereum nodes run in about 95 countries and territories, but they're still heavily concentrated in the US and Germany.
 
-## Đọc tiếp
+## Read next
 
-- [Đồng thuận](./consensus.mdx): vì sao cần 2/3 số phiếu
-- [Địa chỉ và khóa](./addresses-and-keys.mdx)
+- [Consensus](./consensus.mdx): why 2/3 of the votes are needed
+- [Addresses and keys](./addresses-and-keys.mdx)

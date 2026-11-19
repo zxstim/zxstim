@@ -1,6 +1,6 @@
 ---
-title: Ethereum nâng cấp thế nào
-description: Không có công ty hay giám đốc nào quyết định thay đổi Ethereum. Mỗi thay đổi bắt đầu từ một đề xuất công khai (EIP), được nhiều nhóm cùng làm, rồi cả mạng lưới nâng cấp cùng một lúc.
+title: How Ethereum upgrades
+description: No company or CEO decides how Ethereum changes. Every change starts as a public proposal (an EIP), is built by many teams together, and then the whole network upgrades at the same moment.
 sources:
   - https://ethereum.org/governance/
   - https://ethereum.org/eips/
@@ -10,71 +10,71 @@ sources:
   - https://ethereum.org/roadmap/hegota/
 ---
 
-Ethereum đã nâng cấp hơn hai mươi lần kể từ khi ra mắt năm 2015: đổi cách tính phí, chuyển sang bằng chứng cổ phần, làm Layer 2 rẻ hơn. Nhưng không có công ty, giám đốc hay cuộc bỏ phiếu bằng token nào quyết định những thay đổi đó.
+Ethereum has upgraded more than twenty times since it launched in 2015: changing how fees work, switching to proof of stake, making Layer 2 cheaper. But no company, CEO or token vote decided any of those changes.
 
-## Mọi thay đổi bắt đầu từ một EIP
+## Every change starts with an EIP
 
-**EIP** (Ethereum Improvement Proposal, đề xuất cải tiến Ethereum) là một văn bản mô tả một thay đổi. Ai cũng có thể viết EIP và đưa ra thảo luận công khai.
+An **EIP** (Ethereum Improvement Proposal) is a document that describes a change. Anyone can write an EIP and put it up for public discussion.
 
-- **EIP lõi** thay đổi chính giao thức, như EIP-1559 đổi cách tính phí. Loại này cần cả mạng lưới nâng cấp.
-- **ERC** là các tiêu chuẩn cho ứng dụng, như ERC-20 cho token hay ERC-721 cho NFT. Loại này không cần nâng cấp mạng lưới.
+- **Core EIPs** change the protocol itself, like EIP-1559, which changed how fees work. These need the whole network to upgrade.
+- **ERCs** are standards for applications, like ERC-20 for tokens or ERC-721 for NFTs. These don't need a network upgrade.
 
 <UpgradeScene />
 
-## Từ đề xuất tới mạng chính
+## From proposal to mainnet
 
-1. **Viết đề xuất.** Tác giả viết EIP theo mẫu chung.
-2. **Trình bày công khai.** EIP được đưa ra trong các cuộc họp mở của các nhóm phát triển (All Core Devs), ai cũng xem được.
-3. **Sửa và hoàn thiện** theo góp ý.
-4. **Gom vào một đợt nâng cấp.** Các nhóm chọn những EIP đủ chín cho đợt tới.
-5. **Chạy thử rồi kích hoạt.** Mỗi nhóm phần mềm tự làm thay đổi trong phần mềm của mình. Đợt nâng cấp chạy thử trên các mạng thử nghiệm (như Sepolia, Hoodi), rồi kích hoạt trên mạng chính ở một mốc định trước.
+1. **Write the proposal.** The author writes the EIP using a shared template.
+2. **Present it publicly.** The EIP is brought up in the development teams' open meetings (All Core Devs), which anyone can watch.
+3. **Revise and polish** it based on feedback.
+4. **Bundle it into an upgrade.** The teams pick the EIPs that are ready for the next upgrade.
+5. **Test, then activate.** Each software team makes the change in its own software. The upgrade is tested on testnets (such as Sepolia and Hoodi), then activated on mainnet at a point set in advance.
 
-## Ai quyết định?
+## Who decides?
 
-Ethereum được quản trị ngoài chuỗi: không có cuộc bỏ phiếu bằng ETH nào. Quyết định hình thành từ thảo luận giữa nhiều bên: nhà phát triển, người chạy nút, trình xác thực, nhà phát triển ứng dụng và người dùng.
+Ethereum is governed offchain: there's no vote with ETH. Decisions take shape through discussion among many groups: developers, node operators, validators, app developers and users.
 
-Các nhà phát triển không thể ép ai nâng cấp. Mỗi người chạy nút tự chọn phần mềm của mình. Nếu đa số không đồng ý một thay đổi, họ không cài bản mới và thay đổi đó không có hiệu lực.
+Developers can't force anyone to upgrade. Each node operator chooses their own software. If most of them don't agree with a change, they don't install the new version, and the change doesn't take effect.
 
-Đến mốc nâng cấp, nút đã cập nhật chuyển sang luật mới. Nút không cập nhật không kiểm tra được các khối mới và bị tách khỏi mạng lưới. Năm 2016, sau vụ The DAO, một nhóm không đồng ý với đợt nâng cấp đã ở lại chuỗi cũ, và chuỗi đó trở thành Ethereum Classic.
+When the upgrade point arrives, nodes that have updated switch to the new rules. Nodes that haven't updated can't check the new blocks and get split off from the network. In 2016, after The DAO incident, a group that disagreed with the upgrade stayed on the old chain, and that chain became Ethereum Classic.
 
-<Callout type="warn" title="Cảnh báo">
-Người dùng bình thường không phải làm gì khi Ethereum nâng cấp: ETH và token của bạn vẫn nguyên. Ai bảo bạn phải "nâng cấp" hay "đổi" ETH là lừa đảo.
+<Callout type="warn" title="Warning">
+Regular users don't need to do anything when Ethereum upgrades: your ETH and tokens stay exactly as they are. Anyone who tells you that you have to "upgrade" or "swap" your ETH is running a scam.
 </Callout>
 
-## Các đợt nâng cấp quan trọng
+## Major upgrades
 
-| Thời gian | Nâng cấp | Thay đổi chính |
+| When | Upgrade | Main change |
 |---|---|---|
-| 7/2015 | Frontier | Ethereum ra mắt |
-| 7/2016 | DAO fork | Lấy lại tiền bị rút khỏi The DAO; Ethereum Classic tách ra |
-| 12/2020 | Beacon Chain | Chuỗi bằng chứng cổ phần ra mắt, chạy song song |
-| 8/2021 | London | EIP-1559: phí cơ sở bị đốt |
-| 9/2022 | The Merge | Chuyển hẳn sang bằng chứng cổ phần |
-| 4/2023 | Shapella | Trình xác thực rút được tiền cọc |
-| 3/2024 | Dencun | Blob: Layer 2 rẻ hơn nhiều |
-| 5/2025 | Pectra | Nâng cấp tài khoản thường thành [ví thông minh](../using-ethereum/smart-wallets.mdx) (EIP-7702); một trình xác thực giữ tới 2.048 ETH |
-| 12/2025 | Fusaka | PeerDAS cho nhiều blob hơn; giới hạn gas mặc định 60 triệu; hỗ trợ passkey |
+| July 2015 | Frontier | Ethereum launches |
+| July 2016 | DAO fork | Recovers the funds drained from The DAO; Ethereum Classic splits off |
+| December 2020 | Beacon Chain | The proof-of-stake chain launches, running alongside |
+| August 2021 | London | EIP-1559: the base fee is burned |
+| September 2022 | The Merge | Full switch to proof of stake |
+| April 2023 | Shapella | Validators can withdraw their stake |
+| March 2024 | Dencun | Blobs: Layer 2 gets much cheaper |
+| May 2025 | Pectra | Regular accounts can be upgraded into [smart wallets](../using-ethereum/smart-wallets.mdx) (EIP-7702); one validator can hold up to 2,048 ETH |
+| December 2025 | Fusaka | PeerDAS for more blobs; default gas limit of 60 million; passkey support |
 
-Tên các đợt nâng cấp ghép từ tên thành phố tổ chức hội nghị Devcon (cho lớp thực thi) và tên một ngôi sao (cho lớp đồng thuận). Ví dụ Glamsterdam là Amsterdam ghép với Gloas.
+Upgrade names combine the name of a city that hosted a Devcon conference (for the execution layer) with the name of a star (for the consensus layer). For example, Glamsterdam is Amsterdam combined with Gloas.
 
-## Sắp tới
+## Coming up
 
-Lộ trình có thể thay đổi. Tính tới tháng 11 năm 2026, đây vẫn là kế hoạch, chưa có trên mạng chính:
+The roadmap can change. As of November 2026, these are still plans and not yet on mainnet:
 
-- **Glamsterdam**, nhắm tới cuối năm 2026. Hai thay đổi chính:
-  - Đưa việc tách người đề xuất và người xây khối vào chính giao thức (ePBS, EIP-7732), để không còn phụ thuộc vào các nút relay của MEV-Boost.
-  - Danh sách truy cập cấp khối (BALs, EIP-7928), giúp nút chạy giao dịch song song.
-- **Hegotá**, đang lên kế hoạch, chưa có ngày. Thay đổi chính được bàn là FOCIL (EIP-7805), giúp chống kiểm duyệt giao dịch.
+- **Glamsterdam**, aiming for late 2026. Two main changes:
+  - Building the separation of proposers and block builders into the protocol itself (ePBS, EIP-7732), so it no longer depends on MEV-Boost relay nodes.
+  - Block-level access lists (BALs, EIP-7928), which help nodes run transactions in parallel.
+- **Hegotá**, still being planned, with no date yet. The main change under discussion is FOCIL (EIP-7805), which helps resist transaction censorship.
 
-Về lâu dài, lộ trình của Ethereum hướng tới phí rẻ hơn, an toàn hơn, dễ dùng hơn và riêng tư mặc định.
+In the long run, Ethereum's roadmap aims for cheaper fees, more security, easier use and privacy by default.
 
-## Tóm tắt
+## Summary
 
-- Mọi thay đổi bắt đầu từ một EIP công khai, được bàn trong các cuộc họp mở.
-- Nhiều nhóm phần mềm cùng làm, chạy thử trên mạng thử nghiệm, rồi cả mạng lưới nâng cấp tại một mốc định trước.
-- Không ai ép được người chạy nút nâng cấp. Người dùng bình thường không phải làm gì.
+- Every change starts with a public EIP, discussed in open meetings.
+- Many software teams build it together, test it on testnets, and then the whole network upgrades at a point set in advance.
+- No one can force node operators to upgrade. Regular users don't need to do anything.
 
-## Đọc tiếp
+## Read next
 
-- [Nút](./nodes.mdx): người chạy nút chọn phần mềm của mình
-- [Layer 2](./layer-2.mdx): vì sao Dencun làm Layer 2 rẻ hơn
+- [Nodes](./nodes.mdx): node operators choose their own software
+- [Layer 2](./layer-2.mdx): why Dencun made Layer 2 cheaper

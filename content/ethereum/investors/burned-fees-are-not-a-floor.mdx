@@ -1,6 +1,6 @@
 ---
-title: Phí bị đốt chưa bao giờ là sàn giá
-description: Lý thuyết định giá ETH bằng phí bị đốt, vì sao nó không tạo ra một mức sàn thật, và lượng ETH bị đốt đã thay đổi thế nào từ 2021 tới 2026.
+title: Burned fees were never a price floor
+description: The theory of valuing ETH by burned fees, why it doesn't create a real floor, and how the amount of ETH burned changed from 2021 to 2026.
 sources:
   - https://x.com/VitalikButerin/status/2119401255919604064
   - https://ethereum.org/developers/docs/gas/
@@ -8,68 +8,68 @@ sources:
   - https://ultrasound.money
 ---
 
-## Cơ chế đốt phí
+## The fee-burning mechanism
 
-Từ nâng cấp London (tháng 8 năm 2021), mỗi giao dịch trả hai phần phí. **Phí cơ sở** bị **đốt**, tức là xóa khỏi tổng cung. **Phí ưu tiên** trả cho trình xác thực. Mạng càng đông, phí cơ sở càng cao, và càng nhiều ETH bị đốt. Xem [Gas](../basics/how-it-works/gas.mdx).
+Since the London upgrade (August 2021), every transaction pays a fee in two parts. The **base fee** is **burned**, meaning it is removed from the total supply. The **priority fee** goes to the validator. The busier the network, the higher the base fee, and the more ETH gets burned. See [Gas](../basics/how-it-works/gas.mdx).
 
-Tính tới ngày 8 tháng 11 năm 2026, tổng cộng khoảng 4,64 triệu ETH đã bị đốt (ultrasound.money).
+As of November 8, 2026, about 4.64 million ETH had been burned in total (ultrasound.money).
 
-## Lý thuyết: định giá bằng phí bị đốt
+## The theory: valuing ETH by burned fees
 
-Lý thuyết này coi phí bị đốt như dòng tiền trả cho người giữ token, và định giá theo **giá trị hiện tại ròng** (net present value, NPV):
+This theory treats burned fees like a cash flow paid to token holders, and values the token by its **net present value** (NPV):
 
-**Vốn hóa = phí bị đốt mỗi năm ÷ lãi suất chiết khấu**
+**Market cap = burned fees per year ÷ discount rate**
 
-Ví dụ của Vitalik: một token mỗi năm bị đốt 1 tỷ USD, ổn định lâu dài, và người ta coi 1 tỷ USD hôm nay ngang 1,04 tỷ USD sau một năm (lãi suất chiết khấu 4%). Khi đó 1 tỷ ÷ 4% = 25 tỷ USD được coi là một "sàn" tự nhiên.
+Vitalik's example: a token burns 1 billion USD a year, steadily over the long term, and people treat 1 billion USD today as worth the same as 1.04 billion USD a year from now (a 4% discount rate). Then 1 billion ÷ 4% = 25 billion USD is seen as a natural "floor."
 
-Lý do: nếu vốn hóa rơi xuống dưới 25 tỷ, ai đó có thể mua token rồi mỗi năm bán ra hơn 4% số đang giữ mà phần sở hữu vẫn giữ nguyên, vì tổng cung cũng giảm đúng chừng đó. Như vậy là mua được một dòng 1 USD mỗi năm mãi mãi với giá dưới 25 USD, một món hời mà thị trường sẽ không để tồn tại lâu.
+The reasoning: if the market cap fell below 25 billion, someone could buy the token and then sell more than 4% of their holdings every year while their share of ownership stays the same, because the total supply shrinks by that same amount. That would mean buying a stream of 1 USD a year, forever, for less than 25 USD: a bargain the market wouldn't let last for long.
 
-## Vì sao đó chưa bao giờ là sàn thật
+## Why it was never a real floor
 
-Lập luận "sàn" chỉ đúng khi dòng tiền đến từ **bên ngoài**: nó không giảm khi giá token giảm.
+The "floor" argument only holds when the cash flow comes from **outside**: it doesn't shrink when the token's price falls.
 
-Những năm 2021 tới 2023, Ethereum đốt hàng triệu ETH mỗi năm. Nhưng phần lớn đến từ hoạt động **bên trong** thế giới tiền mã hóa: mua bán NFT, cho vay, giao dịch token. Nếu ETH giảm 10 lần, những người mua trong các hoạt động đó cũng nghèo đi 10 lần, nên phí họ trả cũng giảm theo. Dòng tiền co lại đúng lúc giá cần nó nhất.
+From 2021 to 2023, Ethereum burned millions of ETH a year. But most of it came from activity **inside** the crypto world: buying and selling NFTs, lending, trading tokens. If ETH falls 10x, the buyers in those activities are also 10x poorer, so the fees they pay fall too. The cash flow shrinks exactly when the price needs it most.
 
-Ví dụ nổi tiếng: đợt bán đất ảo Otherside của Yuga Labs (công ty đứng sau bộ NFT hình khỉ Bored Ape), ngày 30 tháng 4 tới 1 tháng 5 năm 2022.
+A famous example: the Otherside virtual land sale by Yuga Labs (the company behind the Bored Ape NFTs, a collection of ape pictures), April 30 to May 1, 2022.
 
-- Theo Decrypt, khoảng 55.843 ETH (khoảng 157 triệu USD) đã bị đốt cho đợt bán này.
-- Theo Etherscan, cả cuối tuần có 64.219 ETH bị đốt, được báo chí gọi là "180 triệu USD tiền phí".
+- According to Decrypt, about 55,843 ETH (about 157 million USD) was burned for this sale.
+- According to Etherscan, 64,219 ETH was burned over the whole weekend, which the press reported as "180 million USD in fees."
 
-## Lượng đốt đã thay đổi thế nào
+## How the burn has changed
 
-| Năm | ETH bị đốt (ước tính) | ETH phát hành mới (ước tính) |
+| Year | ETH burned (estimate) | Newly issued ETH (estimate) |
 |---|---|---|
-| 2021 (từ tháng 8) | khoảng 1,32 triệu | |
-| 2022 | khoảng 1,47 triệu | |
-| 2023 | khoảng 1,09 triệu | khoảng 0,75 triệu |
-| 2024 | khoảng 0,65 triệu | khoảng 0,93 triệu |
-| 2025 | khoảng 97 nghìn | khoảng 962 nghìn |
-| 2026 (tới 7 tháng 11) | khoảng 20 nghìn | khoảng 884 nghìn |
+| 2021 (from August) | about 1.32 million | |
+| 2022 | about 1.47 million | |
+| 2023 | about 1.09 million | about 0.75 million |
+| 2024 | about 0.65 million | about 0.93 million |
+| 2025 | about 97 thousand | about 962 thousand |
+| 2026 (through November 7) | about 20 thousand | about 884 thousand |
 
-Số liệu tính từ dữ liệu của Coin Metrics, khớp với tổng của ultrasound.money trong khoảng 0,4%. Hai năm 2021 và 2022 bỏ trống cột phát hành, vì trước The Merge (tháng 9 năm 2022) ETH còn được phát hành cho thợ đào theo cơ chế khác.
+Figures are calculated from Coin Metrics data and match ultrasound.money's totals to within about 0.4%. The issuance column is left blank for 2021 and 2022 because before The Merge (September 2022), ETH was still issued to miners under a different mechanism.
 
-Lượng đốt giảm mạnh từ 2024 vì phần lớn giao dịch đã chuyển sang [Layer 2](../basics/how-it-works/layer-2.mdx), nơi phí rẻ hơn nhiều, và vì blob làm phí đăng dữ liệu của Layer 2 rất rẻ. Năm 2025, lượng đốt chỉ bằng khoảng 10% lượng phát hành mới. Trong 30 ngày tính tới 8 tháng 11 năm 2026, con số đó là khoảng 3%.
+The burn has dropped sharply since 2024 because most transactions moved to [Layer 2](../basics/how-it-works/layer-2.mdx), where fees are much cheaper, and because blobs made it very cheap for Layer 2s to post their data. In 2025, the burn was only about 10% of new issuance. In the 30 days up to November 8, 2026, that figure was about 3%.
 
-## Hôm nay thì sao?
+## What about today?
 
-Vitalik thừa nhận hôm nay Ethereum có chỗ dựa bên ngoài tốt hơn: nền kinh tế tài sản thực được token hóa (khoảng 15,1 tỷ USD trên Ethereum, theo rwa.xyz ngày 8 tháng 11 năm 2026) và stablecoin. Nhưng chính vì đó là một hoạt động kinh doanh bình thường, ổn định, nó sẽ không bất ngờ đốt 180 triệu USD trong một ngày như đợt bán đất ảo năm 2022.
+Vitalik acknowledges that Ethereum has better outside support today: the economy of tokenized real-world assets (about 15.1 billion USD on Ethereum, according to rwa.xyz on November 8, 2026) and stablecoins. But precisely because these are normal, steady businesses, they won't suddenly burn 180 million USD in a day the way the 2022 virtual land sale did.
 
-Kết luận: EIP-1559 vẫn tốt và nên giữ, vì nó làm phí dễ đoán và trả lại một phần giá trị cho mọi người giữ ETH. Nhưng không nên coi phí bị đốt là nền móng cho giá trị của ETH.
+The conclusion: EIP-1559 is still good and should stay, because it makes fees predictable and returns part of the value to everyone who holds ETH. But burned fees shouldn't be treated as the foundation of ETH's value.
 
-## Tóm tắt
+## Summary
 
-- Lý thuyết NPV coi phí bị đốt như dòng tiền và cho rằng nó tạo ra một mức sàn cho giá.
-- Mức sàn đó không thật, vì phần lớn phí bị đốt đến từ hoạt động bên trong tiền mã hóa, co lại khi giá ETH giảm.
-- Lượng đốt đã giảm từ khoảng 1,47 triệu ETH (2022) xuống khoảng 97 nghìn ETH (2025), chủ yếu vì giao dịch chuyển sang Layer 2.
+- The NPV theory treats burned fees as a cash flow and claims they create a floor for the price.
+- That floor isn't real, because most burned fees come from activity inside crypto, which shrinks when ETH's price falls.
+- The burn has fallen from about 1.47 million ETH (2022) to about 97,000 ETH (2025), mainly because transactions moved to Layer 2.
 
-## Đọc tiếp
+## Read next
 
-- [Cái giá của việc tối đa hóa phí](./cost-of-maximizing-fees.mdx)
-- [Nguồn cung và an ninh của ETH](./supply-and-security.mdx)
+- [The cost of maximizing fees](./cost-of-maximizing-fees.mdx)
+- [ETH supply and security](./supply-and-security.mdx)
 
-## Nguồn
+## Sources
 
-- Vitalik Buterin: [bài đăng trên X](https://x.com/VitalikButerin/status/2119401255919604064), ngày 8 tháng 11 năm 2026
-- ethereum.org: [Gas và phí](https://ethereum.org/developers/docs/gas/), [Phát hành ETH sau The Merge](https://ethereum.org/roadmap/merge/issuance/)
-- [ultrasound.money](https://ultrasound.money), số liệu ngày 8 tháng 11 năm 2026; [Coin Metrics](https://coinmetrics.io/community-network-data/); [rwa.xyz](https://app.rwa.xyz)
-- Decrypt, bài về đợt bán Otherside, ngày 2 tháng 5 năm 2022; Vice, dẫn số liệu Etherscan, cùng thời điểm
+- Vitalik Buterin: [post on X](https://x.com/VitalikButerin/status/2119401255919604064), November 8, 2026
+- ethereum.org: [Gas and fees](https://ethereum.org/developers/docs/gas/), [ETH issuance after The Merge](https://ethereum.org/roadmap/merge/issuance/)
+- [ultrasound.money](https://ultrasound.money), figures as of November 8, 2026; [Coin Metrics](https://coinmetrics.io/community-network-data/); [rwa.xyz](https://app.rwa.xyz)
+- Decrypt, article on the Otherside sale, May 2, 2022; Vice, citing Etherscan figures, around the same time

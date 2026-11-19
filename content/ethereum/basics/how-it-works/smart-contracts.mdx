@@ -1,6 +1,6 @@
 ---
-title: Hợp đồng thông minh
-description: Những chương trình chạy trên Ethereum. Ai cũng đọc được mã, không ai một mình dừng hay sửa được, và mọi nút chạy ra cùng một kết quả.
+title: Smart contracts
+description: Programs that run on Ethereum. Anyone can read the code, no one can stop or change it on their own, and every node gets the same result.
 sources:
   - https://ethereum.org/smart-contracts/
   - https://ethereum.org/developers/docs/smart-contracts/
@@ -8,77 +8,77 @@ sources:
   - https://ethereum.org/developers/docs/transactions/
 ---
 
-**Hợp đồng thông minh** (smart contract) là chương trình máy tính được lưu trên chuỗi khối. Nó làm theo logic "nếu điều này xảy ra thì làm điều kia", và luôn chạy đúng như mã đã viết. Đây là thứ làm Ethereum khác Bitcoin: ngoài chuyển tiền, Ethereum chạy được ứng dụng.
+A **smart contract** is a computer program stored on a blockchain. It follows "if this happens, then do that" logic, and it always runs exactly as its code is written. This is what sets Ethereum apart from Bitcoin: besides moving money, Ethereum can run applications.
 
-Nhà khoa học máy tính Nick Szabo đặt ra cái tên này từ năm 1994. Ông hình dung một thị trường số nơi các thỏa thuận tự thực hiện, không cần bên trung gian đáng tin. Ethereum biến ý tưởng đó thành hiện thực.
+Computer scientist Nick Szabo coined the name back in 1994. He imagined a digital marketplace where agreements carry themselves out, with no need for a trusted middleman. Ethereum made that idea real.
 
-## Giống một máy bán hàng tự động
+## Like a vending machine
 
-Hãy nghĩ tới máy bán nước tự động:
+Think of a drink vending machine:
 
-1. Bạn chọn món.
-2. Máy hiện giá.
-3. Bạn trả tiền.
-4. Máy kiểm tra bạn trả đủ chưa.
-5. Đủ thì máy nhả món. Thiếu thì không.
+1. You pick an item.
+2. The machine shows the price.
+3. You pay.
+4. The machine checks whether you've paid enough.
+5. If you have, it drops the item. If not, it doesn't.
 
-Không cần người bán đứng cạnh. Luật đã được lập trình sẵn trong máy, và lần nào cũng chạy như nhau. Hợp đồng thông minh cũng vậy: đưa vào đúng điều kiện thì nhận được kết quả đã định trước.
+No seller needs to stand next to it. The rules are programmed into the machine, and they work the same way every time. A smart contract is the same: put in the right conditions and you get the result that was set in advance.
 
-Ví dụ, bạn có thể viết một hợp đồng giữ tiền tiết kiệm cho con, chỉ cho rút sau một ngày nhất định. Rút sớm hơn, hợp đồng không chạy. Không cần ngân hàng, cũng không ai đổi ý giữa chừng được.
+For example, you could write a contract that holds savings for your child and only allows withdrawals after a certain date. Try to withdraw earlier and the contract won't go through. No bank is needed, and no one can change their mind halfway.
 
-## Hợp đồng nằm ở đâu?
+## Where does a contract live?
 
-Hợp đồng thông minh là một loại [tài khoản](./addresses-and-keys.mdx): có địa chỉ, có số dư, và thêm hai thứ:
+A smart contract is a kind of [account](./addresses-and-keys.mdx): it has an address and a balance, plus two more things:
 
-- **Mã** (code): các chức năng của hợp đồng, ví dụ "chuyển token".
-- **Dữ liệu** (state): những gì hợp đồng ghi nhớ, ví dụ số dư token của từng người.
+- **Code**: the contract's functions, for example "transfer tokens".
+- **Data** (state): what the contract remembers, for example each person's token balance.
 
-Hợp đồng không có khóa riêng tư. Không ai ký thay nó được, nó chỉ làm theo mã. Hợp đồng cũng không tự chạy: nó chỉ chạy khi có ai đó gửi [giao dịch](./digital-signatures.mdx) gọi tới một chức năng của nó.
+A contract has no private key. No one can sign on its behalf; it just follows its code. A contract also doesn't run on its own: it only runs when someone sends a [transaction](./digital-signatures.mdx) that calls one of its functions.
 
 <ContractScene />
 
-Trong hình, An gọi hợp đồng token USDC để chuyển 30 USDC cho Bình. Mỗi nút chạy cùng đoạn mã, ra cùng kết quả, và số dư được cập nhật. Khi An thử chuyển 500 USDC, nhiều hơn số đang có, mã dừng ở dòng kiểm tra. Giao dịch bị **hoàn tác** (revert): dữ liệu giữ nguyên như chưa có gì xảy ra, nhưng phí gas cho phần đã chạy vẫn bị tính.
+In the animation, An calls the USDC token contract to send 30 USDC to Bình. Every node runs the same code, gets the same result, and the balances are updated. When An tries to send 500 USDC, more than An has, the code stops at the line that checks the balance. The transaction is **reverted**: the data stays as if nothing had happened, but the gas fee for the part that already ran is still charged.
 
-## Điều gì làm hợp đồng thông minh đặc biệt?
+## What makes smart contracts special?
 
-- **Tự động và dự đoán được.** Hợp đồng chạy chính xác theo mã, không cần ai diễn giải. Hai thẩm phán có thể hiểu một hợp đồng giấy theo hai cách; hợp đồng thông minh thì chỉ có một cách.
-- **Công khai.** Ai cũng xem được mã và mọi giao dịch đã gọi tới hợp đồng.
-- **Không cần xin phép.** Ai biết lập trình cũng có thể **triển khai** (deploy) hợp đồng lên Ethereum. Triển khai cũng là một giao dịch, nên chỉ cần trả phí gas.
-- **Ghép nối được.** Hợp đồng gọi được hợp đồng khác, như những khối Lego. Một sàn đổi token gọi tới các hợp đồng token; một ứng dụng cho vay dùng giá từ một hợp đồng khác. Nhờ vậy ứng dụng mới xây được rất nhanh trên những gì đã có.
-- **Khó sửa sau khi triển khai.** Mã của hợp đồng mặc định không thay đổi được. Điều này giúp người dùng tin rằng luật sẽ không bị đổi. Một số dự án dùng cách thiết kế cho phép nâng cấp (ví dụ mẫu proxy), nghĩa là có người giữ quyền thay logic. Khi dùng một ứng dụng, nên biết ai giữ quyền đó.
+- **Automatic and predictable.** A contract runs exactly according to its code, with no one needed to interpret it. Two judges might read a paper contract two different ways; a smart contract can only be read one way.
+- **Public.** Anyone can see the code and every transaction that has called the contract.
+- **Permissionless.** Anyone who can code can **deploy** a contract to Ethereum. Deploying is also a transaction, so all it takes is paying the gas fee.
+- **Composable.** Contracts can call other contracts, like Lego bricks. A token exchange calls token contracts; a lending app uses prices from another contract. That's why new apps can be built very quickly on top of what already exists.
+- **Hard to change after deployment.** By default, a contract's code can't be changed. This helps users trust that the rules won't be switched on them. Some projects use designs that allow upgrades (the proxy pattern, for example), which means someone holds the power to swap out the logic. When you use an app, it's worth knowing who holds that power.
 
-## Hợp đồng thông minh dùng để làm gì?
+## What are smart contracts used for?
 
-Gần như mọi thứ một chương trình máy tính làm được. Những ứng dụng phổ biến nhất:
+Almost anything a computer program can do. The most common uses:
 
-| Ứng dụng | Hợp đồng làm gì |
+| Use | What the contract does |
 |---|---|
-| Token, stablecoin | Ghi số dư của từng người và cho phép chuyển, như USDC |
-| Sàn đổi token phi tập trung | Đổi token này lấy token khác theo công thức, không cần người khớp lệnh |
-| Cho vay | Giữ tài sản thế chấp. Khi giá trị xuống quá thấp, bất kỳ ai cũng có thể gọi hợp đồng để thanh lý |
-| NFT | Ghi ai sở hữu từng tài sản số độc nhất |
-| DAO | Cho thành viên bỏ phiếu, và thực hiện kết quả theo đúng luật đã định |
-| Ví thông minh, ví đa chữ ký | Cần nhiều chữ ký mới chuyển được tiền, hoặc đặt hạn mức chi tiêu |
+| Tokens, stablecoins | Records each person's balance and allows transfers, like USDC |
+| Decentralized token exchanges | Swaps one token for another using a formula, with no one needed to match orders |
+| Lending | Holds collateral. When its value drops too low, anyone can call the contract to liquidate it |
+| NFTs | Records who owns each unique digital asset |
+| DAOs | Lets members vote, and carries out the result according to the agreed rules |
+| Smart wallets, multisig wallets | Requires several signatures to move money, or sets spending limits |
 
-## Giới hạn cần biết
+## Limits to know about
 
-- **Không tự biết chuyện ngoài đời.** Hợp đồng chỉ đọc được dữ liệu trên Ethereum. Muốn biết giá vàng hay kết quả một trận đấu, nó cần một **oracle**: dịch vụ đưa dữ liệu bên ngoài vào chuỗi khối. Hợp đồng chỉ an toàn bằng oracle mà nó tin.
-- **Mã sai thì sai đúng như mã.** Hợp đồng làm đúng những gì được viết, kể cả lỗi. Kẻ gian có thể lợi dụng lỗi để rút tiền, và vì mã khó sửa nên thiệt hại thường không lấy lại được. Năm 2016, một lỗi trong hợp đồng The DAO khiến 3,6 triệu ETH bị rút ra.
-- **Mỗi lần chạy đều tốn gas.** Mã càng phức tạp, phí càng cao.
+- **They don't know about the outside world.** A contract can only read data on Ethereum. To know the price of gold or the result of a match, it needs an **oracle**: a service that brings outside data onto the blockchain. A contract is only as safe as the oracle it trusts.
+- **Buggy code fails exactly as written.** A contract does exactly what it was written to do, bugs included. Attackers can exploit bugs to drain funds, and because the code is hard to change, the losses usually can't be recovered. In 2016, a bug in The DAO contract let 3.6 million ETH be drained.
+- **Every run costs gas.** The more complex the code, the higher the fee.
 
-<Callout type="warn" title="Cảnh báo">
-Trước khi dùng một ứng dụng: vào đúng trang web chính thức, chỉ ký khi hiểu giao dịch sẽ làm gì, và cẩn thận khi cấp quyền cho hợp đồng dùng token của bạn. Xem [Chữ ký số](./digital-signatures.mdx#ký-cái-gì-thì-đọc-kỹ-cái-đó) và [Giữ an toàn](../getting-started/staying-safe.mdx).
+<Callout type="warn" title="Warning">
+Before using an app: go to its real, official website, only sign when you understand what the transaction will do, and be careful when giving a contract permission to use your tokens. See [Digital signatures](./digital-signatures.mdx#read-carefully-whatever-you-sign) and [Staying safe](../getting-started/staying-safe.mdx).
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Hợp đồng thông minh là chương trình kèm dữ liệu, đặt tại một địa chỉ trên Ethereum.
-- Nó chỉ chạy khi có giao dịch gọi tới, và mọi nút chạy ra cùng một kết quả.
-- Lệnh vi phạm luật trong mã bị hoàn tác, nhưng phí gas vẫn mất.
-- Hợp đồng công khai, không cần xin phép và ghép nối được với nhau, nhưng lỗi trong mã có thể khiến người dùng mất tiền.
+- A smart contract is a program plus data, sitting at an address on Ethereum.
+- It only runs when a transaction calls it, and every node gets the same result.
+- An instruction that breaks the rules in the code is reverted, but the gas fee is still lost.
+- Contracts are public, permissionless and composable, but bugs in the code can cost users money.
 
-## Đọc tiếp
+## Read next
 
-- [Token, stablecoin và NFT](../using-ethereum/tokens-stablecoins-nfts.mdx): những hợp đồng bạn dùng nhiều nhất
-- [Gas](./gas.mdx): vì sao mỗi lần chạy hợp đồng đều tốn phí
-- [Khối](./blocks.mdx): giao dịch gọi hợp đồng được đưa vào khối thế nào
+- [Tokens, stablecoins and NFTs](../using-ethereum/tokens-stablecoins-nfts.mdx): the contracts you use most
+- [Gas](./gas.mdx): why every contract run costs a fee
+- [Blocks](./blocks.mdx): how transactions that call contracts get into a block

@@ -1,6 +1,6 @@
 ---
 title: Gas
-description: Gas đo lượng tính toán mà mỗi giao dịch cần. Nhờ gas, Ethereum không bị spam, không bị treo vì vòng lặp vô tận, và người giữ mạng lưới được trả công.
+description: Gas measures how much computation each transaction needs. Thanks to gas, Ethereum isn't flooded with spam, can't be frozen by an endless loop, and the people who keep the network running get paid.
 sources:
   - https://ethereum.org/developers/docs/gas/
   - https://ethereum.org/gas/
@@ -8,68 +8,68 @@ sources:
   - https://ethereum.org/ethereum-forks/#london
 ---
 
-**Gas** là đơn vị đo lượng tính toán cần để thực hiện một việc trên Ethereum. Giống như xăng cho xe: đi xa thì tốn nhiều xăng, chạy chương trình phức tạp thì tốn nhiều gas.
+**Gas** is the unit that measures how much computation it takes to do something on Ethereum. It's like fuel for a car: a long trip burns more fuel, and running a complex program burns more gas.
 
-Bài [Phí gas](../getting-started/gas-fees.mdx) hướng dẫn cách trả ít phí hơn. Bài này giải thích vì sao Ethereum cần gas ngay từ đầu.
+The [Gas fees](../getting-started/gas-fees.mdx) page shows you how to pay less in fees. This page explains why Ethereum needs gas in the first place.
 
-## Vì sao Ethereum cần gas?
+## Why does Ethereum need gas?
 
-Ethereum là một chiếc máy tính dùng chung của cả thế giới. Điều đó kéo theo bốn vấn đề, và gas giải quyết cả bốn:
+Ethereum is one computer shared by the whole world. That brings four problems, and gas solves all four:
 
-1. **Mọi nút đều phải chạy lại.** Mỗi giao dịch được hàng nghìn nút chạy lại để kiểm tra. Tính toán trên Ethereum tốn tài nguyên của cả mạng lưới, nên người yêu cầu phải trả tiền.
-2. **Chống spam.** Nếu giao dịch miễn phí, kẻ xấu có thể gửi hàng triệu giao dịch rác làm nghẽn mạng lưới. Có phí thì spam rất tốn kém.
-3. **Chống vòng lặp vô tận.** Ethereum chạy được mọi loại chương trình, kể cả chương trình chạy mãi không dừng. Về lý thuyết, không có cách nào biết trước một chương trình bất kỳ có dừng hay không. Gas đặt ra một mức trần: hết gas là chương trình bị dừng, nên không ai làm treo được mạng lưới.
-4. **Giữ cho khối vừa phải.** Mỗi khối có giới hạn gas, nên máy tính bình thường vẫn đủ sức chạy nút.
+1. **Every node has to rerun everything.** Each transaction is rerun by thousands of nodes to check it. Computation on Ethereum uses the resources of the whole network, so whoever asks for it has to pay.
+2. **Stopping spam.** If transactions were free, bad actors could send millions of junk transactions and clog the network. With fees, spam gets very expensive.
+3. **Stopping endless loops.** Ethereum can run any kind of program, including programs that never stop. In theory, there's no way to know in advance whether an arbitrary program will ever stop. Gas sets a ceiling: when the gas runs out, the program is stopped, so no one can freeze the network.
+4. **Keeping blocks a reasonable size.** Each block has a gas limit, so an ordinary computer can still run a node.
 
 <GasScene />
 
-## Đơn vị gas và giá gas
+## Gas units and gas price
 
-Cần phân biệt hai thứ:
+There are two separate things here:
 
-- **Lượng gas** phụ thuộc vào việc bạn làm. Mỗi phép tính có một giá gas cố định: phép cộng rẻ, ghi dữ liệu lâu dài lên chuỗi đắt hơn nhiều.
-- **Giá mỗi đơn vị gas** phụ thuộc vào độ đông của mạng lưới, tính bằng **gwei**. 1 gwei bằng một phần tỷ ETH.
+- **The amount of gas** depends on what you do. Each operation has a fixed gas cost: addition is cheap, while storing data permanently on the chain costs much more.
+- **The price per unit of gas** depends on how busy the network is, and it's measured in **gwei**. 1 gwei is one billionth of an ETH.
 
-| Việc | Lượng gas (khoảng) |
+| Action | Amount of gas (approx.) |
 |---|---|
-| Gửi ETH | 21.000 |
-| Chuyển một token ERC-20 | 65.000 |
-| Chuyển một NFT | 85.000 |
-| Đổi token trên một sàn phi tập trung | 185.000 |
+| Send ETH | 21,000 |
+| Transfer an ERC-20 token | 65,000 |
+| Transfer an NFT | 85,000 |
+| Swap tokens on a decentralized exchange | 185,000 |
 
-Phí bạn trả bằng lượng gas đã dùng nhân với giá mỗi đơn vị gas. Ví dụ minh họa của ethereum.org: gửi ETH dùng 21.000 gas, phí cơ sở 10 gwei và phí ưu tiên 2 gwei, thì phí là 21.000 × 12 = 252.000 gwei, tức 0,000252 ETH. Giá thật thay đổi theo từng khối.
+The fee you pay is the amount of gas used times the price per unit of gas. An illustrative example from ethereum.org: sending ETH uses 21,000 gas; with a base fee of 10 gwei and a priority fee of 2 gwei, the fee is 21,000 × 12 = 252,000 gwei, or 0.000252 ETH. Real prices change from block to block.
 
-## Giới hạn gas: trả cho phần đã dùng
+## Gas limit: you pay for what you use
 
-Khi gửi giao dịch, ví đặt một **giới hạn gas**: lượng gas tối đa bạn chịu trả.
+When you send a transaction, your wallet sets a **gas limit**: the most gas you're willing to pay for.
 
-- **Dùng ít hơn giới hạn:** bạn chỉ trả cho phần đã dùng. Đặt giới hạn 50.000 cho một lần gửi ETH thì vẫn chỉ dùng 21.000, phần còn lại không bị tính.
-- **Giới hạn quá thấp so với mức tối thiểu:** giao dịch bị từ chối ngay, không vào khối và không tốn gì.
-- **Hết gas giữa chừng:** giao dịch dừng lại và **hoàn tác** mọi thay đổi, nhưng gas đã dùng vẫn mất. Công tính toán đã bỏ ra rồi, nên vẫn phải trả.
+- **You use less than the limit:** you only pay for what you used. Set a limit of 50,000 for an ETH transfer and it still uses only 21,000; the rest isn't charged.
+- **The limit is below the minimum needed:** the transaction is rejected right away. It doesn't go into a block and costs nothing.
+- **It runs out of gas partway through:** the transaction stops and **reverts** all its changes, but the gas already used is still lost. The computing work has already been done, so it still has to be paid for.
 
-## Phí cơ sở bị đốt, phí ưu tiên cho trình xác thực
+## The base fee is burned, the priority fee goes to the validator
 
-Từ nâng cấp London (tháng 8 năm 2021, EIP-1559), phí gồm hai phần:
+Since the London upgrade (August 2021, EIP-1559), the fee has two parts:
 
-- **Phí cơ sở** (base fee): do giao thức tự đặt cho mỗi khối. Mỗi khối có một mức gas mục tiêu bằng nửa giới hạn. Khối trước đông hơn mục tiêu thì phí cơ sở tăng, vắng hơn thì giảm, mỗi lần tối đa 12,5%. Phí cơ sở bị **đốt**: biến mất vĩnh viễn, không ai nhận.
-- **Phí ưu tiên** (priority fee), hay tiền boa: trả cho trình xác thực đưa giao dịch của bạn vào khối. Không có tiền boa, trình xác thực không có lý do để chọn giao dịch của bạn.
+- **Base fee**: set automatically by the protocol for each block. Each block has a target gas amount equal to half the limit. If the previous block was busier than the target, the base fee goes up; if it was quieter, the fee goes down, by at most 12.5% each time. The base fee is **burned**: it disappears forever, and no one receives it.
+- **Priority fee**, or tip: paid to the validator that puts your transaction into a block. Without a tip, the validator has no reason to pick your transaction.
 
-Ví cũng đặt một **phí tối đa** mỗi đơn vị gas. Bạn không bao giờ trả quá mức này. Nếu phí cơ sở lúc giao dịch vào khối thấp hơn, phần chênh lệch không bị tính.
+Your wallet also sets a **max fee** per unit of gas. You never pay more than this. If the base fee is lower when your transaction lands in a block, the difference isn't charged.
 
-Vì phần lớn phí bị đốt, khi mạng lưới bận, lượng ETH bị đốt có thể nhiều hơn lượng ETH mới phát hành cho trình xác thực.
+Because most of the fee is burned, when the network is busy, the amount of ETH burned can be larger than the amount of new ETH issued to validators.
 
-<Callout type="info" title="Lưu ý">
-Phí trên Ethereum luôn trả bằng ETH, kể cả khi bạn gửi token khác. Hãy giữ một ít ETH trong ví để trả phí. Việc chuyển sang bằng chứng cổ phần năm 2022 không làm phí rẻ hơn. Thứ làm phí rẻ hơn là [Layer 2](./layer-2.mdx), nơi rollup trả một loại gas riêng cho dữ liệu blob.
+<Callout type="info" title="Note">
+Fees on Ethereum are always paid in ETH, even when you're sending another token. Keep a little ETH in your wallet to pay fees. The switch to proof of stake in 2022 didn't make fees cheaper. What makes fees cheaper is [Layer 2](./layer-2.mdx), where rollups pay a separate kind of gas for blob data.
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Gas đo lượng tính toán. Mọi nút đều phải chạy lại giao dịch, nên tính toán phải trả tiền.
-- Gas chống spam, chống vòng lặp vô tận và giữ khối ở kích thước vừa phải.
-- Phí bằng gas đã dùng nhân với giá gas. Phí cơ sở bị đốt, phí ưu tiên trả cho trình xác thực.
-- Hết gas giữa chừng thì giao dịch bị hoàn tác, nhưng phí vẫn mất.
+- Gas measures computation. Every node has to rerun each transaction, so computation has to be paid for.
+- Gas stops spam, stops endless loops and keeps blocks a reasonable size.
+- The fee is the gas used times the gas price. The base fee is burned; the priority fee goes to the validator.
+- If a transaction runs out of gas partway through, it's reverted, but the fee is still lost.
 
-## Đọc tiếp
+## Read next
 
-- [Phí gas](../getting-started/gas-fees.mdx): cách trả ít phí hơn
-- [Khối](./blocks.mdx): giới hạn gas của mỗi khối
+- [Gas fees](../getting-started/gas-fees.mdx): how to pay less in fees
+- [Blocks](./blocks.mdx): the gas limit of each block

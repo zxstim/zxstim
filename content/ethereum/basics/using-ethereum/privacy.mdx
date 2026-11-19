@@ -1,6 +1,6 @@
 ---
-title: Quyền riêng tư
-description: Ethereum công khai dưới bút danh, không ẩn danh. Ai cũng đọc được mọi giao dịch của một địa chỉ, và chỉ cần một lần địa chỉ bị gắn với tên bạn là cả lịch sử bị lộ.
+title: Privacy
+description: Ethereum is pseudonymous, not anonymous. Anyone can read every transaction of an address, and it only takes one time for that address to be linked to your name for your whole history to be exposed.
 sources:
   - https://ethereum.org/privacy/
   - https://ethereum.org/privacy/ethereum/
@@ -9,51 +9,51 @@ sources:
   - https://ethereum.org/run-a-node/
 ---
 
-Nhiều người nghĩ tiền mã hóa là ẩn danh. Với Ethereum thì không. Trên chuỗi không ghi tên bạn, chỉ có địa chỉ, nên Ethereum **công khai dưới bút danh** (pseudonymous). Nhưng theo ethereum.org, chỉ cần phân tích cách một địa chỉ hoạt động là đủ để lộ thông tin nhạy cảm, thậm chí nhận ra người đứng sau.
+Many people think crypto is anonymous. With Ethereum, it isn't. The chain doesn't record your name, only your address, so Ethereum is **pseudonymous**. But according to ethereum.org, simply analyzing how an address behaves can be enough to reveal sensitive information, and even to identify the person behind it.
 
 <PrivacyScene />
 
-## Những gì ai cũng xem được
+## What anyone can see
 
-Mở một [trình khám phá khối](./reading-a-transaction.mdx), bất kỳ ai cũng thấy về một địa chỉ:
+By opening a [block explorer](./reading-a-transaction.mdx), anyone can see this about an address:
 
-- số dư hiện tại và các token đang giữ,
-- mọi khoản đã nhận và đã gửi, gửi cho ai, lúc nào,
-- mọi hợp đồng và ứng dụng địa chỉ đó từng dùng.
+- its current balance and the tokens it holds,
+- every payment received and sent, to whom, and when,
+- every contract and app that address has ever used.
 
-Dữ liệu này nằm trên chuỗi mãi mãi, không xóa được.
+This data stays on the chain forever and can't be deleted.
 
-## Địa chỉ bị gắn với bạn thế nào?
+## How does an address get linked to you?
 
-- **Rút tiền từ sàn đã xác minh danh tính.** Sàn biết địa chỉ nhận là của bạn. Dữ liệu của sàn có thể bị lộ hoặc bị yêu cầu cung cấp.
-- **Tự công khai:** đăng địa chỉ lên mạng xã hội, đặt tên ENS giống tên tài khoản mạng xã hội, nhận tiền công khai.
-- **Liên kết các địa chỉ:** nạp tiền cho nhiều địa chỉ từ cùng một nguồn, hay để chúng chuyển tiền qua lại, là đủ để người phân tích gom chúng thành của một người. Vì vậy dùng nhiều địa chỉ giúp ít hơn bạn nghĩ.
-- **Ví và nút cũng biết.** Nút mà ví của bạn hỏi (thường của một nhà cung cấp) thấy địa chỉ IP, các địa chỉ ví của bạn và lúc bạn dùng. Xem [Nút](../how-it-works/nodes.mdx).
+- **Withdrawing from an exchange that verified your identity.** The exchange knows the receiving address is yours. The exchange's data can leak or be demanded by authorities.
+- **Making it public yourself:** posting your address on social media, using an ENS name that matches your social media handle, receiving payments publicly.
+- **Linking addresses together:** funding several addresses from the same source, or having them send money back and forth, is enough for an analyst to group them as belonging to one person. That's why using several addresses helps less than you might think.
+- **Wallets and nodes know too.** The node your wallet asks (usually one run by a provider) sees your IP address, your wallet addresses and when you use them. See [Nodes](../how-it-works/nodes.mdx).
 
-## Giữ riêng tư hơn
+## Staying more private
 
-- **Tách địa chỉ theo việc**, và đừng nạp tiền cho chúng từ cùng một nguồn. Cách này giảm rủi ro, nhưng không làm bạn ẩn danh.
-- **Cẩn thận với những gì bạn công khai:** địa chỉ, tên ENS, ảnh chụp màn hình ví.
-- **Dùng nút của chính mình**, hoặc một nút bạn tin, thay cho nút mặc định của ví.
-- **Công cụ riêng tư** đang phát triển, như địa chỉ dùng một lần (stealth address, ERC-5564), các nhóm giao dịch riêng tư (privacy pools) và các Layer 2 tập trung vào riêng tư. Chúng có đánh đổi về phí và độ phức tạp, và mỗi quốc gia có quy định khác nhau: hãy tìm hiểu quy định hiện hành trước khi dùng.
+- **Use separate addresses for separate purposes**, and don't fund them from the same source. This lowers the risk, but it doesn't make you anonymous.
+- **Be careful about what you make public:** addresses, ENS names, screenshots of your wallet.
+- **Use your own node**, or a node you trust, instead of your wallet's default node.
+- **Privacy tools** are being developed, such as stealth addresses (one-time addresses, ERC-5564), privacy pools and privacy-focused Layer 2s. They come with trade-offs in fees and complexity, and every country has different rules: look into the regulations in force before you use them.
 
-Công nghệ "không kiến thức" (ZK) không tự làm mọi thứ riêng tư: dữ liệu đăng lên chuỗi, địa chỉ IP hay ứng dụng bạn dùng vẫn có thể lộ thông tin.
+"Zero-knowledge" (ZK) technology doesn't automatically make everything private: the data posted onchain, your IP address or the apps you use can still give information away.
 
-<Callout type="warn" title="Cảnh báo">
-Đừng khoe số dư hay địa chỉ đang giữ nhiều tiền. Khi người khác biết bạn có bao nhiêu, kẻ xấu có thể tìm tới bạn ngoài đời để ép bạn chuyển tiền. Những vụ như vậy đang tăng lên.
+<Callout type="warn" title="Warning">
+Don't show off your balance or an address holding a lot of money. Once other people know how much you have, criminals can track you down in real life to force you to transfer it. Cases like this are on the rise.
 </Callout>
 
-## Sắp tới
+## Coming soon
 
-Lộ trình của Ethereum đặt mục tiêu "riêng tư mặc định": đọc dữ liệu riêng tư, gửi giao dịch riêng tư, và chứng minh điều gì đó mà không lộ dữ liệu. Theo ethereum.org, chưa phần nào trong số này hoàn thành.
+Ethereum's roadmap aims for "private by default": reading data privately, sending transactions privately, and proving something without revealing the data. According to ethereum.org, none of these are finished yet.
 
-## Tóm tắt
+## Summary
 
-- Ethereum công khai dưới bút danh: ai cũng đọc được mọi giao dịch của một địa chỉ.
-- Một lần địa chỉ bị gắn với tên bạn, ví dụ qua sàn, là cả lịch sử bị lộ.
-- Tách địa chỉ, cẩn thận khi công khai, dùng nút của mình. Không cách nào trong số đó làm bạn hoàn toàn ẩn danh.
+- Ethereum is pseudonymous: anyone can read every transaction of an address.
+- Once an address is linked to your name, for example through an exchange, your whole history is exposed.
+- Separate your addresses, be careful about what you make public, use your own node. None of these makes you fully anonymous.
 
-## Đọc tiếp
+## Read next
 
-- [Đọc một giao dịch](./reading-a-transaction.mdx): xem những gì người khác thấy
-- [Giữ an toàn](../getting-started/staying-safe.mdx)
+- [Reading a transaction](./reading-a-transaction.mdx): see what other people see
+- [Staying safe](../getting-started/staying-safe.mdx)

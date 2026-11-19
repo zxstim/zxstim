@@ -1,6 +1,6 @@
 ---
-title: ETH được đo bằng tiêu chí nào
-description: Một tài sản lưu trữ giá trị trước hết phải tồn tại. Rồi phải giữ được an toàn, giữ được riêng tư, luôn gửi được, và không phụ thuộc hạ tầng của ai. Ethereum đang làm gì cho từng tiêu chí, và việc nào đã xong.
+title: What ETH should be measured by
+description: A store of value must, first of all, survive. Then it must be easy to keep safe and private, always possible to send, and independent of anyone's infrastructure. What Ethereum is doing for each criterion, and which work is done.
 sources:
   - https://x.com/VitalikButerin/status/2119401255919604064
   - https://ethereum.org/roadmap/security/
@@ -14,67 +14,67 @@ sources:
   - https://blog.ethereum.org/2025/07/08/partial-history-exp
 ---
 
-Nếu bạn giữ ETH để chạy theo xu hướng, bạn sẽ đo nó bằng doanh thu và tốc độ tăng trưởng. Nếu bạn giữ ETH như **tài sản lưu trữ giá trị**, bạn sẽ đo nó bằng những tiêu chí khác. Dưới đây là các tiêu chí Vitalik nêu, cùng những gì Ethereum đang làm cho từng tiêu chí, tính tới tháng 11 năm 2026.
+If you hold ETH to chase trends, you'll measure it by revenue and growth rate. If you hold ETH as a **store of value**, you'll measure it by different criteria. Below are the criteria Vitalik lists, along with what Ethereum is doing for each one, as of November 2026.
 
-Nhãn trạng thái: **Đã có** (chạy trên mạng chính), **Đã xếp lịch** (đã chọn cho một đợt nâng cấp, chưa có ngày), **Đang làm** (nghiên cứu hoặc mạng thử nghiệm).
+Status labels: **Live** (running on mainnet), **Scheduled** (chosen for an upgrade, no date yet), **In progress** (research or testnets).
 
-## 1. Tồn tại
+## 1. Survive
 
-Tiêu chí đầu tiên và quan trọng nhất: sống sót. Theo Vitalik, Devcon gần nhất bàn rất nhiều về điều này, dưới chủ đề "hậu lượng tử và hậu trí tuệ nhân tạo".
+The first and most important criterion: survival. According to Vitalik, the most recent Devcon discussed this a great deal, under the theme "post-quantum and post-AI."
 
-- **An toàn trước máy tính lượng tử.** Máy tính lượng tử đủ mạnh có thể phá các loại chữ ký Ethereum đang dùng. Từ tháng 1 năm 2026, Quỹ Ethereum có một nhóm riêng cho việc này. Chữ ký mới chỉ dựa trên hàm băm đang được thử trên các mạng phát triển hằng tuần, với hơn 10 nhóm phần mềm tham gia. Mục tiêu khoảng năm 2029. ethereum.org đánh giá nguy cơ chưa cận kề. **Đang làm.**
-- **Chọn hướng thận trọng.** Vitalik muốn một chuỗi chỉ dựa vào hàm băm để bảo mật, được **kiểm chứng hình thức** (formal verification, chứng minh bằng toán học rằng mã chạy đúng), và dùng số vòng tính nhiều hơn ít nhất 3 lần mức đã biết là đủ an toàn. Các dự án kiểm chứng hình thức đang được tài trợ. **Đang làm.**
-- **Hướng tới cố định giao thức** (ossification). Khi phần lõi đã hoàn thiện, phần lớn việc phát triển chuyển lên các tầng bên trên, và giao thức hiếm khi thay đổi nữa. Theo một bài trình bày đăng trên ethereum.org, Ethereum chỉ có thể cố định khi đã an toàn trước máy tính lượng tử. **Mới là định hướng.**
-- **Ít chính trị trong giao thức.** Đặt ngưỡng rất cao trước khi thêm vào giao thức những thứ làm nó phình to, hay những khoản thưởng mới có thể bị một nhóm chiếm lấy.
+- **Post-quantum security.** A powerful enough quantum computer could break the kinds of signatures Ethereum uses today. Since January 2026, the Ethereum Foundation has had a dedicated team for this. New signatures based only on hash functions are being tested on weekly development networks, with more than 10 client teams taking part. The target is around 2029. ethereum.org considers the threat not yet imminent. **In progress.**
+- **Choosing the conservative path.** Vitalik wants a chain that relies only on hash functions for its security, is **formally verified** (proven mathematically to run correctly), and uses at least 3 times as many computation rounds as the level known to be safe enough. Formal verification projects are being funded. **In progress.**
+- **Moving toward ossification.** Once the core is complete, most development moves to the layers above, and the protocol rarely changes anymore. According to a presentation published on ethereum.org, Ethereum can only ossify once it is post-quantum secure. **Only a direction so far.**
+- **Little politics in the protocol.** Set a very high bar before adding things to the protocol that make it bloated, or new rewards that some group could capture.
 
-## 2. Giữ an toàn dễ dàng
+## 2. Easy to keep safe
 
-- **Ví nhiều chữ ký và ví thông minh.** Tiêu chuẩn ERC-4337 chạy từ tháng 3 năm 2023, và EIP-7702 cho tài khoản thường thêm tính năng của ví thông minh từ tháng 5 năm 2025. Xem [Ví thông minh](../basics/using-ethereum/smart-wallets.mdx). **Đã có.**
-- **Giao dịch dạng khung** (EIP-8141): đưa các tính năng như khôi phục và nhờ trả phí vào thẳng giao thức, và cho phép đổi sang chữ ký an toàn trước máy tính lượng tử. **Đã xếp lịch** cho đợt nâng cấp Hegotá.
+- **Multisig wallets and smart wallets.** The ERC-4337 standard has been running since March 2023, and EIP-7702 has given regular accounts smart wallet features since May 2025. See [Smart wallets](../basics/using-ethereum/smart-wallets.mdx). **Live.**
+- **Frame transactions** (EIP-8141): bring features like recovery and having someone else pay your fees directly into the protocol, and make it possible to switch to post-quantum signatures. **Scheduled** for the Hegotá upgrade.
 
-## 3. Giữ riêng tư
+## 3. Keep it private
 
-- **Kohaku:** bộ công cụ mã nguồn mở để các ví thêm tính năng riêng tư. Xem [Quyền riêng tư](../basics/using-ethereum/privacy.mdx). **Đang làm.**
+- **Kohaku:** an open-source toolkit that lets wallets add privacy features. See [Privacy](../basics/using-ethereum/privacy.mdx). **In progress.**
 
-## 4. Vừa riêng tư vừa an toàn
+## 4. Private and safe at the same time
 
-Hai thứ này hay kéo ngược nhau: công cụ riêng tư thường khó dùng cùng ví nhiều chữ ký hay ví khôi phục được.
+These two often pull against each other: privacy tools are often hard to use together with multisig wallets or recoverable wallets.
 
-- **EIP-8288** (bản nháp, tháng 6 năm 2026): gộp chữ ký và bằng chứng của nhiều giao dịch thành một bằng chứng duy nhất cho mỗi khối. Nhờ đó, chữ ký an toàn trước máy tính lượng tử và bằng chứng riêng tư trở nên đủ rẻ để dùng hằng ngày. **Đang làm.**
-- Các hướng "trừu tượng hóa tài khoản riêng tư" cũng đã bắt đầu. **Đang làm.**
+- **EIP-8288** (draft, June 2026): combines the signatures and proofs of many transactions into a single proof per block. That makes post-quantum signatures and privacy proofs cheap enough for everyday use. **In progress.**
+- Work on "private account abstraction" has also begun. **In progress.**
 
-## 5. Có coin là gửi được
+## 5. If you have the coins, you can send them
 
-Nếu bạn có ETH, bạn phải gửi được, và không bên xây khối nào chặn được bạn.
+If you have ETH, you must be able to send it, and no block builder should be able to stop you.
 
-- Hôm nay: khi một số bên lọc giao dịch, giao dịch vẫn vào chuỗi qua các bên không lọc, chỉ chậm hơn. Xem [Hạ tầng trung lập](../government/global-neutrality.mdx).
-- **FOCIL** (EIP-7805) đưa bảo đảm này vào chính giao thức: một nhóm trình xác thực chọn ngẫu nhiên công bố các giao dịch đang chờ, và khối nào bỏ qua chúng sẽ bị từ chối. **Đã xếp lịch** cho Hegotá, chưa có ngày.
+- Today: when some builders filter transactions, those transactions still make it onto the chain through builders that don't filter, just more slowly. See [Neutral infrastructure](../government/global-neutrality.mdx).
+- **FOCIL** (EIP-7805) builds this guarantee into the protocol itself: a randomly chosen group of validators publishes the pending transactions, and any block that leaves them out is rejected. **Scheduled** for Hegotá, no date yet.
 
-## 6. Ít phụ thuộc hạ tầng
+## 6. Little dependence on infrastructure
 
-Bạn không nên phải tin một công ty để biết số dư của mình.
+You shouldn't have to trust a company to know your own balance.
 
-- **Tự chạy nút trên máy phổ thông.**
-  - Theo ethereum.org, cấu hình tối thiểu là 2 nhân, 16 GB RAM, ổ NVMe 2 TB và mạng 25 Mbit/s.
-  - Từ tháng 7 năm 2025, các nút không phải giữ lịch sử cũ nữa, tiết kiệm 300 tới 500 GB.
-  - Vitalik cho biết nút trên máy tính xách tay của ông đồng bộ xong trong chưa tới 6 giờ và chỉ chiếm một phần tám ổ cứng, tốt hơn cả năm 2019.
-  - Xem [Nút](../basics/how-it-works/nodes.mdx). **Đã có.**
-- **Nút không cần giữ toàn bộ trạng thái** (statelessness), để cả điện thoại cũng tự kiểm tra được. **Đang làm.**
+- **Running your own node on ordinary hardware.**
+  - According to ethereum.org, the minimum spec is 2 cores, 16 GB of RAM, a 2 TB NVMe drive and a 25 Mbit/s connection.
+  - Since July 2025, nodes no longer have to keep old history, which saves 300 to 500 GB.
+  - Vitalik says the node on his laptop finished syncing in under 6 hours and takes up only an eighth of the disk, better than even in 2019.
+  - See [Nodes](../basics/how-it-works/nodes.mdx). **Live.**
+- **Statelessness** (nodes that don't need to keep the full state), so that even phones can verify things for themselves. **In progress.**
 
-## Tóm tắt
+## Summary
 
-- Tiêu chí số một của tài sản lưu trữ giá trị là tồn tại: an toàn trước máy tính lượng tử, chọn hướng thận trọng, hướng tới cố định giao thức, ít chính trị.
-- Tiếp theo: giữ an toàn, giữ riêng tư, vừa riêng tư vừa an toàn, luôn gửi được, và không phụ thuộc hạ tầng của ai.
-- Một phần đã có (ví thông minh, tự chạy nút trên máy phổ thông). Phần lớn đã xếp lịch hoặc đang làm.
+- The number one criterion for a store of value is survival: post-quantum security, choosing the conservative path, moving toward ossification, and little politics.
+- Next come staying safe, staying private, being private and safe at once, always being able to send, and not depending on anyone's infrastructure.
+- Some of this is live (smart wallets, running your own node on ordinary hardware). Most of it is scheduled or in progress.
 
-## Đọc tiếp
+## Read next
 
-- [Nguồn cung và an ninh của ETH](./supply-and-security.mdx)
-- [Giữ ETH để làm gì](./why-hold-eth.mdx)
+- [ETH supply and security](./supply-and-security.mdx)
+- [Why hold ETH?](./why-hold-eth.mdx)
 
-## Nguồn
+## Sources
 
-- Vitalik Buterin: [bài đăng trên X](https://x.com/VitalikButerin/status/2119401255919604064), ngày 8 tháng 11 năm 2026
-- ethereum.org: [lộ trình an ninh](https://ethereum.org/roadmap/security/), [trừu tượng hóa tài khoản](https://ethereum.org/roadmap/account-abstraction/), [quyền riêng tư](https://ethereum.org/roadmap/privacy/), [chạy một nút](https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/)
-- Quỹ Ethereum: [nhóm hậu lượng tử](https://pq.ethereum.org), [hết hạn lịch sử một phần](https://blog.ethereum.org/2025/07/08/partial-history-exp) (tháng 7 năm 2025)
+- Vitalik Buterin: [post on X](https://x.com/VitalikButerin/status/2119401255919604064), November 8, 2026
+- ethereum.org: [security roadmap](https://ethereum.org/roadmap/security/), [account abstraction](https://ethereum.org/roadmap/account-abstraction/), [privacy](https://ethereum.org/roadmap/privacy/), [running a node](https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/)
+- Ethereum Foundation: [post-quantum team](https://pq.ethereum.org), [partial history expiry](https://blog.ethereum.org/2025/07/08/partial-history-exp) (July 2025)
 - [EIP-7805: FOCIL](https://eips.ethereum.org/EIPS/eip-7805), [EIP-8288](https://eips.ethereum.org/EIPS/eip-8288), [EIP-8081: Hegotá](https://eips.ethereum.org/EIPS/eip-8081)

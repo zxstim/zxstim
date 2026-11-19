@@ -1,6 +1,6 @@
 ---
-title: Ethereum nhìn từ khu vực công
-description: Một sổ ghi chép công khai không do cơ quan hay công ty nào vận hành. Ai cũng tự kiểm tra được, không ai sửa lén được. Những gì nó làm tốt, và những gì nó không làm được.
+title: Ethereum from the public sector's view
+description: A public record book that no agency or company runs. Anyone can check it for themselves, and no one can quietly change it. What it does well, and what it can't do.
 sources:
   - https://publicsector.ethereum.foundation/evaluating-ethereum/
   - https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf
@@ -9,53 +9,53 @@ sources:
   - https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/
 ---
 
-Hãy hình dung một tờ công báo mà ai cũng đọc được, không ai sửa được bài đã đăng, và không cơ quan nào giữ nhà in. Mỗi bài ghi rõ ai đăng, đăng lúc nào, kèm một chữ ký mà ai cũng kiểm tra được. Nhìn từ khu vực công, đó là cách gần nhất để hiểu Ethereum.
+Picture an official gazette that anyone can read, where no one can edit an article once it's published, and no agency owns the printing press. Each article says clearly who published it and when, with a signature anyone can check. From the public sector's point of view, that is the closest way to understand Ethereum.
 
-## Ai vận hành Ethereum?
+## Who runs Ethereum?
 
-Không có đơn vị chủ quản. Ethereum chạy nhờ nhiều bên độc lập:
+No one owns it. Ethereum runs thanks to many independent parties:
 
-- **Các nút** (node): máy tính chạy phần mềm Ethereum, mỗi máy giữ một bản sao và tự kiểm tra mọi khối. Theo Ethernodes, tháng 11 năm 2026 có 8.717 nút lớp thực thi ở 95 quốc gia và vùng lãnh thổ. Xem [Nút](../basics/how-it-works/nodes.mdx).
-- **Các trình xác thực** (validator): khóa ETH làm tiền cọc để được tham gia tạo khối. Làm sai thì mất cọc. Xem [Trình xác thực](../basics/how-it-works/validators.mdx).
-- **Quy tắc** chỉ thay đổi qua các đợt nâng cấp được bàn công khai, và mỗi bên tự quyết có chạy phiên bản mới hay không. Xem [Ethereum nâng cấp thế nào](../basics/how-it-works/upgrades.mdx).
+- **Nodes**: computers running Ethereum software. Each keeps a copy and checks every block for itself. According to Ethernodes, in November 2026 there were 8,717 execution layer nodes in 95 countries and territories. See [Nodes](../basics/how-it-works/nodes.mdx).
+- **Validators**: they lock up ETH as a stake to take part in creating blocks. If they misbehave, they lose their stake. See [Validators](../basics/how-it-works/validators.mdx).
+- **The rules** only change through upgrades discussed in public, and each party decides for itself whether to run the new version. See [How Ethereum upgrades](../basics/how-it-works/upgrades.mdx).
 
-**Quỹ Ethereum** (Ethereum Foundation, EF) là tổ chức phi lợi nhuận tài trợ nghiên cứu và hỗ trợ hệ sinh thái. Chính EF ghi rõ trên trang dành cho khu vực công rằng họ không vận hành hay kiểm soát Ethereum.
+The **Ethereum Foundation** (EF) is a nonprofit that funds research and supports the ecosystem. The EF itself states clearly on its public-sector site that it does not run or control Ethereum.
 
-## Những điểm khu vực công quan tâm
+## What the public sector cares about
 
-- **Không sửa lén được lịch sử.** Mỗi khối mang mã băm ("dấu vân tay") của khối trước. Sửa một bản ghi cũ là làm hỏng mọi khối sau nó. Sau khoảng 15 phút, một giao dịch đạt **tính cuối cùng** (finality): muốn đảo ngược thì kẻ tấn công phải chịu mất một phần rất lớn số ETH đang đặt cọc. Xem [Đồng thuận](../basics/how-it-works/consensus.mdx).
-- **Ai cũng tự kiểm tra được.** Người dân, kiểm toán viên, nhà báo, cơ quan nước khác đều đọc cùng một dữ liệu, không cần xin phép hay tin vào một bên trung gian. Ai muốn chắc chắn hơn có thể tự chạy nút.
-- **Trung lập, không thuộc về cường quốc nào.** Không chính phủ, công ty hay quỹ nào một mình tắt được mạng, đổi được luật hay chặn được một quốc gia. Điều này có ích khi nhiều bên cần một nguồn chung nhưng không muốn giao nó cho một bên: các bộ ngành, các địa phương, các quốc gia. Xem [Hạ tầng trung lập](./global-neutrality.mdx).
-- **Chạy liên tục.** Mạng chính chạy từ năm 2015, không có giờ đóng cửa. Như vậy không có nghĩa là chưa từng có sự cố: tháng 5 năm 2023, mạng hai lần tạm ngừng đạt tính cuối cùng (khoảng 25 phút và khoảng một giờ), dù khối mới vẫn được tạo bình thường.
-- **Quy tắc thành mã.** [Hợp đồng thông minh](../basics/how-it-works/smart-contracts.mdx) tự chạy theo quy tắc công khai, ví dụ tự giải ngân khi một điều kiện được đáp ứng.
-- **Tốn ít điện.** Từ năm 2022, Ethereum dùng bằng chứng cổ phần thay cho đào, và lượng điện tiêu thụ giảm khoảng 99,95%.
+- **History can't be quietly rewritten.** Each block carries the hash (a "fingerprint") of the block before it. Changing an old record breaks every block after it. After about 15 minutes, a transaction reaches **finality**: to reverse it, an attacker would have to accept losing a very large share of all staked ETH. See [Consensus](../basics/how-it-works/consensus.mdx).
+- **Anyone can check for themselves.** Citizens, auditors, journalists and foreign agencies all read the same data, without asking permission or trusting a middleman. Anyone who wants more certainty can run their own node.
+- **Neutral, owned by no great power.** No government, company or foundation can, on its own, switch off the network, change the rules or block a country. This helps when many parties need a shared source but don't want to hand it to any one of them: ministries, provinces, countries. See [Neutral infrastructure](./global-neutrality.mdx).
+- **Always running.** Mainnet has been running since 2015, with no closing hours. That doesn't mean it has never had problems: in May 2023, the network twice temporarily stopped reaching finality (for about 25 minutes and about an hour), though new blocks were still produced as normal.
+- **Rules as code.** [Smart contracts](../basics/how-it-works/smart-contracts.mdx) run on their own according to public rules, for example paying out automatically when a condition is met.
+- **Uses little electricity.** Since 2022, Ethereum has used proof of stake instead of mining, and its electricity use fell by about 99.95%.
 
-## Những gì Ethereum không làm được
+## What Ethereum can't do
 
-- **Không kiểm tra sự thật.** Chuỗi khối chỉ bảo đảm dữ liệu không bị sửa sau khi ghi. Dữ liệu sai từ đầu thì vẫn sai.
-- **Không phải nơi chứa dữ liệu cá nhân.** Mọi thứ trên mạng chính đều công khai và tồn tại mãi. Xem [Đưa gì lên chuỗi, giữ gì ngoài chuỗi](./what-goes-onchain.mdx).
-- **Không tự có giá trị pháp lý.** Một bản ghi trên chuỗi có giá trị pháp lý hay không là do luật quy định, không do công nghệ.
-- **Không miễn phí.** Mỗi lần ghi tốn [phí gas](../basics/how-it-works/gas.mdx), trả bằng ETH.
-- **Không thay được quy chế.** Ai giữ khóa, ai được ghi, ghi sai thì đính chính thế nào: những câu hỏi đó vẫn cần quy trình của chính cơ quan.
+- **It doesn't check the truth.** A blockchain only guarantees that data isn't changed after it's written. Data that was wrong from the start stays wrong.
+- **It's not a place for personal data.** Everything on mainnet is public and stays forever. See [What goes onchain, what stays offchain](./what-goes-onchain.mdx).
+- **It has no legal validity on its own.** Whether an onchain record has legal validity is up to the law, not the technology.
+- **It's not free.** Every write costs a [gas fee](../basics/how-it-works/gas.mdx), paid in ETH.
+- **It doesn't replace regulations.** Who holds the keys, who may write, how to correct a wrong entry: those questions still need the agency's own procedures.
 
-<Callout type="info" title="Lưu ý">
-Phần lớn tài liệu về Ethereum cho khu vực công do Quỹ Ethereum viết, với mục đích vận động các tổ chức dùng Ethereum. Mục này dựa trên các tài liệu đó nhưng giữ giọng trung lập: nêu cả những dự án đã dừng, và những điều tài liệu gốc ít nhắc tới. Đây không phải tư vấn pháp lý.
+<Callout type="info" title="Note">
+Most of the material on Ethereum for the public sector is written by the Ethereum Foundation, with the goal of encouraging organizations to use Ethereum. This section draws on that material but keeps a neutral tone: it also covers projects that were stopped, and things the original material rarely mentions. This is not legal advice.
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Ethereum là một sổ ghi chép công khai do hàng nghìn bên độc lập cùng giữ, không có đơn vị chủ quản.
-- Điểm mạnh với khu vực công: trung lập trên phạm vi toàn cầu, lịch sử không sửa lén được, ai cũng tự kiểm tra được, chạy liên tục.
-- Giới hạn: không kiểm tra sự thật của dữ liệu đầu vào, không hợp để chứa dữ liệu cá nhân, không tự có giá trị pháp lý, và mỗi lần ghi đều tốn phí.
+- Ethereum is a public record book kept jointly by thousands of independent parties, with no owning agency.
+- Strengths for the public sector: global neutrality, history that can't be quietly rewritten, anyone can check it for themselves, and it's always running.
+- Limits: it doesn't check whether input data is true, it isn't suited to holding personal data, it has no legal validity on its own, and every write costs a fee.
 
-## Đọc tiếp
+## Read next
 
-- [Hạ tầng trung lập, không thuộc về cường quốc nào](./global-neutrality.mdx)
-- [Chuỗi khối là gì?](../basics/how-it-works/blockchain.mdx)
+- [Neutral infrastructure no great power owns](./global-neutrality.mdx)
+- [What is a blockchain?](../basics/how-it-works/blockchain.mdx)
 
-## Nguồn
+## Sources
 
-- Quỹ Ethereum: [Đánh giá Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/) và [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)
-- [Ethernodes](https://ethernodes.org), số liệu đọc ngày 8 tháng 11 năm 2026
-- ethereum.org: [Mức tiêu thụ năng lượng](https://ethereum.org/energy-consumption/)
-- Prysm: [báo cáo sự cố mạng chính](https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/) tháng 5 năm 2023
+- Ethereum Foundation: [Evaluating Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/) and [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)
+- [Ethernodes](https://ethernodes.org), figures read on November 8, 2026
+- ethereum.org: [Energy consumption](https://ethereum.org/energy-consumption/)
+- Prysm: [mainnet incident reports](https://prysm.offchainlabs.com/docs/misc/mainnet-postmortems/), May 2023

@@ -1,6 +1,6 @@
 ---
-title: Tuân thủ trên hạ tầng công khai
-description: Ethereum trung lập ở tầng giao thức, nên các quy định về danh tính, trừng phạt và quyền riêng tư được thực hiện ở các tầng bên trên. Ai kiểm soát tầng nào, công cụ nào đang có, và cái giá của từng lựa chọn.
+title: Compliance on public infrastructure
+description: Ethereum is neutral at the protocol layer, so rules on identity, sanctions and privacy are enforced at the layers above it. Who controls which layer, what tools exist, and the cost of each choice.
 sources:
   - https://ethereum.org/organizations/enterprise/privacy/
   - https://eips.ethereum.org/EIPS/eip-3643
@@ -12,75 +12,75 @@ sources:
   - https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf
 ---
 
-Ethereum không kiểm tra danh tính ai, cũng không chặn giao dịch của ai. Đó là lý do nó [trung lập](./neutral-blockspace.mdx). Các yêu cầu tuân thủ, như xác minh khách hàng (KYC), sàng lọc theo danh sách trừng phạt hay giới hạn người được nắm giữ, được thực hiện ở các tầng bên trên. Mỗi tầng có một bên chịu trách nhiệm.
+Ethereum doesn't check anyone's identity, and it doesn't block anyone's transactions. That is why it is [neutral](./neutral-blockspace.mdx). Compliance requirements, such as know-your-customer (KYC) checks, sanctions-list screening or limits on who may hold an asset, are enforced at the layers above. Each layer has a party responsible for it.
 
-## Ai kiểm soát tầng nào
+## Who controls which layer
 
-| Tầng | Ai kiểm soát | Làm được gì |
+| Layer | Who controls it | What they can do |
 |---|---|---|
-| Giao thức Ethereum | Không ai | Không chặn, không đóng băng ai |
-| Token | Bên phát hành | Đóng băng, chặn địa chỉ, chỉ cho chuyển tới ví đã xác minh |
-| Layer 2 | Bên vận hành | Danh sách cho phép, lọc giao dịch |
-| Ứng dụng | Bên làm ứng dụng | Kiểm tra danh tính, giới hạn người dùng |
-| Lưu ký | Doanh nghiệp hoặc đơn vị lưu ký | Ai được ký, cần mấy chữ ký |
+| Ethereum protocol | No one | Blocks no one, freezes no one |
+| Token | The issuer | Freeze, block addresses, allow transfers only to verified wallets |
+| Layer 2 | The operator | Allow-lists, transaction filtering |
+| Application | The app builder | Identity checks, user restrictions |
+| Custody | The business or a custodian | Who may sign, how many signatures are needed |
 
-## Ở tầng token
+## At the token layer
 
-- **Stablecoin có quyền đóng băng.**
-  - Hợp đồng USDC có vai trò "người chặn": địa chỉ bị chặn không chuyển, nhận hay đổi được USDC. Theo điều khoản của Circle (cập nhật tháng 10 năm 2026), Circle có thể đóng băng USDC khi tự đánh giá là có liên quan tới hoạt động bất hợp pháp, và phải làm vậy khi có lệnh hợp lệ của cơ quan nhà nước.
-  - Điều khoản của Tether (cập nhật tháng 2 năm 2026) cũng cho phép đóng băng USDT theo luật hoặc khi Tether tự thấy là cần thiết.
-- **Token cấp phép (ERC-3643).** Đây là một tiêu chuẩn đã hoàn tất cho chứng khoán và tài sản dạng token. Nó bảo đảm:
-  - token chỉ được chuyển tới ví có trong sổ danh tính, với xác nhận từ bên xác minh được tin cậy;
-  - có thể đặt quy tắc như giới hạn số người nắm giữ;
-  - bên quản lý có thể đóng băng ví, buộc chuyển token, hay khôi phục token sang ví mới của cùng một người;
-  - có thể tạm dừng cả token.
-- **Token ERC-20 thông thường** cũng có thể thêm danh sách cho phép và các quy tắc tương tự, tùy từng trường hợp.
+- **Stablecoins can freeze funds.**
+  - The USDC contract has a "blacklister" role: a blocked address can't send, receive or redeem USDC. Under Circle's terms (updated October 2026), Circle may freeze USDC when it judges on its own that there is a link to illegal activity, and must do so when there is a valid order from a government authority.
+  - Tether's terms (updated February 2026) also allow it to freeze USDT under the law or when Tether itself considers it necessary.
+- **Permissioned tokens (ERC-3643).** This is a finalized standard for securities and tokenized assets. It ensures that:
+  - tokens can only be transferred to wallets listed in an identity registry, with confirmation from a trusted verifier;
+  - rules can be set, such as a limit on the number of holders;
+  - the manager can freeze wallets, force token transfers, or recover tokens to a new wallet belonging to the same person;
+  - the whole token can be paused.
+- **Regular ERC-20 tokens** can also add allow-lists and similar rules, case by case.
 
-## Ở tầng Layer 2
+## At the Layer 2 layer
 
-- **Danh sách cho phép:** chỉ người được duyệt mới gửi được giao dịch hay triển khai hợp đồng. Xem [Tùy chỉnh một Layer 2](./customizing-layer-2.mdx).
-- **Lọc theo danh sách hạn chế:**
-  - Từ ArbOS 61, chuỗi Arbitrum có thể bật lọc: bộ sắp xếp chạy thử mỗi giao dịch và từ chối giao dịch chạm tới địa chỉ bị hạn chế, theo danh sách của một nhà cung cấp dữ liệu. Tính năng này mặc định tắt, và tài liệu Arbitrum nói nó không dành cho Arbitrum One.
-  - Robinhood Chain dùng cơ chế lọc này. Theo ETHBEAT, bên lọc được ủy quyền có thể buộc một giao dịch thất bại, kể cả giao dịch tự đưa qua Ethereum.
-  - Một số chuỗi dựng bằng ZK Stack lọc ai được gửi giao dịch từ Ethereum vào mạng.
-- **Cái giá:** bên vận hành có quyền chặn, nên mạng kém trung lập hơn, và lối thoát có thể yếu đi. Tài liệu ZKsync cảnh báo người dùng bị chặn sau này có thể bị khóa tiền.
+- **Allow-lists:** only approved people can send transactions or deploy contracts. See [Customizing a Layer 2](./customizing-layer-2.mdx).
+- **Filtering against a restricted list:**
+  - Starting with ArbOS 61, Arbitrum chains can turn on filtering: the sequencer simulates each transaction and rejects any that touch a restricted address, using a list from a data provider. This feature is off by default, and the Arbitrum documentation says it is not meant for Arbitrum One.
+  - Robinhood Chain uses this filtering. According to ETHBEAT, the authorized filtering party can force a transaction to fail, including a transaction pushed through Ethereum directly.
+  - Some chains built with the ZK Stack filter who may send transactions from Ethereum into the network.
+- **The cost:** the operator has the power to block, so the network is less neutral, and the escape hatch may be weakened. The ZKsync documentation warns that users who are blocked later on may have their funds locked.
 
-## Riêng tư mà vẫn kiểm toán được
+## Private yet auditable
 
-Mọi giao dịch trên Ethereum công khai. Doanh nghiệp thường cần giữ kín giao dịch với đối thủ, nhưng vẫn cho kiểm toán và cơ quan quản lý xem. Các công cụ hiện có:
+Every transaction on Ethereum is public. Businesses often need to keep their transactions hidden from competitors while still letting auditors and regulators see them. The tools available today:
 
-- **Tiết lộ có chọn lọc và khóa xem** (viewing key): người ngoài không xem được, bên có khóa thì xem được đúng phần được phép.
-- **Bằng chứng không kiến thức:** chứng minh một khách hàng đã qua sàng lọc trừng phạt, hay cư trú ở một nước, mà không lộ người đó là ai (theo hướng dẫn của Quỹ Ethereum).
-- **Xác nhận danh tính** (attestation): một bên đã xác minh ký xác nhận, dữ liệu cá nhân không lên chuỗi.
-- **Privacy Pools:** chạy trên mạng chính Ethereum từ ngày 31 tháng 3 năm 2025. Người gửi được sàng lọc khi nạp tiền, và luôn có đường rút công khai. Tháng 3 năm 2026, bên sàng lọc đã chặn mọi lượt rút riêng tư trong 2 giờ. Đây là ví dụ cho thấy công cụ riêng tư vẫn phụ thuộc vào một bên.
-- **Chuỗi riêng có bằng chứng,** như Prividium: dữ liệu giữ kín, chỉ bằng chứng lên Ethereum. Xem [Tùy chỉnh một Layer 2](./customizing-layer-2.mdx).
-- **Lưu ký bằng tính toán đa bên** (MPC) hay ví nhiều chữ ký: không một nhân viên nào tự ký được giao dịch lớn.
+- **Selective disclosure and viewing keys:** outsiders can't see the data, but whoever holds a key can see exactly the part they're allowed to.
+- **Zero-knowledge proofs:** prove that a customer has passed sanctions screening, or lives in a certain country, without revealing who that person is (per the Ethereum Foundation's guide).
+- **Identity attestations:** a party that has done the verification signs a confirmation, and no personal data goes onchain.
+- **Privacy Pools:** running on Ethereum mainnet since March 31, 2025. Depositors are screened when they deposit, and there is always a public withdrawal path. In March 2026, the screening party blocked all private withdrawals for 2 hours. This shows that privacy tools still depend on a particular party.
+- **Private chains with proofs,** such as Prividium: data is kept private, and only proofs go to Ethereum. See [Customizing a Layer 2](./customizing-layer-2.mdx).
+- **Custody using multi-party computation** (MPC) or multisig wallets: no single employee can sign a large transaction alone.
 
-Theo ethereum.org, các công cụ riêng tư này còn mới, và nhiều công cụ chưa được kiểm chứng ở quy mô lớn.
+According to ethereum.org, these privacy tools are still new, and many have not been proven at large scale.
 
-## Những điều cần nhớ
+## Things to remember
 
-- **Tuân thủ là trách nhiệm của bên vận hành, bên phát hành và bên làm ứng dụng,** không phải của giao thức. Hãy biết rõ ai đang kiểm soát tầng nào.
-- **Vỏ pháp lý vẫn cần.** Các đợt phát hành trái phiếu số của Ngân hàng Đầu tư châu Âu vẫn dùng hồ sơ pháp lý truyền thống và các tổ chức trung gian được cấp phép.
-- **Quy định khác nhau giữa các nước** và thay đổi nhanh. Tài liệu của ethereum.org về quy định đã cũ, và hầu như không nhắc tới các khung pháp lý lớn như MiCA của Liên minh châu Âu.
-- **Ở Việt Nam,** Luật Công nghiệp công nghệ số (số 71/2025/QH15) và Nghị quyết 05/2025/NQ-CP đặt nền đầu tiên cho tài sản mã hóa. Hãy đối chiếu với quy định hiện hành và hỏi ý kiến pháp lý trước khi làm. Đây không phải tư vấn pháp lý.
+- **Compliance is the responsibility of operators, issuers and app builders,** not the protocol. Know exactly who controls which layer.
+- **A legal wrapper is still needed.** The European Investment Bank's digital bond issues still used traditional legal documentation and licensed intermediaries.
+- **Regulations differ from country to country** and change quickly. ethereum.org's material on regulation is out of date and barely mentions major legal frameworks such as the European Union's MiCA.
+- **In Vietnam,** the Law on Digital Technology Industry (No. 71/2025/QH15) and Resolution No. 05/2025/NQ-CP lay the first foundation for crypto assets. Check against the regulations in force and get legal advice before acting. This is not legal advice.
 
-## Tóm tắt
+## Summary
 
-- Ethereum không chặn ai. Tuân thủ nằm ở token, Layer 2, ứng dụng và lưu ký, mỗi tầng có một bên chịu trách nhiệm.
-- Có sẵn công cụ: token cấp phép (ERC-3643), quyền đóng băng của stablecoin, danh sách cho phép và lọc ở Layer 2, bằng chứng không kiến thức, khóa xem.
-- Mỗi quyền kiểm soát thêm vào là một điểm người dùng phải tin bên vận hành.
+- Ethereum blocks no one. Compliance lives in tokens, Layer 2s, applications and custody, and each layer has a responsible party.
+- Tools are available: permissioned tokens (ERC-3643), stablecoin freeze powers, allow-lists and filtering on Layer 2, zero-knowledge proofs, viewing keys.
+- Every added control is one more point where users have to trust the operator.
 
-## Đọc tiếp
+## Read next
 
-- [Token hóa và thanh toán bằng stablecoin](./tokenization-and-payments.mdx)
-- [Quyền riêng tư](../basics/using-ethereum/privacy.mdx)
+- [Tokenization and stablecoin payments](./tokenization-and-payments.mdx)
+- [Privacy](../basics/using-ethereum/privacy.mdx)
 
-## Nguồn
+## Sources
 
-- ethereum.org: [Quyền riêng tư cho doanh nghiệp](https://ethereum.org/organizations/enterprise/privacy/)
+- ethereum.org: [Privacy for enterprise](https://ethereum.org/organizations/enterprise/privacy/)
 - [ERC-3643](https://eips.ethereum.org/EIPS/eip-3643)
-- Điều khoản [USDC](https://www.circle.com/legal/usdc-terms) và [Tether](https://tether.to/en/legal)
-- Arbitrum: [lọc tuân thủ](https://docs.arbitrum.io/launch-arbitrum-chain/chain-config/sequencer/compliance-filtering); ZKsync: [lọc giao dịch](https://docs.zksync.io/zk-stack/customizations/transaction-filtering)
+- [USDC](https://www.circle.com/legal/usdc-terms) and [Tether](https://tether.to/en/legal) terms
+- Arbitrum: [compliance filtering](https://docs.arbitrum.io/launch-arbitrum-chain/chain-config/sequencer/compliance-filtering); ZKsync: [transaction filtering](https://docs.zksync.io/zk-stack/customizations/transaction-filtering)
 - ETHBEAT: [Privacy Pools](https://ethbeat.org/privacy/projects/privacy-pools)
-- Quỹ Ethereum: [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)
+- Ethereum Foundation: [Ethereum Basics for Governments and Institutions](https://publicsector.ethereum.foundation/docs/ethereum-basics-for-governments-and-institutions.pdf) (2026)

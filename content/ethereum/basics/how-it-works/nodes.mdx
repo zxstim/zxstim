@@ -1,6 +1,6 @@
 ---
-title: Nút
-description: Nút là máy tính chạy phần mềm Ethereum, giữ một bản sao chuỗi khối và tự kiểm tra mọi khối. Ai cũng chạy được, không cần ETH.
+title: Nodes
+description: A node is a computer running Ethereum software that keeps a copy of the blockchain and checks every block itself. Anyone can run one, and no ETH is needed.
 sources:
   - https://ethereum.org/developers/docs/nodes-and-clients/
   - https://ethereum.org/run-a-node/
@@ -9,65 +9,65 @@ sources:
   - https://ethereum.org/developers/docs/nodes-and-clients/client-diversity/
 ---
 
-Mạng lưới Ethereum không chạy trên máy chủ của một công ty nào. Nó là hàng nghìn máy tính nối với nhau, mỗi máy gọi là một **nút** (node). Mỗi nút giữ một bản sao [chuỗi khối](./blockchain.mdx) và tự kiểm tra mọi khối mới, không tin lời ai.
+The Ethereum network doesn't run on any one company's servers. It's thousands of computers connected to each other, and each one is called a **node**. Every node keeps a copy of the [blockchain](./blockchain.mdx) and checks every new block itself, without taking anyone's word for it.
 
-## Một nút gồm những gì?
+## What makes up a node?
 
-Một nút là hai phần mềm chạy cùng nhau trên một máy:
+A node is two pieces of software running together on one machine:
 
-- **Phần mềm lớp thực thi** (execution client): nhận giao dịch, chạy chúng trong EVM và giữ trạng thái của Ethereum, tức số dư và dữ liệu của mọi tài khoản.
-- **Phần mềm lớp đồng thuận** (consensus client): làm phần [đồng thuận](./consensus.mdx), theo dõi khối và phiếu bầu để biết đâu là chuỗi đúng.
+- **Execution client**: receives transactions, runs them in the EVM and keeps Ethereum's state, meaning the balances and data of every account.
+- **Consensus client**: handles [consensus](./consensus.mdx), following blocks and votes to know which chain is the right one.
 
-Người muốn làm [trình xác thực](./validators.mdx) chạy thêm phần mềm xác thực và đặt cọc 32 ETH. Chỉ chạy nút thì không cần ETH nào.
+Anyone who wants to be a [validator](./validators.mdx) also runs validator software and stakes 32 ETH. Just running a node doesn't need any ETH at all.
 
-Mỗi lớp có nhiều phần mềm do các nhóm độc lập viết bằng nhiều ngôn ngữ khác nhau, để một lỗi trong một phần mềm không làm hỏng cả mạng lưới:
+Each layer has several clients, written by independent teams in different programming languages, so that a bug in one client can't break the whole network:
 
-| Lớp | Một số phần mềm |
+| Layer | Some of the clients |
 |---|---|
-| Thực thi | Geth, Nethermind, Besu, Erigon, Reth, ethrex |
-| Đồng thuận | Lighthouse, Prysm, Teku, Nimbus, Lodestar, Grandine |
+| Execution | Geth, Nethermind, Besu, Erigon, Reth, ethrex |
+| Consensus | Lighthouse, Prysm, Teku, Nimbus, Lodestar, Grandine |
 
 <NodeScene />
 
-## Các loại nút
+## Types of nodes
 
-- **Nút đầy đủ** (full node): kiểm tra mọi khối và giữ trạng thái gần đây. Đây là loại phổ biến nhất.
-- **Nút lưu trữ** (archive node): giữ mọi trạng thái trong quá khứ, chiếm hàng terabyte. Trình khám phá khối và các dịch vụ phân tích dùng loại này.
-- **Nút nhẹ** (light client): chỉ tải phần đầu của các khối, rất nhẹ, có thể chạy trên điện thoại. Theo ethereum.org, hiện chưa có phần mềm nút nhẹ nào được coi là sẵn sàng để dùng thật.
+- **Full node**: checks every block and keeps the recent state. This is the most common type.
+- **Archive node**: keeps every past state and takes up terabytes of space. Block explorers and analytics services use this type.
+- **Light client**: downloads only the headers of blocks. It's very lightweight and can run on a phone. According to ethereum.org, no light client software is yet considered ready for real-world use.
 
-## Vì sao nên tự chạy nút?
+## Why run a node yourself?
 
-- **Tự kiểm chứng.** Nút của bạn tự kiểm tra mọi khối và mọi số dư. Bạn không phải tin ai, đúng với tinh thần "đừng tin, hãy kiểm chứng".
-- **Riêng tư.** Khi ví hỏi một nút công cộng, nút đó thấy địa chỉ IP và các địa chỉ ví của bạn. Hỏi nút của chính mình thì không ai thấy.
-- **Chống kiểm duyệt.** Một nhà cung cấp có thể từ chối giao dịch từ một số địa chỉ hay một số quốc gia. Nút của bạn thì không.
-- **Góp phần giữ mạng lưới phi tập trung.** Càng nhiều người tự chạy nút, mạng lưới càng khó bị kiểm soát. Chính các nút buộc trình xác thực phải làm đúng luật.
+- **Verify for yourself.** Your node checks every block and every balance on its own. You don't have to trust anyone, in keeping with the spirit of "don't trust, verify."
+- **Privacy.** When your wallet asks a public node for data, that node sees your IP address and your wallet addresses. Ask your own node and nobody sees them.
+- **Censorship resistance.** A provider can refuse transactions from certain addresses or certain countries. Your own node won't.
+- **Help keep the network decentralized.** The more people run their own nodes, the harder the network is to control. It's the nodes that force validators to follow the rules.
 
-## Ví của bạn đang dùng nút của ai?
+## Whose node is your wallet using?
 
-Phần lớn ví không tự chạy nút. Chúng hỏi nút của các nhà cung cấp dịch vụ (RPC), như Infura hay Alchemy. Cách này tiện, nhưng bạn phải tin nhà cung cấp trả lời đúng và không lạm dụng dữ liệu của bạn. Họ không giữ khóa riêng tư của bạn và không lấy được tiền của bạn.
+Most wallets don't run a node of their own. They query nodes run by service providers (RPC providers) such as Infura or Alchemy. This is convenient, but you have to trust the provider to answer truthfully and not misuse your data. Providers don't hold your private key and can't take your money.
 
-Nhiều ví cho phép đổi sang một địa chỉ RPC khác, kể cả nút của chính bạn.
+Many wallets let you switch to a different RPC address, including one pointing to your own node.
 
-## Cần máy như thế nào?
+## What kind of machine do you need?
 
-Các trang của ethereum.org đưa ra yêu cầu hơi khác nhau, vì dữ liệu của Ethereum lớn dần theo thời gian:
+ethereum.org's pages give slightly different requirements, because Ethereum's data keeps growing over time:
 
-| | Tối thiểu | Khuyến nghị (EIP-7870) |
+| | Minimum | Recommended (EIP-7870) |
 |---|---|---|
-| CPU | 2 lõi trở lên | 4 lõi trở lên |
+| CPU | 2 or more cores | 4 or more cores |
 | RAM | 16 GB | 32 GB |
-| Ổ cứng | SSD NVMe 2 TB | SSD NVMe 4 TB |
-| Mạng | 25 Mbit/s trở lên | 50 Mbit/s tải xuống, 15 Mbit/s tải lên |
+| Storage | 2 TB NVMe SSD | 4 TB NVMe SSD |
+| Network | 25 Mbit/s or more | 50 Mbit/s download, 15 Mbit/s upload |
 
-Ổ cứng thường là phần quan trọng nhất. Nên dùng mạng không giới hạn dung lượng, vì nút trao đổi dữ liệu liên tục. Có những máy làm sẵn để cắm là chạy (như DAppNode) và những công cụ giúp cài đặt dễ hơn (như eth-docker, Stereum, Sedge).
+The drive is usually the most important part. Use an internet plan without a data cap, because a node exchanges data constantly. There are ready-made plug-and-play machines (such as DAppNode) and tools that make setup easier (such as eth-docker, Stereum and Sedge).
 
-## Tóm tắt
+## Summary
 
-- Nút là máy tính chạy hai phần mềm: lớp thực thi và lớp đồng thuận.
-- Nút tự kiểm tra mọi khối, nên bạn không phải tin ai. Chạy nút không cần ETH.
-- Phần lớn ví dùng nút của nhà cung cấp. Tự chạy nút giúp riêng tư hơn và chống kiểm duyệt.
+- A node is a computer running two pieces of software: an execution client and a consensus client.
+- A node checks every block itself, so you don't have to trust anyone. Running a node doesn't need any ETH.
+- Most wallets use a provider's node. Running your own node gives you more privacy and resists censorship.
 
-## Đọc tiếp
+## Read next
 
-- [Đồng thuận](./consensus.mdx): các nút thống nhất với nhau thế nào
-- [Trình xác thực](./validators.mdx)
+- [Consensus](./consensus.mdx): how nodes come to agree with each other
+- [Validators](./validators.mdx)

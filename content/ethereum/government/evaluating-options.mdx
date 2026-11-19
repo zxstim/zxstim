@@ -1,71 +1,71 @@
 ---
-title: "Đánh giá Ethereum: chuỗi công khai, chuỗi riêng hay Layer 2"
-description: Mười một câu hỏi Quỹ Ethereum đề xuất để đánh giá Ethereum, so với các chuỗi công khai khác và với chuỗi riêng. Kèm những điểm mà tài liệu của Quỹ nói ít.
+title: "Evaluating Ethereum: public chain, private chain or Layer 2"
+description: Eleven questions the Ethereum Foundation proposes for evaluating Ethereum, compared with other public chains and with private chains. Plus the points the Foundation's material says little about.
 sources:
   - https://publicsector.ethereum.foundation/evaluating-ethereum/
   - https://publicsector.ethereum.foundation/docs/openzeppelin-technical-risk-assessment.pdf
   - https://ethereum.org/energy-consumption/
 ---
 
-Trang "Đánh giá Ethereum" của Quỹ Ethereum (EF) đặt 11 câu hỏi, chia làm ba nhóm. Dưới đây là các câu hỏi và câu trả lời của EF, tóm tắt lại, kèm nhận xét của wiki khi cần. Cuối trang là những điểm EF ít nhắc tới.
+The Ethereum Foundation's (EF) "Evaluating Ethereum" page asks 11 questions, in three groups. Below are the questions and the EF's answers, summarized, with this wiki's comments where needed. At the end of the page are the points the EF rarely mentions.
 
-## Dùng Ethereum nghĩa là gì trong thực tế
+## What using Ethereum means in practice
 
-1. **Có giữ kín được thông tin nhạy cảm không?** EF: được. Dữ liệu ở lại hệ thống hiện có, và các phương pháp bảo vệ quyền riêng tư cho phép kiểm tra một điều mà không lộ dữ liệu. Xem [Đưa gì lên chuỗi](./what-goes-onchain.mdx).
-2. **Tốn bao nhiêu?** Đọc là miễn phí, chỉ ghi mới tốn phí. EF khuyên tính cả chi phí của toàn bộ vòng đời, gồm cả việc phụ thuộc vào nhà cung cấp.
-3. **Ảnh hưởng tới môi trường?** Từ năm 2022, lượng điện tiêu thụ giảm khoảng 99,95%. Trung tâm Tài chính Thay thế Cambridge (CCAF) ước tính năm 2026 khoảng 7,87 GWh mỗi năm, tương đương khoảng 2.900 hộ gia đình ở Anh, cho hơn 524 triệu giao dịch trong năm 2025.
-   - Nhận xét: hướng dẫn của chính EF đưa ra một con số khác, thấp hơn khoảng ba lần. Các ước tính còn chênh nhau đáng kể.
-4. **Có phải giao quyền kiểm soát không?** EF: không. Cơ quan vẫn quyết định chính sách, điều kiện, tuân thủ, quyền truy cập và vận hành.
-   - Nhận xét: đúng với phần ứng dụng của cơ quan. Nhưng quy tắc của chính mạng lưới (qua các đợt [nâng cấp](../basics/how-it-works/upgrades.mdx)) và mức phí thì không cơ quan nào quyết định được.
+1. **Can sensitive information be kept confidential?** EF: yes. Data stays in existing systems, and privacy-preserving methods let you check something without revealing the data. See [What goes onchain](./what-goes-onchain.mdx).
+2. **How much does it cost?** Reading is free; only writing costs a fee. The EF advises counting the cost over the whole lifecycle, including dependence on vendors.
+3. **What's the environmental impact?** Since 2022, electricity use has fallen by about 99.95%. The Cambridge Centre for Alternative Finance (CCAF) estimates about 7.87 GWh a year in 2026, about as much as 2,900 UK households, for more than 524 million transactions in 2025.
+   - Comment: the EF's own guidance gives a different figure, about three times lower. Estimates still differ considerably.
+4. **Does it mean giving up control?** EF: no. The agency still decides policy, conditions, compliance, access and operations.
+   - Comment: true for the agency's own application. But no agency gets to decide the rules of the network itself (set through [upgrades](../basics/how-it-works/upgrades.mdx)) or the level of fees.
 
-## So với các chuỗi công khai khác
+## Compared with other public chains
 
-EF chỉ dựa vào một nguồn cho nhóm câu hỏi này: báo cáo đánh giá rủi ro kỹ thuật của OpenZeppelin (2026), so sánh sáu mạng.
+The EF relies on just one source for this group of questions: OpenZeppelin's technical risk assessment report (2026), which compares six networks.
 
-5. **Một lỗi phần mềm lan rộng tới đâu?** Ethereum có nhiều phần mềm nút độc lập do các nhóm khác nhau viết, nên lỗi ở một phần mềm không làm hỏng cả mạng. Một số mạng khác chỉ có một phần mềm chiếm ưu thế. Xem [Nút](../basics/how-it-works/nodes.mdx).
-6. **Ai được tham gia vận hành mạng?** Ethereum mở cho bất kỳ ai. Một số mạng khác chỉ có nhóm trình xác thực định sẵn, được bầu hoặc bị giới hạn.
-7. **Ai thay đổi được quy tắc?** Ethereum dùng quy trình đề xuất công khai. Một số mạng khác do một quỹ hoặc một ủy ban quyết định.
-   - EF thừa nhận: mạng ít trình xác thực, hoặc do một quỹ điều hành, có thể phối hợp và ra quyết định nhanh hơn. Quy trình mở của Ethereum có thể chậm hơn.
+5. **How far does a software bug spread?** Ethereum has many independent node clients written by different teams, so a bug in one client doesn't break the whole network. Some other networks have only one dominant client. See [Nodes](../basics/how-it-works/nodes.mdx).
+6. **Who can take part in running the network?** Ethereum is open to anyone. Some other networks have only a preset, elected or capped group of validators.
+7. **Who can change the rules?** Ethereum uses a public proposal process. On some other networks, a foundation or a committee decides.
+   - The EF admits: networks with few validators, or run by a foundation, can coordinate and make decisions faster. Ethereum's open process can be slower.
 
-## So với chuỗi riêng
+## Compared with private chains
 
-**Chuỗi riêng** (còn gọi là chuỗi cấp phép, permissioned) là chuỗi khối chỉ những bên được duyệt mới được vận hành, thường do một cơ quan hoặc một liên minh lập ra.
+A **private chain** (also called a permissioned chain) is a blockchain that only approved parties may run, usually set up by an agency or a consortium.
 
-8. **Ai được tham gia vận hành?** Ethereum: không cần xin phép. Chuỗi riêng: chỉ bên được duyệt.
-9. **Ai tự kiểm tra được sổ?** Ethereum: bất kỳ ai. Chuỗi riêng: chỉ các thành viên, hoặc qua hạ tầng của liên minh.
-10. **Ai kiểm soát mạng?** Ethereum: không một cơ quan nào. Chuỗi riêng: bên vận hành hoặc ban quản trị.
-11. **Điều gì giữ cho mạng chạy lâu dài?** Ethereum: nhiều bên độc lập cùng duy trì. Chuỗi riêng: cần đầu tư liên tục; nếu không, cơ quan có thể phải tự vận hành hoặc chuyển đi nơi khác.
+8. **Who can take part in running it?** Ethereum: no permission needed. Private chain: approved parties only.
+9. **Who can check the ledger for themselves?** Ethereum: anyone. Private chain: only members, or through the consortium's infrastructure.
+10. **Who controls the network?** Ethereum: no single body. Private chain: the operator or governing board.
+11. **What keeps the network running over the long term?** Ethereum: many independent parties maintain it together. Private chain: it needs ongoing investment; otherwise the agency may have to run it itself or move elsewhere.
 
-## Những gì tài liệu của EF ít nói
+## What the EF's material says little about
 
-- **Chuỗi riêng cũng có điểm mạnh.** Kiểm soát được ai tham gia, chi phí ổn định và dự toán được, không phải giữ ETH để trả phí, dữ liệu không công khai cho cả thế giới, và quyết định nhanh. Phần so sánh với chuỗi riêng của EF chỉ nêu điểm yếu của chuỗi riêng.
-- **Layer 2 là một lựa chọn ở giữa.** [Layer 2](../basics/how-it-works/layer-2.mdx) có phí thấp hơn, tùy chỉnh được, và ghi dữ liệu về Ethereum. Nhưng phần lớn Layer 2 vẫn có một bộ sắp xếp do một bên vận hành và hợp đồng có thể bị nâng cấp. Trang của EF cho khu vực công không bàn tới các giả định tin cậy này. Kiểm tra từng mạng trên [ETHBEAT](https://ethbeat.org) (trước đây là L2BEAT).
-- **Câu hỏi đầu tiên vẫn là có cần chuỗi khối không.** Xem [Ý tưởng ứng dụng](./use-case-ideas.mdx).
+- **Private chains have strengths too.** Control over who takes part, stable and predictable costs, no need to hold ETH to pay fees, data that isn't public to the whole world, and fast decisions. The EF's comparison with private chains lists only their weaknesses.
+- **Layer 2 is a middle option.** [Layer 2s](../basics/how-it-works/layer-2.mdx) have lower fees, can be customized, and write their data back to Ethereum. But most Layer 2s still have a sequencer run by one party and contracts that can be upgraded. The EF's public-sector site doesn't discuss these trust assumptions. Check each network on [ETHBEAT](https://ethbeat.org) (formerly L2BEAT).
+- **The first question is still whether you need a blockchain at all.** See [Use-case ideas](./use-case-ideas.mdx).
 
-## So sánh nhanh
+## Quick comparison
 
-| | Ethereum (mạng chính) | Layer 2 | Chuỗi riêng |
+| | Ethereum (mainnet) | Layer 2 | Private chain |
 |---|---|---|---|
-| Ai tự kiểm tra được | Bất kỳ ai | Bất kỳ ai, nếu dữ liệu được đăng lên Ethereum | Thành viên |
-| Ai vận hành | Hàng nghìn bên độc lập | Thường một công ty vận hành bộ sắp xếp | Bên được duyệt |
-| Ai đổi quy tắc | Quy trình công khai | Bên vận hành, trong giới hạn hợp đồng cho phép | Ban quản trị |
-| Phí | Trả bằng ETH, thay đổi theo độ đông | Thấp hơn nhiều | Do bên vận hành định |
-| Dữ liệu | Công khai | Thường công khai | Chỉ thành viên xem |
-| Rủi ro chính | Phí biến động, dữ liệu công khai | Bên vận hành, mức độ chín muồi | Phụ thuộc bên vận hành, khó cho người ngoài kiểm tra |
+| Who can check for themselves | Anyone | Anyone, if the data is posted to Ethereum | Members |
+| Who runs it | Thousands of independent parties | Usually one company running the sequencer | Approved parties |
+| Who changes the rules | Public process | The operator, within the limits the contracts allow | Governing board |
+| Fees | Paid in ETH, vary with how busy the network is | Much lower | Set by the operator |
+| Data | Public | Usually public | Visible to members only |
+| Main risks | Volatile fees, public data | The operator, level of maturity | Dependence on the operator, hard for outsiders to check |
 
-## Tóm tắt
+## Summary
 
-- EF đề xuất 11 câu hỏi: về thực tế khi dùng, so với các chuỗi công khai khác, và so với chuỗi riêng.
-- Ethereum mạnh ở chỗ ai cũng tự kiểm tra được và không ai một mình kiểm soát. Chuỗi riêng mạnh ở kiểm soát, chi phí ổn định và giữ kín dữ liệu.
-- Layer 2 nằm ở giữa: rẻ và linh hoạt, nhưng cần xem kỹ ai vận hành và ai nâng cấp được hợp đồng.
+- The EF proposes 11 questions: about what using it means in practice, compared with other public chains, and compared with private chains.
+- Ethereum's strength is that anyone can check it for themselves and no one controls it alone. Private chains are strong on control, stable costs and keeping data confidential.
+- Layer 2 sits in the middle: cheap and flexible, but look carefully at who runs it and who can upgrade the contracts.
 
-## Đọc tiếp
+## Read next
 
-- [Rủi ro và trách nhiệm](./risks-and-accountability.mdx)
+- [Risks and accountability](./risks-and-accountability.mdx)
 - [Layer 2](../basics/how-it-works/layer-2.mdx)
 
-## Nguồn
+## Sources
 
-- Quỹ Ethereum: [Đánh giá Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/)
+- Ethereum Foundation: [Evaluating Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/)
 - OpenZeppelin: [Technical Risk Assessment on Blockchain Networks](https://publicsector.ethereum.foundation/docs/openzeppelin-technical-risk-assessment.pdf) (2026)
-- ethereum.org: [Mức tiêu thụ năng lượng](https://ethereum.org/energy-consumption/)
+- ethereum.org: [Energy consumption](https://ethereum.org/energy-consumption/)

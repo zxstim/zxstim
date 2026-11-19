@@ -1,6 +1,6 @@
 ---
-title: Đọc một giao dịch
-description: Trình khám phá khối cho bạn tự tra mọi giao dịch, khối và địa chỉ trên Ethereum. Biết đọc trang giao dịch là biết tiền của mình đã đi đâu.
+title: Reading a transaction
+description: A block explorer lets you look up any transaction, block or address on Ethereum yourself. If you can read a transaction page, you can see where your money went.
 sources:
   - https://ethereum.org/developers/docs/data-and-analytics/block-explorers/
   - https://ethereum.org/developers/docs/transactions/
@@ -8,62 +8,62 @@ sources:
   - https://ethereum.org/guides/how-to-revoke-token-access/
 ---
 
-Ethereum không có tổng đài để hỏi "tiền của tôi đã tới chưa". Nhưng vì mọi dữ liệu đều công khai, bạn có thể tự tra bằng **trình khám phá khối** (block explorer): một trang web hiển thị giao dịch, khối và địa chỉ trên Ethereum.
+Ethereum has no hotline you can call to ask "has my money arrived yet?". But because all the data is public, you can check for yourself with a **block explorer**: a website that shows transactions, blocks and addresses on Ethereum.
 
-Có nhiều trình khám phá khối. Etherscan được dùng nhiều nhất. Blockscout và Otterscan là mã nguồn mở. Beaconcha.in hiển thị lớp đồng thuận (khe, kỷ nguyên, trình xác thực). Ethplorer chuyên về token và có giao diện tiếng Việt. Tất cả đều do bên thứ ba vận hành, đọc từ cùng một chuỗi khối.
+There are many block explorers. Etherscan is the most widely used. Blockscout and Otterscan are open source. Beaconcha.in shows the consensus layer (slots, epochs, validators). Ethplorer specializes in tokens and has a Vietnamese-language interface. All of them are run by third parties and read from the same blockchain.
 
 <ExplorerScene />
 
-## Trang giao dịch có gì?
+## What's on a transaction page?
 
-Dán **mã băm giao dịch** (transaction hash) vào ô tìm kiếm. Ví thường có nút "xem trên trình khám phá khối" sau khi gửi.
+Paste the **transaction hash** into the search box. Wallets usually show a "view on block explorer" button after you send.
 
-| Mục | Nghĩa |
+| Field | Meaning |
 |---|---|
-| Trạng thái | Đang chờ, thành công hay thất bại |
-| Khối | Khối nào chứa giao dịch. Xem [Khối](../how-it-works/blocks.mdx) |
-| Thời gian | Lúc khối được tạo |
-| Từ, Tới | Địa chỉ gửi và địa chỉ nhận. "Tới" có thể là một [hợp đồng thông minh](../how-it-works/smart-contracts.mdx) |
-| Giá trị | Số ETH được chuyển |
-| Token đã chuyển | Nếu giao dịch chuyển token, phần này cho biết token nào, bao nhiêu, cho ai |
-| Phí giao dịch | Tổng phí đã trả. Một phần bị đốt, phần còn lại cho trình xác thực |
-| Giới hạn gas, gas đã dùng | Bạn cho phép tối đa bao nhiêu gas, và thực tế dùng bao nhiêu. Xem [Gas](../how-it-works/gas.mdx) |
-| Phí cơ sở, phí ưu tiên | Giá mỗi đơn vị gas, tính bằng gwei |
-| Nonce | Số thứ tự giao dịch của địa chỉ gửi, đếm từ 0. Xem [Chữ ký số](../how-it-works/digital-signatures.mdx#nonce-mỗi-giao-dịch-chỉ-chạy-một-lần) |
-| Dữ liệu đầu vào | Lệnh gửi tới hợp đồng. Nếu mã nguồn hợp đồng đã được công khai, trình khám phá khối dịch lệnh này ra tên dễ đọc |
+| Status | Pending, successful or failed |
+| Block | Which block contains the transaction. See [Blocks](../how-it-works/blocks.mdx) |
+| Timestamp | When the block was created |
+| From, To | The sending address and the receiving address. "To" can be a [smart contract](../how-it-works/smart-contracts.mdx) |
+| Value | How much ETH was transferred |
+| Tokens transferred | If the transaction moved tokens, this shows which token, how much, and to whom |
+| Transaction fee | The total fee paid. Part of it is burned, the rest goes to the validator |
+| Gas limit, gas used | The most gas you allowed, and how much was actually used. See [Gas](../how-it-works/gas.mdx) |
+| Base fee, priority fee | The price per unit of gas, in gwei |
+| Nonce | The sending address's transaction number, counting from 0. See [Digital signatures](../how-it-works/digital-signatures.mdx#nonce-each-transaction-runs-only-once) |
+| Input data | The instruction sent to the contract. If the contract's source code has been published, the block explorer decodes it into a readable name |
 
-## Giao dịch đã chắc chắn chưa?
+## Is the transaction final yet?
 
-"Thành công" nghĩa là giao dịch đã nằm trong một khối. Khoảng 13 tới 19 phút sau, khối đó đạt [tính cuối cùng](../how-it-works/blocks.mdx#khi-nào-khối-không-thể-đảo-ngược) và gần như không thể đảo ngược. Các trang về khối và kỷ nguyên thường ghi rõ khối đã đạt tính cuối cùng hay chưa.
+"Success" means the transaction is in a block. About 13 to 19 minutes later, that block reaches [finality](../how-it-works/blocks.mdx#when-can-a-block-no-longer-be-reversed) and becomes practically irreversible. Pages for blocks and epochs usually say clearly whether a block has been finalized yet.
 
-- **Đang chờ** (pending): giao dịch chưa vào khối, thường do phí ưu tiên thấp, hoặc do một giao dịch trước của bạn (nonce nhỏ hơn) còn kẹt.
-- **Thất bại** (failed): giao dịch đã vào khối nhưng bị hoàn tác, ví dụ do hết gas hoặc hợp đồng từ chối. Phí cho phần đã chạy vẫn mất.
+- **Pending**: the transaction isn't in a block yet, usually because the priority fee is too low, or because an earlier transaction of yours (with a lower nonce) is still stuck.
+- **Failed**: the transaction made it into a block but was reverted, for example because it ran out of gas or the contract rejected it. You still pay the fee for the part that ran.
 
-## Trang địa chỉ và trang khối
+## Address pages and block pages
 
-- **Trang địa chỉ** cho thấy số dư ETH, các token đang giữ và toàn bộ lịch sử giao dịch. Ai cũng xem được: xem [Quyền riêng tư](./privacy.mdx).
-- **Trang hợp đồng** có thêm người tạo, giao dịch tạo, và mã nguồn nếu đã được công khai.
-- **Trang khối** cho thấy số khối, thời gian, số giao dịch, gas đã dùng trên giới hạn, phí cơ sở, lượng phí bị đốt và mã băm của khối cha.
+- **An address page** shows the ETH balance, the tokens held and the full transaction history. Anyone can see it: see [Privacy](./privacy.mdx).
+- **A contract page** also shows who created it, the creation transaction, and the source code if it has been published.
+- **A block page** shows the block number, time, number of transactions, gas used out of the limit, base fee, how much in fees was burned, and the hash of the parent block.
 
-## Dùng trình khám phá khối để tự bảo vệ
+## Using a block explorer to protect yourself
 
-- **Kiểm tra token có thật không.** Ai cũng tạo được token mang tên bất kỳ. Lấy địa chỉ hợp đồng chính thức từ trang của dự án rồi so với trình khám phá khối.
-- **Kiểm tra và thu hồi quyền chi tiêu.** Các công cụ như Revoke.cash hay trang kiểm tra quyền của Etherscan liệt kê những hợp đồng bạn đã cho phép dùng token của mình. Thu hồi quyền không làm mất tiền.
-- **Báo cáo địa chỉ lừa đảo** trên các trang như Chainabuse.
+- **Check whether a token is real.** Anyone can create a token with any name. Get the official contract address from the project's own site and compare it on the block explorer.
+- **Check and revoke spending permissions.** Tools such as Revoke.cash or Etherscan's token approval checker list the contracts you have allowed to spend your tokens. Revoking a permission doesn't cost you your funds.
+- **Report scam addresses** on sites such as Chainabuse.
 
-Nhãn trình khám phá khối gắn cho một địa chỉ ("lừa đảo", tên sàn…) chỉ để tham khảo, không phải sự thật tuyệt đối.
+The labels a block explorer puts on an address ("scam", an exchange's name…) are for reference only, not absolute truth.
 
-<Callout type="error" title="Thận trọng">
-Không ai đảo ngược được giao dịch đã vào khối. Người tự xưng là "hỗ trợ" của Etherscan, của ví hay của Ethereum, xin mã băm giao dịch rồi đòi cụm từ khôi phục hoặc phí "mở khóa", đều là kẻ lừa đảo. Hãy gõ địa chỉ trình khám phá khối trực tiếp, đừng bấm vào đường dẫn lạ.
+<Callout type="error" title="Caution">
+No one can reverse a transaction once it is in a block. Anyone who claims to be "support" for Etherscan, for a wallet or for Ethereum, asks for your transaction hash and then demands your recovery phrase or an "unlock" fee, is a scammer. Type the block explorer's address in yourself; don't click on unfamiliar links.
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Trình khám phá khối cho bạn tự tra mọi giao dịch, khối và địa chỉ.
-- Trang giao dịch cho biết trạng thái, khối, ai gửi gì cho ai, phí, gas và nonce.
-- Dùng nó để kiểm tra token, thu hồi quyền chi tiêu và tự kiểm chứng thay vì tin lời người khác.
+- A block explorer lets you look up any transaction, block or address yourself.
+- A transaction page shows the status, the block, who sent what to whom, the fee, gas and the nonce.
+- Use it to check tokens, revoke spending permissions, and verify things yourself instead of taking someone's word for it.
 
-## Đọc tiếp
+## Read next
 
-- [Token, stablecoin và NFT](./tokens-stablecoins-nfts.mdx)
-- [Quyền riêng tư](./privacy.mdx): ai cũng tra được như bạn
+- [Tokens, stablecoins and NFTs](./tokens-stablecoins-nfts.mdx)
+- [Privacy](./privacy.mdx): anyone can look things up just like you can

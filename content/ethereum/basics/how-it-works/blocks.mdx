@@ -1,83 +1,83 @@
 ---
-title: Khối
-description: Cứ 12 giây, một khối mới gom các giao dịch lại, ghi mã băm của khối trước và được mọi nút kiểm tra trước khi nối vào chuỗi.
+title: Blocks
+description: Every 12 seconds, a new block bundles transactions together, records the hash of the previous block, and is checked by every node before it's added to the chain.
 sources:
   - https://ethereum.org/developers/docs/blocks/
   - https://ethereum.org/developers/docs/gas/
   - https://ethereum.org/developers/docs/consensus-mechanisms/pos/
 ---
 
-**Khối** (block) là một lô giao dịch, kèm mã băm của khối liền trước. Các khối nối lại thành [chuỗi khối](./blockchain.mdx).
+A **block** is a batch of transactions, along with the hash of the block right before it. Blocks link together to form a [blockchain](./blockchain.mdx).
 
-## Vì sao phải gom thành khối?
+## Why bundle transactions into blocks?
 
-Hàng nghìn nút trên khắp thế giới cần giữ cùng một dữ liệu. Nếu mỗi giao dịch được ghi ngay khi tới, các nút sẽ nhận theo thứ tự khác nhau và không bao giờ khớp với nhau. Gom giao dịch thành khối, cách nhau một khoảng thời gian cố định, cho cả mạng lưới đủ thời gian để thống nhất. Thứ tự các khối, và thứ tự giao dịch trong mỗi khối, đều rõ ràng.
+Thousands of nodes around the world need to hold the same data. If each transaction were recorded the moment it arrived, nodes would receive them in different orders and would never match up. Bundling transactions into blocks, spaced a fixed time apart, gives the whole network enough time to agree. The order of the blocks, and the order of the transactions inside each block, are both clear.
 
-## Cứ 12 giây một khe
+## A slot every 12 seconds
 
-Thời gian trên Ethereum chia thành các **khe** (slot) dài 12 giây. Cứ 32 khe làm thành một **kỷ nguyên** (epoch), dài 6,4 phút.
+Time on Ethereum is split into **slots** that are 12 seconds long. Every 32 slots make up an **epoch**, which lasts 6.4 minutes.
 
-- Mỗi khe, một trình xác thực được chọn ngẫu nhiên làm **người đề xuất** (proposer) khối.
-- Nếu người đề xuất vắng mặt, khe đó trống, không có khối.
-- Vì vậy thời gian giữa hai khối là 12 giây, hoặc bội số của 12 giây. Với cơ chế "đào" (bằng chứng công việc) mà Bitcoin vẫn dùng và Ethereum đã dùng tới năm 2022, thời gian ra khối là ngẫu nhiên. Với bằng chứng cổ phần, nó cố định.
+- In each slot, one validator is chosen at random to be the block **proposer**.
+- If the proposer is absent, the slot is empty and there's no block.
+- So the time between two blocks is 12 seconds, or a multiple of 12 seconds. With "mining" (proof of work), which Bitcoin still uses and Ethereum used until 2022, the time between blocks is random. With proof of stake, it's fixed.
 
-## Một khối ra đời thế nào
+## How a block is made
 
 <BlockAnatomy />
 
-1. **Gom giao dịch.** Giao dịch được chọn từ **mempool** (hàng chờ giao dịch) và xếp vào khối. Ngày nay phần lớn khối do các **người xây khối** (block builder) chuyên nghiệp xây rồi bán cho người đề xuất qua MEV-Boost. Hình động ở [trang chủ](/ethereum) cho thấy quá trình này.
-2. **Chạy giao dịch.** Các giao dịch được chạy theo thứ tự, ra trạng thái mới của Ethereum: số dư mới, dữ liệu hợp đồng mới.
-3. **Ghi phần đầu khối.** Phần đầu khối ghi lại các thông tin chính, như bảng dưới đây.
-4. **Công bố và kiểm tra.** Các nút khác tự chạy lại mọi giao dịch trong khối. Nếu kết quả khớp với gốc trạng thái ghi trong khối, khối hợp lệ. Các trình xác thực bỏ phiếu cho khối, và khối được nối vào chuỗi.
+1. **Gather transactions.** Transactions are picked from the **mempool** (the queue of waiting transactions) and placed into a block. Today most blocks are built by professional **block builders**, who then sell them to proposers through MEV-Boost. The animation on the [home page](/ethereum) shows this process.
+2. **Run the transactions.** The transactions are run in order, producing Ethereum's new state: new balances, new contract data.
+3. **Write the block header.** The block header records the key information, as in the table below.
+4. **Publish and check.** Other nodes rerun every transaction in the block for themselves. If the result matches the state root recorded in the block, the block is valid. Validators vote for the block, and it's added to the chain.
 
-## Khi nào khối không thể đảo ngược?
+## When can a block no longer be reversed?
 
-Khối vừa được nối vào chuỗi thì giao dịch của bạn đã "thành công", nhưng về lý thuyết khối đó vẫn có thể bị thay, dù rất hiếm. Khối chỉ chắc chắn khi đạt **tính cuối cùng** (finality).
+Once a block has just been added to the chain, your transaction has "succeeded", but in theory that block could still be replaced, though it's very rare. A block is only certain once it reaches **finality**.
 
 <FinalityScene />
 
-1. **Mốc.** Khối đầu tiên của mỗi kỷ nguyên là một **mốc** (checkpoint). Nếu khe đầu kỷ nguyên trống, khối gần nhất trước nó làm mốc.
-2. **Bỏ phiếu.** Trong mỗi kỷ nguyên, mọi trình xác thực đang hoạt động bỏ một phiếu cho mốc của kỷ nguyên đó. Phiếu tính theo số ETH đặt cọc.
-3. **Được chứng minh.** Khi phiếu cho một mốc đạt 2/3 tổng số ETH đặt cọc, mốc đó **được chứng minh** (justified).
-4. **Tính cuối cùng.** Khi mốc kế tiếp cũng được chứng minh, mốc trước đạt tính cuối cùng, kéo theo mọi khối trước nó.
+1. **Checkpoint.** The first block of each epoch is a **checkpoint**. If the first slot of the epoch is empty, the closest block before it serves as the checkpoint.
+2. **Voting.** In each epoch, every active validator casts one vote for that epoch's checkpoint. Votes are weighted by the amount of staked ETH.
+3. **Justified.** When the votes for a checkpoint reach 2/3 of all staked ETH, that checkpoint is **justified**.
+4. **Finality.** When the next checkpoint is also justified, the earlier checkpoint reaches finality, and so does every block before it.
 
-Vì vậy, từ lúc vào khối, giao dịch của bạn chờ 2 tới 3 kỷ nguyên, tức khoảng 13 tới 19 phút, tùy nó nằm ở đầu hay cuối kỷ nguyên. Không có quy tắc 2/3 cho từng khối: phiếu được tính theo từng kỷ nguyên.
+So from the moment it's included in a block, your transaction waits 2 to 3 epochs, about 13 to 19 minutes, depending on whether it lands near the start or the end of an epoch. There's no 2/3 rule for each individual block: votes are counted per epoch.
 
-Muốn đảo ngược một khối đã đạt tính cuối cùng, ít nhất 1/3 tổng số ETH đặt cọc phải ký cho hai nhánh mâu thuẫn. Việc đó bị phát hiện và bị cắt tiền cọc, nên đảo ngược tốn ít nhất 1/3 số ETH đang bảo vệ mạng lưới. Nếu các trình xác thực nắm hơn 1/3 tiền cọc ngừng hoạt động, chuỗi vẫn ra khối nhưng tạm thời không đạt tính cuối cùng, cho tới khi đủ 2/3 trở lại. Xem [Đồng thuận](./consensus.mdx#bằng-chứng-cổ-phần).
+To reverse a block that has reached finality, at least 1/3 of all staked ETH would have to sign for two conflicting branches. That gets detected and slashed, so reversing a block costs at least 1/3 of the ETH protecting the network. If validators holding more than 1/3 of the stake stop working, the chain keeps producing blocks but temporarily doesn't reach finality, until 2/3 is back. See [Consensus](./consensus.mdx#proof-of-stake).
 
-## Trong một khối có gì?
+## What's inside a block?
 
-| Phần | Nghĩa |
+| Part | Meaning |
 |---|---|
-| Khe | Khối thuộc khe nào |
-| Người đề xuất | Trình xác thực được chọn cho khe này |
-| Mã băm khối cha | Sợi dây nối với khối trước |
-| Gốc trạng thái | Một mã băm tóm tắt toàn bộ số dư và dữ liệu của Ethereum sau khối này |
-| Thời gian | Lúc khối được tạo |
-| Giới hạn gas, gas đã dùng, phí cơ sở | Khối lớn cỡ nào và phí đang ở mức nào |
-| Giao dịch | Danh sách giao dịch, theo đúng thứ tự đã chạy |
-| Chứng thực | Phiếu bầu của các trình xác thực cho những khối trước |
+| Slot | Which slot the block belongs to |
+| Proposer | The validator chosen for this slot |
+| Parent block hash | The thread that ties it to the previous block |
+| State root | A hash that sums up all of Ethereum's balances and data after this block |
+| Timestamp | When the block was created |
+| Gas limit, gas used, base fee | How big the block is and where fees are at |
+| Transactions | The list of transactions, in the exact order they were run |
+| Attestations | Validators' votes for earlier blocks |
 
-Một khối của Ethereum thường chứa từ vài chục tới vài trăm giao dịch.
+An Ethereum block usually holds anywhere from a few dozen to a few hundred transactions.
 
-## Khối lớn cỡ nào?
+## How big is a block?
 
-Kích thước khối không đo bằng byte mà bằng **gas**, đơn vị đo lượng tính toán. Mỗi khối có một **giới hạn gas**, và một mức mục tiêu bằng một nửa giới hạn.
+Block size isn't measured in bytes but in **gas**, the unit that measures computation. Each block has a **gas limit**, and a target equal to half the limit.
 
-- Khối dùng nhiều gas hơn mục tiêu thì phí cơ sở của khối sau tăng, tối đa 12,5%. Dùng ít hơn thì phí giảm. Xem [Phí gas](../getting-started/gas-fees.mdx).
-- Các trình xác thực có thể nâng hoặc hạ giới hạn gas từng chút một qua mỗi khối. Theo ethereum.org, cuối năm 2025 giới hạn là 60 triệu gas. Con số này đang được nâng dần, nên hãy xem số liệu trực tiếp nếu bạn cần chính xác.
+- If a block uses more gas than the target, the next block's base fee goes up, by at most 12.5%. If it uses less, the fee goes down. See [Gas fees](../getting-started/gas-fees.mdx).
+- Validators can raise or lower the gas limit little by little with each block. According to ethereum.org, the limit was 60 million gas at the end of 2025. This number is being raised gradually, so check live data if you need the exact figure.
 
-Vì sao không làm khối thật lớn cho rẻ? Khối càng lớn thì máy chạy nút càng phải mạnh. Khi chỉ những máy rất mạnh mới chạy nổi, ít người tự chạy nút hơn, và mạng lưới dần tập trung vào tay một số ít. [Layer 2](./layer-2.mdx) là cách Ethereum mở rộng mà không phải đánh đổi điều đó.
+Why not make blocks really big so they're cheap? The bigger the blocks, the more powerful the computer needed to run a node. When only very powerful machines can keep up, fewer people run their own nodes, and the network gradually ends up in the hands of a few. [Layer 2](./layer-2.mdx) is how Ethereum scales without having to make that trade-off.
 
-## Tóm tắt
+## Summary
 
-- Khối là một lô giao dịch kèm mã băm của khối cha.
-- Mỗi khe 12 giây có tối đa một khối, do một trình xác thực được chọn ngẫu nhiên đề xuất.
-- Mọi nút tự chạy lại giao dịch để kiểm tra khối trước khi nối vào chuỗi.
-- Sau 2 tới 3 kỷ nguyên (khoảng 13 tới 19 phút), khối đạt tính cuối cùng và không thể đảo ngược nếu không mất ít nhất 1/3 tổng số ETH đặt cọc.
-- Kích thước khối được giới hạn bằng gas, để người bình thường vẫn chạy được nút.
+- A block is a batch of transactions plus the hash of its parent block.
+- Each 12-second slot has at most one block, proposed by a randomly chosen validator.
+- Every node reruns the transactions itself to check a block before adding it to the chain.
+- After 2 to 3 epochs (about 13 to 19 minutes), a block reaches finality and can't be reversed without losing at least 1/3 of all staked ETH.
+- Block size is capped with gas, so ordinary people can still run a node.
 
-## Đọc tiếp
+## Read next
 
 - [Layer 2](./layer-2.mdx)
-- [Chuỗi khối là gì?](./blockchain.mdx)
+- [What is a blockchain?](./blockchain.mdx)

@@ -1,62 +1,62 @@
 ---
-title: Địa chỉ và khóa
-description: Địa chỉ Ethereum được tính ra từ một cặp khóa. Địa chỉ cứ chia sẻ thoải mái; khóa riêng tư và cụm từ khôi phục thì phải giữ kín tuyệt đối.
+title: Addresses and keys
+description: An Ethereum address is derived from a pair of keys. Share your address freely; keep your private key and recovery phrase absolutely secret.
 sources:
   - https://ethereum.org/developers/docs/accounts/
   - https://ethereum.org/glossary/
 ---
 
-Địa chỉ Ethereum trông như thế này: `0x71C7656EC7ab88b098defB751B7401B5f6d8976F`. Bạn đưa nó cho người khác để nhận tiền, giống số tài khoản ngân hàng. Nhưng không có ngân hàng nào cấp địa chỉ này. Ví của bạn tự tính ra nó từ một cặp khóa.
+An Ethereum address looks like this: `0x71C7656EC7ab88b098defB751B7401B5f6d8976F`. You give it to other people so they can send you money, like a bank account number. But no bank issues this address. Your wallet calculates it on its own from a pair of keys.
 
-## Bạn giữ khóa, không giữ tiền
+## You hold keys, not money
 
-Tài sản của bạn luôn nằm trên chuỗi khối Ethereum, không nằm trong điện thoại. Thứ bạn thực sự giữ là **khóa riêng tư** (private key): chìa khóa duy nhất cho phép tiêu tài sản đứng tên địa chỉ của bạn.
+Your assets always live on the Ethereum blockchain, not on your phone. What you actually hold is your **private key**: the one key that lets you spend the assets held at your address.
 
-Vì vậy cần phân biệt:
+So it's worth telling these apart:
 
-- **Tài khoản** (account): một mục trên Ethereum, có địa chỉ, số dư và vài thông tin khác.
-- **Ví** (wallet): ứng dụng giúp bạn giữ khóa và dùng tài khoản. Mất điện thoại không làm mất tài khoản, nếu bạn còn cụm từ khôi phục.
+- **Account**: an entry on Ethereum with an address, a balance and a few other pieces of information.
+- **Wallet**: an app that helps you keep your keys and use your account. Losing your phone doesn't mean losing your account, as long as you still have your recovery phrase.
 
-Ethereum có hai loại tài khoản. Loại bạn dùng hằng ngày do khóa riêng tư điều khiển (ethereum.org gọi là tài khoản thuộc sở hữu bên ngoài, viết tắt **EOA**). Loại thứ hai là **tài khoản hợp đồng**: do mã của hợp đồng thông minh điều khiển, không có khóa riêng tư.
+Ethereum has two types of accounts. The kind you use every day is controlled by a private key (ethereum.org calls it an externally owned account, or **EOA** for short). The second kind is a **contract account**: it's controlled by smart contract code and has no private key.
 
-## Từ cụm từ khôi phục tới địa chỉ
+## From recovery phrase to address
 
 <KeysScene />
 
-1. **Cụm từ khôi phục.** Khi tạo ví, ví sinh ra một số ngẫu nhiên rất lớn và ghi lại thành 12 hoặc 24 từ. Một cụm từ có thể tạo ra nhiều tài khoản, nên ví thường cho bạn thêm tài khoản mà không cần cụm từ mới.
-2. **Khóa riêng tư.** Một số 256 bit, viết thành 64 ký tự thập lục phân. Số khóa có thể có lớn tới mức hai người gần như không bao giờ trùng nhau.
-3. **Khóa công khai.** Tính từ khóa riêng tư bằng thuật toán chữ ký số trên đường cong elliptic (ECDSA). Phép tính này chỉ đi một chiều.
-4. **Địa chỉ.** Lấy khóa công khai, băm bằng Keccak-256, giữ lại 20 byte cuối, rồi thêm `0x` phía trước. Kết quả là 42 ký tự: `0x` và 40 ký tự thập lục phân.
+1. **Recovery phrase.** When you create a wallet, it generates a very large random number and writes it down as 12 or 24 words. One phrase can create many accounts, so wallets usually let you add more accounts without a new phrase.
+2. **Private key.** A 256-bit number, written as 64 hexadecimal characters. There are so many possible keys that two people will almost never end up with the same one.
+3. **Public key.** Calculated from the private key with the elliptic curve digital signature algorithm (ECDSA). This calculation only goes one way.
+4. **Address.** Take the public key, hash it with Keccak-256, keep the last 20 bytes, then add `0x` in front. The result is 42 characters: `0x` followed by 40 hexadecimal characters.
 
-Không có bước nào đi ngược được. Biết địa chỉ hay khóa công khai, không ai suy ra được khóa riêng tư. Đó là lý do bạn có thể đăng địa chỉ lên mạng mà vẫn an toàn.
+None of these steps can be reversed. Knowing an address or a public key, nobody can work out the private key. That's why you can post your address online and still be safe.
 
-<Callout type="error" title="Thận trọng">
-Ai có khóa riêng tư hoặc cụm từ khôi phục là có toàn quyền với tài sản của bạn, và không ai lấy lại được cho bạn. Không chụp ảnh, không lưu lên đám mây, không gõ vào trang web nào, không đưa cho ai, kể cả người tự xưng là hỗ trợ kỹ thuật.
+<Callout type="error" title="Caution">
+Anyone who has your private key or recovery phrase has full control of your assets, and nobody can get them back for you. Don't take a photo of it, don't save it to the cloud, don't type it into any website and don't give it to anyone, including people who claim to be tech support.
 </Callout>
 
-## Chữ hoa, chữ thường trong địa chỉ
+## Uppercase and lowercase in addresses
 
-Bạn sẽ thấy cùng một địa chỉ khi viết thường toàn bộ, khi có lẫn chữ hoa. Cả hai đều chỉ cùng một tài khoản. Kiểu viết có chữ hoa là một cách kiểm tra lỗi gõ (checksum): nếu bạn gõ sai một ký tự, ví thường phát hiện ra.
+You'll see the same address written sometimes in all lowercase and sometimes with a mix of uppercase letters. Both point to the same account. The mixed-case version is a way to catch typos (a checksum): if you mistype a character, your wallet will usually notice.
 
-## Kiểm tra địa chỉ trước khi gửi
+## Check the address before you send
 
-Giao dịch trên Ethereum không đảo ngược được. Gửi nhầm địa chỉ là mất. Hãy:
+Transactions on Ethereum can't be reversed. Send to the wrong address and the money is gone. So:
 
-- **Sao chép và dán**, đừng gõ tay.
-- **So nhiều ký tự**, không chỉ vài ký tự đầu và cuối. Kẻ gian tạo địa chỉ giống phần đầu và phần cuối của địa chỉ bạn hay dùng, rồi gửi cho bạn một giao dịch nhỏ để địa chỉ giả nằm trong lịch sử giao dịch của bạn. Đừng sao chép địa chỉ từ lịch sử giao dịch.
-- **Gửi thử một khoản nhỏ** khi gửi số tiền lớn tới địa chỉ mới.
+- **Copy and paste**; don't type it by hand.
+- **Compare many characters**, not just the first and last few. Scammers create addresses that match the beginning and end of an address you use often, then send you a tiny transaction so the fake address shows up in your transaction history. Don't copy addresses from your transaction history.
+- **Send a small test amount** first when you're sending a large sum to a new address.
 
-<Callout type="warn" title="Cảnh báo">
-Một địa chỉ có thể dùng trên Ethereum và trên nhiều mạng khác dùng cùng định dạng (như các Layer 2). Số dư ở mỗi mạng là riêng. Khi gửi hoặc rút từ sàn, hãy chọn đúng mạng.
+<Callout type="warn" title="Warning">
+One address can be used on Ethereum and on many other networks that use the same format (such as Layer 2s). The balance on each network is separate. When depositing to or withdrawing from an exchange, pick the right network.
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Ví tính ra khóa riêng tư từ cụm từ khôi phục, khóa công khai từ khóa riêng tư, rồi địa chỉ từ khóa công khai.
-- Mỗi bước chỉ đi một chiều: địa chỉ chia sẻ được, khóa và cụm từ phải giữ kín.
-- Địa chỉ gồm `0x` và 40 ký tự. Kiểm tra kỹ trước khi gửi.
+- Your wallet derives the private key from the recovery phrase, the public key from the private key, and then the address from the public key.
+- Each step only goes one way: you can share your address, but your keys and recovery phrase must stay secret.
+- An address is `0x` followed by 40 characters. Check it carefully before you send.
 
-## Đọc tiếp
+## Read next
 
-- [Chữ ký số](./digital-signatures.mdx): khóa riêng tư được dùng để làm gì
-- [Ví, tài khoản và cụm từ khôi phục](../getting-started/wallets-and-accounts.mdx): chọn ví và tạo tài khoản đầu tiên
+- [Digital signatures](./digital-signatures.mdx): what the private key is used for
+- [Wallets, accounts and recovery phrases](../getting-started/wallets-and-accounts.mdx): choose a wallet and create your first account

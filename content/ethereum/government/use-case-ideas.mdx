@@ -1,49 +1,49 @@
 ---
-title: Ý tưởng ứng dụng, chưa có dự án
-description: Sáu hướng Quỹ Ethereum gợi ý cho khu vực công, từ giám sát mua sắm công tới cấp phép xây dựng. Tất cả mới là ý tưởng, kèm những câu hỏi khó cho từng hướng.
+title: Use-case ideas, not projects yet
+description: Six directions the Ethereum Foundation suggests for the public sector, from monitoring public procurement to building permits. All are still just ideas, with hard questions for each.
 sources:
   - https://publicsector.ethereum.foundation/potential-applications/
   - https://publicsector.ethereum.foundation/institutional-engagement/
   - https://pse.dev/articles/state-of-private-voting-2026/state-of-private-voting-2026-v2.pdf
 ---
 
-Quỹ Ethereum (EF) gợi ý sáu hướng ứng dụng cho khu vực công, và tự ghi rõ đây là điểm khởi đầu để tìm hiểu, không phải báo cáo về dự án đã làm xong. Chưa có số liệu triển khai cho hướng nào.
+The Ethereum Foundation (EF) suggests six directions for public-sector use, and states clearly that they are a starting point for exploration, not reports on finished projects. None of them has deployment data yet.
 
-Trước khi đi vào từng hướng, hãy hỏi câu đầu tiên: **vấn đề này có thật sự cần một cuốn sổ chung mà không bên nào kiểm soát không?** Nếu đã có một cơ quan được mọi bên tin, một cơ sở dữ liệu thông thường thường là đủ. Chính nhóm làm việc với khu vực công của EF cũng nói kết quả trao đổi có thể là một cách làm không dùng Ethereum.
+Before going into each one, ask the first question: **does this problem really need a shared record book that no one party controls?** If there's already an agency every party trusts, an ordinary database is usually enough. The EF's own public-sector team also says that talking it through may end in an approach that doesn't use Ethereum.
 
-## Sáu hướng
+## Six directions
 
-1. **Giám sát mua sắm công.** Một cuốn sổ chung ghi các quyết định và phê duyệt, để cơ quan, nhà thầu và kiểm toán cùng đối chiếu.
-   - Câu hỏi khó: ai được ghi vào sổ, và phần nào của hồ sơ thầu được công khai.
-2. **Xét điều kiện mà lộ ít dữ liệu.** Chứng minh một điều kiện, ví dụ đủ tuổi, mà không lộ dữ liệu cá nhân khác. Cách làm: bằng chứng không kiến thức. Xem [Danh tính số và chứng chỉ](./identity-and-credentials.mdx).
-   - Câu hỏi khó: phải có giấy tờ số do cơ quan cấp trước, và tốc độ trên điện thoại rẻ (8 tới 10 giây trong thử nghiệm của EF).
-3. **Ngân sách có sự tham gia của người dân.** Đề xuất, bỏ phiếu, phân bổ và chi trả nằm trong một cuốn sổ theo dõi được. Cách làm: hợp đồng thông minh.
-   - Câu hỏi khó: bỏ phiếu bí mật mà vẫn đếm được, và mỗi người chỉ một phiếu. Báo cáo *State of Private Voting 2026* (PSE và Shutter) tổng hợp các cách đang được thử.
-4. **Truy xuất nguồn gốc thuốc.** Cơ quan y tế kiểm tra thuốc đến từ đâu và đã đi qua những đâu.
-   - Câu hỏi khó: dữ liệu nhập sai từ đầu vẫn sai, và mọi khâu trong chuỗi cung ứng phải cùng ghi.
-5. **Cấp phép xây dựng.** Hồ sơ, kết quả kiểm tra và quyết định được chia sẻ giữa các cơ quan, để người dân biết hồ sơ đang ở đâu và căn cứ của quyết định.
-   - Câu hỏi khó: dữ liệu cá nhân của người xin phép, và việc kết nối với hệ thống hiện có.
-6. **Cam kết khí hậu.** Cam kết, tiến độ và kết quả đánh giá được ghi lại để ai cũng theo dõi.
-   - Câu hỏi khó: phần lớn số liệu là tự báo cáo.
+1. **Monitoring public procurement.** A shared record book of decisions and approvals, so agencies, contractors and auditors can all cross-check it.
+   - Hard question: who is allowed to write to it, and which parts of the bid documents are made public.
+2. **Checking eligibility while revealing little data.** Proving a condition, such as being old enough, without revealing other personal data. How: zero-knowledge proofs. See [Digital identity and credentials](./identity-and-credentials.mdx).
+   - Hard question: an agency must first issue digital documents, and speed on cheap phones (8 to 10 seconds in the EF's test).
+3. **Participatory budgeting.** Proposals, votes, allocations and payouts all sit in one trackable record book. How: smart contracts.
+   - Hard question: keeping the ballot secret while still being able to count it, with one vote per person. The *State of Private Voting 2026* report (PSE and Shutter) brings together the approaches being tried.
+4. **Tracing medicines.** Health agencies check where a medicine came from and where it has been.
+   - Hard question: data entered wrong at the start stays wrong, and every link in the supply chain has to record.
+5. **Building permits.** Applications, inspection results and decisions are shared between agencies, so citizens know where their application is and what a decision was based on.
+   - Hard question: applicants' personal data, and connecting to existing systems.
+6. **Climate commitments.** Commitments, progress and evaluation results are recorded so anyone can follow them.
+   - Hard question: most of the figures are self-reported.
 
-## Những công cụ đi kèm
+## Tools that go with them
 
-EF cũng nêu một số cơ chế dùng chung cho nhiều hướng:
+The EF also lists some mechanisms shared across several directions:
 
-- **Giao dịch bí mật mà vẫn kiểm toán được:** người ngoài không xem được, nhưng kiểm toán viên được trao **khóa xem** (viewing key) thì xem được.
-- **Thanh toán riêng tư:** mỗi lần nhận tiền dùng một **địa chỉ dùng một lần** (stealth address), để người ngoài không nối các khoản với nhau. Xem [Quyền riêng tư](../basics/using-ethereum/privacy.mdx).
-- **Hồ sơ chính thức kiểm chứng được:** xác nhận có chữ ký của cơ quan, cùng mã băm của văn bản. Xem [Đưa gì lên chuỗi](./what-goes-onchain.mdx).
+- **Confidential transactions that can still be audited:** outsiders can't see them, but an auditor given a **viewing key** can.
+- **Private payments:** each incoming payment uses a **stealth address**, so outsiders can't link the payments together. See [Privacy](../basics/using-ethereum/privacy.mdx).
+- **Verifiable official records:** attestations signed by the agency, along with the document's hash. See [What goes onchain](./what-goes-onchain.mdx).
 
-## Tóm tắt
+## Summary
 
-- Sáu hướng: mua sắm công, xét điều kiện, ngân sách có sự tham gia, truy xuất thuốc, cấp phép xây dựng, cam kết khí hậu. Tất cả mới là ý tưởng.
-- Câu hỏi đầu tiên: có cần một cuốn sổ chung mà không bên nào kiểm soát không. Nếu không, một cơ sở dữ liệu là đủ.
+- Six directions: public procurement, eligibility checks, participatory budgeting, medicine tracing, building permits, climate commitments. All are still just ideas.
+- The first question: do you need a shared record book that no one party controls? If not, a database is enough.
 
-## Đọc tiếp
+## Read next
 
-- [Đánh giá Ethereum](./evaluating-options.mdx)
+- [Evaluating Ethereum](./evaluating-options.mdx)
 
-## Nguồn
+## Sources
 
-- Quỹ Ethereum: [Ứng dụng tiềm năng](https://publicsector.ethereum.foundation/potential-applications/), [Làm việc với các tổ chức](https://publicsector.ethereum.foundation/institutional-engagement/)
-- PSE và Shutter: [State of Private Voting 2026](https://pse.dev/articles/state-of-private-voting-2026/state-of-private-voting-2026-v2.pdf)
+- Ethereum Foundation: [Potential applications](https://publicsector.ethereum.foundation/potential-applications/), [Institutional engagement](https://publicsector.ethereum.foundation/institutional-engagement/)
+- PSE and Shutter: [State of Private Voting 2026](https://pse.dev/articles/state-of-private-voting-2026/state-of-private-voting-2026-v2.pdf)

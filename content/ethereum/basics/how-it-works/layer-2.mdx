@@ -1,6 +1,6 @@
 ---
 title: Layer 2
-description: Layer 2 chạy giao dịch bên ngoài Ethereum cho nhanh và rẻ, rồi ghi dữ liệu về Ethereum để thừa hưởng sự an toàn của nó. Rollup lạc quan, ZK-rollup và các loại khác khác nhau ở đâu.
+description: Layer 2 runs transactions outside Ethereum so they're fast and cheap, then writes the data back to Ethereum to inherit its security. How optimistic rollups, ZK-rollups and the other types differ.
 sources:
   - https://ethereum.org/layer-2/learn/
   - https://ethereum.org/developers/docs/scaling/
@@ -15,152 +15,152 @@ sources:
   - https://ethbeat.org
 ---
 
-Mỗi [khối](./blocks.mdx) của Ethereum chỉ chứa được một lượng giao dịch giới hạn, để người bình thường vẫn chạy được nút. Khi nhiều người dùng cùng lúc, phí tăng lên. **Layer 2** là cách giải quyết: chạy giao dịch ở nơi khác cho nhanh và rẻ, nhưng vẫn dựa vào Ethereum để giữ an toàn.
+Each Ethereum [block](./blocks.mdx) can only hold a limited number of transactions, so that ordinary people can still run a node. When lots of people use it at once, fees go up. **Layer 2** is the fix: run transactions somewhere else so they're fast and cheap, while still relying on Ethereum for security.
 
-Theo ethereum.org, Layer 2 là một chuỗi khối riêng, mở rộng Ethereum và thừa hưởng các bảo đảm an toàn của Ethereum. Ethereum khi đó được gọi là **Layer 1**. Những mạng tự lo an toàn theo cách khác, như chuỗi phụ, không được ethereum.org tính là Layer 2 (xem [phần cuối](#ngoài-rollup-còn-những-loại-nào)).
+According to ethereum.org, a Layer 2 is a separate blockchain that extends Ethereum and inherits Ethereum's security guarantees. Ethereum is then called **Layer 1**. Networks that handle their security some other way, such as sidechains, aren't counted as Layer 2 by ethereum.org (see [the last section](#what-else-is-there-besides-rollups)).
 
-## Rollup: làm ở ngoài, ghi lại ở Ethereum
+## Rollups: do the work outside, record it on Ethereum
 
-Phần lớn Layer 2 ngày nay là **rollup**. Cách hoạt động:
+Most Layer 2s today are **rollups**. Here's how they work:
 
-1. Bạn gửi giao dịch tới Layer 2. Một **bộ sắp xếp** (sequencer) xếp thứ tự và xác nhận gần như tức thì.
-2. Rất nhiều giao dịch được gom thành một **lô** (batch) và nén lại. Một lần chuyển ETH chiếm khoảng 112 byte trên Ethereum, nhưng chỉ khoảng 12 byte trong lô của rollup.
-3. Dữ liệu của lô được đăng lên Ethereum. Ai cũng tải về được để tự tính lại mọi số dư trên Layer 2.
-4. Ethereum được thuyết phục rằng lô này đúng, theo một trong hai cách bên dưới.
+1. You send a transaction to the Layer 2. A **sequencer** puts it in order and confirms it almost instantly.
+2. Lots of transactions are bundled into a **batch** and compressed. An ETH transfer takes up about 112 bytes on Ethereum, but only about 12 bytes in a rollup batch.
+3. The batch's data is posted to Ethereum. Anyone can download it and recalculate every balance on the Layer 2 for themselves.
+4. Ethereum is convinced that the batch is correct, in one of the two ways described below.
 
-Vì dữ liệu nằm trên Ethereum, muốn đảo ngược một giao dịch trên rollup thì phải đảo ngược chính Ethereum.
+Because the data lives on Ethereum, reversing a transaction on a rollup would mean reversing Ethereum itself.
 
 <RollupScene />
 
-Bấm **Lạc quan** hoặc **ZK** ở hình trên để xem bước cuối của hai loại rollup khác nhau thế nào.
+Click **Optimistic** or **ZK** in the animation above to see how the last step differs between the two types of rollup.
 
-## Vì sao dữ liệu phải nằm trên Ethereum
+## Why the data has to be on Ethereum
 
-Điểm mấu chốt của rollup là **tính khả dụng của dữ liệu** (data availability): dữ liệu giao dịch được đăng công khai lên Ethereum, ai cũng tải về được. Nhờ vậy:
+The key to a rollup is **data availability**: the transaction data is posted publicly to Ethereum, and anyone can download it. Because of that:
 
-- Bất kỳ ai cũng tự tính lại được số dư trên Layer 2, và chỉ ra chỗ sai nếu có.
-- Bạn luôn chứng minh được mình có bao nhiêu để rút tiền về Ethereum, kể cả khi bên vận hành không hợp tác.
-- Nếu bộ sắp xếp ngừng chạy, một bên khác có thể dựng lại trạng thái từ dữ liệu trên Ethereum và chạy tiếp.
+- Anyone can recalculate the balances on the Layer 2 for themselves, and point out any mistakes.
+- You can always prove how much you have so you can withdraw to Ethereum, even if the operator won't cooperate.
+- If the sequencer stops running, someone else can rebuild the state from the data on Ethereum and keep going.
 
-Dữ liệu mới là một nửa. Nửa còn lại là câu hỏi: làm sao Ethereum biết kết quả tính toán của lô là đúng? Hai loại rollup trả lời câu hỏi này theo hai cách.
+The data is only half of it. The other half is the question: how does Ethereum know the batch's computed result is correct? The two types of rollup answer that question in two different ways.
 
-## Rollup lạc quan: đúng cho tới khi bị chứng minh là sai
+## Optimistic rollups: correct until proven wrong
 
-**Rollup lạc quan** (optimistic rollup) có tên như vậy vì nó mặc định tin rằng mỗi lô là đúng. Bên đăng lô gửi lên Ethereum kết quả (trạng thái mới sau lô) kèm một khoản **tiền ký quỹ** (bond), nhưng không kèm bằng chứng nào.
+An **optimistic rollup** gets its name because it assumes by default that every batch is correct. Whoever posts a batch sends Ethereum the result (the new state after the batch) along with a **bond**, but no proof of any kind.
 
-Sau đó là **thời gian khiếu nại** (challenge period). Trong thời gian này, ai tự tính lại và thấy kết quả sai có thể nộp **bằng chứng gian lận** (fraud proof):
+Then comes the **challenge period**. During this time, anyone who recalculates the result and finds it wrong can submit a **fraud proof**:
 
-1. Hai bên chia đôi phần đang tranh chấp, rồi chia đôi tiếp phần còn bất đồng, cứ thế cho tới khi chỉ còn bất đồng về **một bước tính toán**.
-2. Hợp đồng trên Ethereum tự tính bước đó và phân xử bên nào đúng.
-3. Bên sai mất tiền ký quỹ. Nếu lô sai, nó bị gạt bỏ.
+1. The two sides split the disputed part in half, then split the part they still disagree on in half again, and keep going until they only disagree on **a single computation step**.
+2. A contract on Ethereum computes that step itself and rules on which side is right.
+3. The side that's wrong loses its bond. If the batch was wrong, it's thrown out.
 
-Nhờ chia đôi, Ethereum không phải tính lại cả lô mà chỉ một bước duy nhất.
+Thanks to this halving, Ethereum doesn't have to recompute the whole batch, just a single step.
 
-Hệ quả:
+What this means:
 
-- **Chỉ cần một người trung thực.** Dù có bao nhiêu bên gian lận, chỉ cần một người theo dõi trung thực khiếu nại kịp lúc là chặn được lô sai. Ngược lại, nếu không ai theo dõi, lô sai có thể lọt qua.
-- **Rút tiền về Ethereum phải chờ hết thời gian khiếu nại.** ethereum.org nói khoảng 7 ngày, con số thực tế tùy mạng. Theo ETHBEAT (trước đây là L2BEAT), tháng 11 năm 2026, thời gian khiếu nại của Arbitrum One là 6 ngày 8 giờ. Muốn nhanh hơn, bạn có thể trả phí cho một dịch vụ ứng trước: họ trả bạn tiền trên Ethereum ngay, rồi tự chờ nhận khoản rút của bạn.
-- **Dễ chạy ứng dụng của Ethereum.** Máy ảo của rollup lạc quan gần như giống hệt máy ảo Ethereum (EVM), nên hợp đồng và công cụ viết cho Ethereum chạy được gần như nguyên vẹn.
+- **It only takes one honest person.** No matter how many parties cheat, a single honest watcher who challenges in time is enough to block a bad batch. On the other hand, if no one is watching, a bad batch could slip through.
+- **Withdrawing to Ethereum means waiting out the challenge period.** ethereum.org says about 7 days; the actual figure depends on the network. According to ETHBEAT (formerly L2BEAT), as of November 2026, Arbitrum One's challenge period was 6 days and 8 hours. If you want it faster, you can pay a fee to a service that fronts you the money: they pay you on Ethereum right away, then wait to receive your withdrawal themselves.
+- **Ethereum apps run easily.** An optimistic rollup's virtual machine is almost identical to the Ethereum Virtual Machine (EVM), so contracts and tools written for Ethereum run almost unchanged.
 
-Ví dụ: Arbitrum One, OP Mainnet, Base.
+Examples: Arbitrum One, OP Mainnet, Base.
 
-## ZK-rollup: kèm bằng chứng toán học
+## ZK-rollups: with a mathematical proof attached
 
-**ZK-rollup** gửi kèm mỗi lô một **bằng chứng hợp lệ** (validity proof): một bằng chứng toán học rằng trạng thái mới đúng là kết quả của việc chạy các giao dịch trong lô. Một hợp đồng trên Ethereum kiểm tra bằng chứng trước khi chấp nhận lô. Bằng chứng sai thì lô bị từ chối. Vì không lô sai nào được chấp nhận, ZK-rollup không cần thời gian khiếu nại.
+A **ZK-rollup** sends each batch along with a **validity proof**: a mathematical proof that the new state really is the result of running the transactions in the batch. A contract on Ethereum checks the proof before accepting the batch. If the proof is wrong, the batch is rejected. Since no bad batch can be accepted, ZK-rollups don't need a challenge period.
 
-Điều đặc biệt là kiểm tra bằng chứng nhanh và rẻ hơn rất nhiều so với tính lại mọi giao dịch. Một bằng chứng còn có thể xác nhận nhiều bằng chứng khác (**bằng chứng đệ quy**), nên một lần kiểm tra trên Ethereum có thể xác nhận nhiều khối của Layer 2.
+What's special is that checking a proof is much faster and cheaper than recomputing every transaction. One proof can even confirm many other proofs (a **recursive proof**), so a single check on Ethereum can confirm many Layer 2 blocks.
 
-Hệ quả:
+What this means:
 
-- **An toàn dựa vào toán học,** không dựa vào việc có người theo dõi. Bạn không cần tự kiểm tra chuỗi để giữ tiền an toàn.
-- **Rút tiền nhanh hơn.** Chỉ cần chờ bằng chứng được tạo và kiểm tra. Một số mạng đặt thêm thời gian chờ an toàn: theo ETHBEAT, tháng 11 năm 2026, ZKsync Era chờ thêm 1 ngày.
-- **Tạo bằng chứng tốn kém.** Việc này cần máy tính mạnh, đôi khi là phần cứng chuyên dụng. Chi phí đó nằm trong phí của người dùng. Và nếu chỉ vài bên đủ sức tạo bằng chứng, mạng dễ bị tập trung vào họ.
-- **Khó chạy ứng dụng của Ethereum hơn.** Chứng minh bằng toán học mọi phép tính của EVM rất phức tạp. Nay nhiều ZK-rollup đã làm được việc này, gọi là **zkEVM**.
+- **Security rests on math,** not on someone watching. You don't need to check the chain yourself to keep your money safe.
+- **Withdrawals are faster.** You just wait for the proof to be created and checked. Some networks add an extra safety delay: according to ETHBEAT, as of November 2026, ZKsync Era waits an extra 1 day.
+- **Creating proofs is expensive.** It takes powerful computers, sometimes specialized hardware. That cost is built into users' fees. And if only a few parties can afford to create proofs, the network can easily end up concentrated around them.
+- **Ethereum apps are harder to run.** Proving every EVM operation mathematically is very complex. Many ZK-rollups can now do it; this is called a **zkEVM**.
 
-Ví dụ: ZKsync Era, Linea, Scroll, Starknet.
+Examples: ZKsync Era, Linea, Scroll, Starknet.
 
-Có hai kiểu bằng chứng hay gặp:
+There are two common kinds of proof:
 
-- **SNARK:** bằng chứng nhỏ, kiểm tra rẻ, nhưng cần một **nghi thức thiết lập** (trusted setup) lúc đầu. Nghi thức này an toàn nếu ít nhất một người tham gia trung thực xóa phần bí mật của mình.
-- **STARK:** không cần nghi thức thiết lập và được cho là an toàn trước máy tính lượng tử. Đổi lại, bằng chứng lớn hơn nên kiểm tra trên Ethereum tốn hơn.
+- **SNARK:** small proofs that are cheap to check, but they need a **trusted setup** at the start. The setup is safe as long as at least one honest participant deletes their secret part.
+- **STARK:** no trusted setup needed, and believed to be safe against quantum computers. In exchange, the proofs are bigger, so checking them on Ethereum costs more.
 
-Nhiều mạng kết hợp cả hai: tạo bằng chứng STARK rồi bọc trong một SNARK để kiểm tra rẻ hơn. Theo ETHBEAT, ZKsync Era và Scroll làm như vậy.
+Many networks combine the two: they create a STARK proof and then wrap it in a SNARK so it's cheaper to check. According to ETHBEAT, ZKsync Era and Scroll do this.
 
-<Callout type="info" title="Lưu ý">
-"ZK" (zero-knowledge, không kiến thức) không có nghĩa là riêng tư. Dữ liệu giao dịch của ZK-rollup vẫn được đăng công khai lên Ethereum.
+<Callout type="info" title="Note">
+"ZK" (zero-knowledge) doesn't mean private. A ZK-rollup's transaction data is still posted publicly to Ethereum.
 </Callout>
 
-## So sánh hai loại rollup
+## Comparing the two types of rollup
 
-| | Rollup lạc quan | ZK-rollup |
+| | Optimistic rollup | ZK-rollup |
 |---|---|---|
-| Làm sao biết lô đúng | Mặc định là đúng. Ai thấy sai thì nộp bằng chứng gian lận | Mỗi lô kèm bằng chứng hợp lệ, Ethereum kiểm tra trước khi nhận |
-| An toàn dựa vào | Ít nhất một người trung thực theo dõi và khiếu nại kịp | Toán học |
-| Rút về Ethereum | Chờ hết thời gian khiếu nại, thường vài ngày tới một tuần | Chờ bằng chứng được tạo và kiểm tra, cộng thời gian chờ an toàn nếu mạng có đặt |
-| Chi phí chính | Đăng dữ liệu lên Ethereum | Đăng dữ liệu, cộng chi phí tạo bằng chứng |
-| Chạy ứng dụng của Ethereum | Dễ, gần như nguyên vẹn | Khó hơn, nay nhiều mạng đã làm được (zkEVM) |
-| Ví dụ | Arbitrum One, OP Mainnet, Base | ZKsync Era, Linea, Scroll, Starknet |
+| How it knows a batch is correct | Assumed correct by default. Anyone who spots a mistake submits a fraud proof | Every batch comes with a validity proof, which Ethereum checks before accepting it |
+| Security relies on | At least one honest person watching and challenging in time | Math |
+| Withdrawing to Ethereum | Wait out the challenge period, usually a few days to a week | Wait for the proof to be created and checked, plus a safety delay if the network sets one |
+| Main cost | Posting data to Ethereum | Posting data, plus the cost of creating proofs |
+| Running Ethereum apps | Easy, almost unchanged | Harder; many networks can now do it (zkEVM) |
+| Examples | Arbitrum One, OP Mainnet, Base | ZKsync Era, Linea, Scroll, Starknet |
 
-<Callout type="info" title="Ranh giới đang mờ dần">
-Một số rollup lạc quan đã bắt đầu dùng bằng chứng ZK trong quy trình khiếu nại. Từ tháng 5 năm 2026, Base kết hợp bằng chứng ZK với xác nhận từ phần cứng bảo mật (TEE). Thời gian khiếu nại là 5 ngày khi có một loại bằng chứng, và rút xuống 1 ngày khi cả hai loại cùng xác nhận. ETHBEAT vẫn xếp Base là rollup lạc quan (số liệu tháng 11 năm 2026).
+<Callout type="info" title="The line is blurring">
+Some optimistic rollups have started using ZK proofs in their challenge process. Since May 2026, Base has combined ZK proofs with attestations from secure hardware (TEE). The challenge period is 5 days with one kind of proof, and drops to 1 day when both kinds confirm. ETHBEAT still classifies Base as an optimistic rollup (data as of November 2026).
 </Callout>
 
-## Ngoài rollup còn những loại nào
+## What else is there besides rollups
 
-Không phải mạng nào nối với Ethereum cũng là rollup. Muốn phân biệt nhanh, hỏi hai câu: **dữ liệu giao dịch nằm ở đâu**, và **cái gì bảo đảm kết quả đúng**.
+Not every network connected to Ethereum is a rollup. To tell them apart quickly, ask two questions: **where does the transaction data live**, and **what guarantees the result is correct**.
 
-| Loại | Dữ liệu nằm ở đâu | Cái gì bảo đảm kết quả đúng | Rủi ro chính |
+| Type | Where the data lives | What guarantees the result is correct | Main risk |
 |---|---|---|---|
-| Rollup lạc quan | Trên Ethereum | Bằng chứng gian lận | Không ai theo dõi và khiếu nại kịp |
-| ZK-rollup | Trên Ethereum | Bằng chứng hợp lệ | Chỉ vài bên đủ sức tạo bằng chứng |
-| Validium | Bên ngoài Ethereum | Bằng chứng hợp lệ | Dữ liệu bị giấu, tiền bị kẹt |
-| Optimium | Bên ngoài Ethereum | Bằng chứng gian lận | Dữ liệu bị giấu, không ai khiếu nại được |
-| Chuỗi phụ | Trên chính chuỗi phụ | Đồng thuận riêng của chuỗi phụ | Đa số trình xác thực của chuỗi phụ thông đồng |
-| Plasma | Bên vận hành giữ | Bằng chứng gian lận | Bên vận hành giấu dữ liệu |
-| Kênh trạng thái | Các bên trong kênh tự giữ | Chữ ký của mọi bên trong kênh | Không trực tuyến để phản đối trạng thái cũ |
+| Optimistic rollup | On Ethereum | Fraud proofs | No one is watching and challenging in time |
+| ZK-rollup | On Ethereum | Validity proofs | Only a few parties can afford to create proofs |
+| Validium | Outside Ethereum | Validity proofs | Data is withheld and funds get stuck |
+| Optimium | Outside Ethereum | Fraud proofs | Data is withheld and no one can challenge |
+| Sidechain | On the sidechain itself | The sidechain's own consensus | A majority of the sidechain's validators collude |
+| Plasma | Held by the operator | Fraud proofs | The operator withholds data |
+| State channel | Kept by the parties in the channel | Signatures from every party in the channel | Not being online to dispute an old state |
 
-ethereum.org chỉ coi rollup và kênh trạng thái là Layer 2 đúng nghĩa. Chuỗi phụ, validium và plasma lấy an toàn từ nơi khác, không phải từ Ethereum.
+ethereum.org only treats rollups and state channels as true Layer 2s. Sidechains, validiums and plasma get their security from somewhere else, not from Ethereum.
 
-**Validium** dùng bằng chứng hợp lệ như ZK-rollup, nhưng dữ liệu giao dịch không đăng lên Ethereum. Dữ liệu do một nhóm bên giữ, thường gọi là **hội đồng giữ dữ liệu** (data availability committee). Bên vận hành không thể tạo số dư sai, vì Ethereum vẫn kiểm tra bằng chứng. Nhưng nếu dữ liệu bị giấu, bạn không chứng minh được mình có bao nhiêu để rút, và tiền có thể bị kẹt. Đổi lại, phí rẻ hơn, và dữ liệu không bị công khai cho mọi người, dù bên giữ dữ liệu vẫn thấy hết.
+A **validium** uses validity proofs like a ZK-rollup, but its transaction data isn't posted to Ethereum. The data is held by a group of parties, usually called a **data availability committee**. The operator can't create false balances, because Ethereum still checks the proofs. But if the data is withheld, you can't prove how much you have in order to withdraw, and your funds could get stuck. In exchange, fees are cheaper, and the data isn't made public to everyone, though whoever holds the data still sees all of it.
 
-**Optimium** (tên ETHBEAT dùng) giống rollup lạc quan, nhưng dữ liệu cũng nằm bên ngoài Ethereum. Không có dữ liệu thì người ngoài không tạo được bằng chứng gian lận, nên an toàn phụ thuộc vào bên giữ dữ liệu.
+An **optimium** (the name ETHBEAT uses) is like an optimistic rollup, but its data also lives outside Ethereum. Without the data, outsiders can't create fraud proofs, so security depends on whoever holds the data.
 
-**Chuỗi phụ** (sidechain) là một chuỗi khối độc lập, có cơ chế đồng thuận và luật riêng, nối với Ethereum bằng cầu nối hai chiều. Nó không đăng dữ liệu hay bằng chứng về Ethereum, nên không thừa hưởng an toàn của Ethereum. Ví dụ theo ethereum.org: Polygon PoS, Gnosis Chain.
+A **sidechain** is an independent blockchain with its own consensus mechanism and rules, connected to Ethereum by a two-way bridge. It doesn't post data or proofs to Ethereum, so it doesn't inherit Ethereum's security. Examples according to ethereum.org: Polygon PoS, Gnosis Chain.
 
-**Plasma** là một thiết kế cũ. Dữ liệu nằm ở bên vận hành, chỉ một bản tóm tắt được đăng lên Ethereum. Nếu bên vận hành gian lận và giấu dữ liệu, mọi người phải tranh nhau rút tiền ra cùng lúc ("rút hàng loạt"), có thể làm nghẽn cả Ethereum. Plasma cũng gần như không chạy được hợp đồng thông minh. Theo ethereum.org, rollup đã thay thế plasma.
+**Plasma** is an older design. The data sits with the operator, and only a summary is posted to Ethereum. If the operator cheats and withholds the data, everyone has to race to withdraw their funds at the same time (a "mass exit"), which could clog Ethereum itself. Plasma also can barely run smart contracts. According to ethereum.org, rollups have replaced plasma.
 
-**Kênh trạng thái** (state channel), và dạng đơn giản hơn là **kênh thanh toán** (payment channel): một nhóm người cố định khóa tiền vào một hợp đồng [nhiều chữ ký](../using-ethereum/smart-wallets.mdx) trên Ethereum, rồi giao dịch với nhau bên ngoài bằng cách cùng ký từng trạng thái mới. Chỉ việc mở và đóng kênh mới cần giao dịch trên Ethereum. Nhược điểm: số người trong kênh cố định, tiền bị khóa suốt thời gian mở kênh, và bạn phải trực tuyến (hoặc nhờ người canh hộ) để phản đối nếu bên kia nộp một trạng thái cũ. Vì vậy, trên Ethereum, kênh ít được dùng hơn rollup.
+A **state channel**, and its simpler form, the **payment channel**: a fixed group of people lock funds into a [multisig](../using-ethereum/smart-wallets.mdx) contract on Ethereum, then transact with each other outside it by jointly signing each new state. Only opening and closing the channel need transactions on Ethereum. The downsides: the number of people in the channel is fixed, the funds are locked for as long as the channel is open, and you have to stay online (or have someone watch for you) to dispute it if the other side submits an old state. That's why, on Ethereum, channels are used less than rollups.
 
-Loại của một mạng có thể thay đổi. Ví dụ: tháng 8 năm 2026, Arbitrum Nova thôi dùng hội đồng giữ dữ liệu, chuyển sang đăng dữ liệu lên Ethereum, và được ETHBEAT xếp lại từ optimium thành rollup lạc quan.
+A network's type can change. For example, in August 2026, Arbitrum Nova stopped using a data availability committee, switched to posting its data to Ethereum, and was reclassified by ETHBEAT from an optimium to an optimistic rollup.
 
-## Blob: chỗ chứa dữ liệu rẻ cho rollup
+## Blobs: cheap data space for rollups
 
-Đăng dữ liệu lên Ethereum là khoản chi lớn nhất của rollup. Từ nâng cấp Dencun năm 2024 (EIP-4844), rollup đăng dữ liệu vào **blob**: một loại dữ liệu đi kèm khối, có thị trường phí riêng và rẻ hơn nhiều so với trước.
+Posting data to Ethereum is a rollup's biggest expense. Since the Dencun upgrade in 2024 (EIP-4844), rollups post their data in **blobs**: a type of data that travels alongside a block, with its own fee market, and much cheaper than before.
 
-Blob không được giữ mãi. Các nút giữ blob khoảng 18 ngày, đủ lâu để bất kỳ ai tải về và kiểm tra. Nâng cấp Fusaka tháng 12 năm 2025 thêm PeerDAS, cho mỗi nút chỉ cần giữ một phần dữ liệu blob, mở đường cho nhiều blob hơn mỗi khối.
+Blobs aren't kept forever. Nodes keep blobs for about 18 days, long enough for anyone to download and check them. The Fusaka upgrade in December 2025 added PeerDAS, which lets each node keep only part of the blob data, paving the way for more blobs per block.
 
-## Những đánh đổi cần biết
+## Trade-offs to know about
 
-- **Bộ sắp xếp thường do một bên vận hành.** Bên đó có thể làm chậm hoặc từ chối giao dịch của bạn. Nhiều rollup cho phép bạn tự đưa giao dịch qua Ethereum sau một thời gian chờ, nhưng cách này phức tạp hơn. ETHBEAT cho biết mạng nào có lối thoát này.
-- **Layer 2 còn non trẻ.** Mức độ an toàn khác nhau giữa các mạng. Trang [ETHBEAT](https://ethbeat.org) đánh giá từng mạng: ai có thể nâng cấp hợp đồng, hệ thống bằng chứng đã chạy chưa, và xếp mỗi rollup vào Stage 0, 1 hoặc 2. Stage càng cao, bên vận hành càng ít quyền can thiệp. Xem [Layer 2 cho doanh nghiệp](../../enterprise/layer-2-for-enterprise.mdx) để biết từng stage nghĩa là gì.
-- **Tên gọi không nói lên tất cả.** Nhiều mạng tự gọi là "Layer 2" nhưng thực ra là validium, optimium hay chuỗi phụ. Xem loại của mạng trên ETHBEAT trước khi gửi số tiền lớn.
+- **The sequencer is usually run by a single party.** That party can delay or refuse your transactions. Many rollups let you force your transaction through Ethereum after a waiting period, but that route is more complicated. ETHBEAT shows which networks have this escape hatch.
+- **Layer 2 is still young.** The level of security varies between networks. The [ETHBEAT](https://ethbeat.org) site rates each network: who can upgrade the contracts, whether the proof system is live yet, and it places each rollup at Stage 0, 1 or 2. The higher the stage, the less power the operator has to intervene. See [Layer 2 for enterprise](../../enterprise/layer-2-for-enterprise.mdx) for what each stage means.
+- **The name doesn't tell you everything.** Many networks call themselves "Layer 2" but are actually validiums, optimiums or sidechains. Check a network's type on ETHBEAT before sending a large amount.
 
-<Callout type="warn" title="Cảnh báo">
-Tiền trên Layer 2 nằm trên mạng đó, không nằm trên Ethereum. Muốn chuyển qua lại phải dùng **cầu nối** (bridge). Khi gửi hoặc rút từ sàn, chọn đúng mạng: gửi nhầm mạng có thể mất tiền. Xem [Một địa chỉ, nhiều mạng](../getting-started/wallets-and-accounts.mdx#một-địa-chỉ-nhiều-mạng).
+<Callout type="warn" title="Warning">
+Funds on a Layer 2 live on that network, not on Ethereum. To move them back and forth, you have to use a **bridge**. When depositing to or withdrawing from an exchange, pick the right network: sending on the wrong network can lose you money. See [One address, many networks](../getting-started/wallets-and-accounts.mdx#one-address-many-networks).
 </Callout>
 
-## Tóm tắt
+## Summary
 
-- Layer 2 chạy giao dịch bên ngoài Ethereum rồi ghi dữ liệu về Ethereum, nên nhanh và rẻ mà vẫn dựa vào an toàn của Ethereum.
-- Rollup đăng dữ liệu lên Ethereum, nên ai cũng tự kiểm tra được và luôn rút được tiền về.
-- Rollup lạc quan mặc định lô là đúng và chờ thời gian khiếu nại, thường vài ngày tới một tuần. ZK-rollup kèm bằng chứng hợp lệ nên không cần thời gian khiếu nại, nhưng tạo bằng chứng tốn kém hơn.
-- Validium và optimium giữ dữ liệu bên ngoài Ethereum. Chuỗi phụ tự lo an toàn. Các loại này không thừa hưởng đầy đủ an toàn của Ethereum.
-- Từ năm 2024, rollup đăng dữ liệu vào blob, rẻ hơn nhiều.
-- Kiểm tra loại và stage của từng mạng trên ETHBEAT trước khi gửi số tiền lớn.
+- Layer 2 runs transactions outside Ethereum and then writes the data back to Ethereum, so it's fast and cheap while still relying on Ethereum's security.
+- Rollups post their data to Ethereum, so anyone can check it for themselves and you can always withdraw your funds.
+- Optimistic rollups assume batches are correct and wait out a challenge period, usually a few days to a week. ZK-rollups attach a validity proof so they don't need a challenge period, but creating proofs costs more.
+- Validiums and optimiums keep their data outside Ethereum. Sidechains handle their own security. These types don't fully inherit Ethereum's security.
+- Since 2024, rollups have posted their data in blobs, which is much cheaper.
+- Check each network's type and stage on ETHBEAT before sending a large amount.
 
-## Đọc tiếp
+## Read next
 
-- [Khối](./blocks.mdx)
-- [Phí gas](../getting-started/gas-fees.mdx): vì sao Layer 2 rẻ hơn
-- [Ethereum nâng cấp thế nào](./upgrades.mdx): những gì sắp tới
-- [Layer 2 cho doanh nghiệp](../../enterprise/layer-2-for-enterprise.mdx): công ty nào chạy Layer 2 riêng, và Stage 0, 1, 2
+- [Blocks](./blocks.mdx)
+- [Gas fees](../getting-started/gas-fees.mdx): why Layer 2 is cheaper
+- [How Ethereum upgrades](./upgrades.mdx): what's coming next
+- [Layer 2 for enterprise](../../enterprise/layer-2-for-enterprise.mdx): which companies run their own Layer 2, and Stages 0, 1 and 2

@@ -1,6 +1,6 @@
 ---
-title: Đưa gì lên chuỗi, giữ gì ngoài chuỗi
-description: Lên chuỗi là bằng chứng, không phải dữ liệu. Mã băm của văn bản, danh sách bên cấp được công nhận, trạng thái thu hồi. Dữ liệu cá nhân ở lại hệ thống của cơ quan.
+title: What goes onchain, what stays offchain
+description: What goes onchain is proof, not data. Document hashes, lists of recognized issuers, revocation status. Personal data stays in the agency's own systems.
 sources:
   - https://publicsector.ethereum.foundation/evaluating-ethereum/
   - https://publicsector.ethereum.foundation/potential-applications/
@@ -8,54 +8,54 @@ sources:
   - https://thuvienphapluat.vn/van-ban/Cong-nghe-thong-tin/Luat-Bao-ve-du-lieu-ca-nhan-2025-91-2025-QH15-625628.aspx
 ---
 
-Nguyên tắc chung: **đưa bằng chứng lên chuỗi, giữ dữ liệu ở lại.** Theo Quỹ Ethereum (EF), dữ liệu nhạy cảm có thể nằm nguyên trong hệ thống hiện có của cơ quan. Ethereum chỉ giữ những gì người khác cần để tự kiểm tra.
+The general rule: **put the proof onchain, keep the data where it is.** According to the Ethereum Foundation (EF), sensitive data can stay in the agency's existing systems. Ethereum only holds what others need to check things for themselves.
 
-## Những gì thường được đưa lên chuỗi
+## What usually goes onchain
 
-- **Mã băm của văn bản.** **Mã băm** (hash) là "dấu vân tay" của một tệp: sửa một dấu phẩy là ra mã khác hẳn, và không ai dựng lại được tệp từ mã băm.
-- **Danh sách bên cấp được công nhận.** Ví dụ: những trường, những cơ quan được quyền cấp một loại giấy tờ.
-- **Trạng thái thu hồi.** Văn bằng, giấy phép nào đã bị thu hồi.
-- **Dòng tiền.** Khoản nào chuyển đi, từ đâu tới đâu, lúc nào. Xem [Minh bạch tài chính và dữ liệu công](./financial-and-data-transparency.mdx).
+- **Document hashes.** A **hash** is a file's "fingerprint": change a single comma and you get a completely different hash, and no one can rebuild the file from its hash.
+- **Lists of recognized issuers.** For example: the schools or agencies allowed to issue a given type of document.
+- **Revocation status.** Which degrees or licenses have been revoked.
+- **Money flows.** Which payments went out, from where to where, and when. See [Financial and public data transparency](./financial-and-data-transparency.mdx).
 
-## Ghi mã băm lên chuỗi: cách làm
+## Putting a hash onchain: how it works
 
-1. Cơ quan tính mã băm của tệp, ví dụ bản PDF của một báo cáo.
-2. Cơ quan gửi một giao dịch chứa mã băm đó, ký bằng khóa của cơ quan. Giao dịch nằm trong một khối, kèm thời điểm.
-3. Về sau, ai có tệp cũng tự tính lại mã băm và so với bản trên chuỗi. Trùng khớp nghĩa là tệp chưa bị sửa từ thời điểm đó, và đúng là do địa chỉ của cơ quan đăng.
+1. The agency computes the hash of a file, for example the PDF of a report.
+2. The agency sends a transaction containing that hash, signed with the agency's key. The transaction lands in a block, along with a timestamp.
+3. Later, anyone with the file can compute the hash again and compare it with the one onchain. A match means the file hasn't been changed since that time, and that it really was published by the agency's address.
 
-Mã băm của hàng nghìn văn bản có thể gộp thành một mã duy nhất, nên một giao dịch đủ cho cả một lô.
+The hashes of thousands of documents can be combined into a single hash, so one transaction is enough for a whole batch.
 
-**Ví dụ:** ngày 28 tháng 8 năm 2025, Bộ Thương mại Hoa Kỳ công bố mã băm của bản PDF số liệu GDP quý 2 năm 2025 lên 9 mạng chuỗi khối, trong đó có mạng chính Ethereum và hai mạng Layer 2 là Arbitrum One và OP Mainnet.
+**Example:** on August 28, 2025, the US Department of Commerce published the hash of the PDF of its Q2 2025 GDP figures on 9 blockchain networks, including Ethereum mainnet and two Layer 2 networks, Arbitrum One and OP Mainnet.
 
-<Callout type="warn" title="Quan trọng">
-Toàn vẹn không có nghĩa là đúng. Mã băm chứng minh văn bản không bị sửa, không chứng minh nội dung của nó đúng. Số liệu sai từ đầu thì ghi lên chuỗi vẫn sai.
+<Callout type="warn" title="Important">
+Integrity doesn't mean accuracy. A hash proves a document hasn't been changed, not that its content is correct. Figures that were wrong from the start are still wrong once written onchain.
 </Callout>
 
-## Vì sao dữ liệu cá nhân không nên lên chuỗi
+## Why personal data shouldn't go onchain
 
-- **Công khai và vĩnh viễn.** Trên mạng chính, ai cũng đọc được, và không ai xóa được. Xem [Quyền riêng tư](../basics/using-ethereum/privacy.mdx).
-- **Va chạm với quyền của người dân.** Luật Bảo vệ dữ liệu cá nhân (số 91/2025/QH15, có hiệu lực từ ngày 1 tháng 1 năm 2026) ghi nhận quyền của chủ thể dữ liệu được chỉnh sửa và yêu cầu xóa dữ liệu. Dữ liệu đã ghi lên một chuỗi công khai thì không sửa, không xóa được. Hãy đối chiếu thiết kế với quy định hiện hành trước khi làm.
-- **Mã băm cũng có thể làm lộ.** Mã băm của một giá trị dễ đoán, như số căn cước hay ngày sinh, có thể bị dò ra bằng cách thử lần lượt mọi khả năng. Đừng ghi mã băm của dữ liệu cá nhân khi chưa có chuyên gia bảo mật thiết kế cách làm.
-- **Dấu vết đi kèm.** Dù không ghi dữ liệu, thời điểm, tần suất và các lần sửa đổi vẫn có thể tiết lộ thông tin.
+- **Public and permanent.** On mainnet, anyone can read it, and no one can delete it. See [Privacy](../basics/using-ethereum/privacy.mdx).
+- **It clashes with citizens' rights.** The Law on Personal Data Protection (No. 91/2025/QH15, in effect from January 1, 2026) recognizes data subjects' right to correct their data and to request its deletion. Data written to a public chain can't be corrected or deleted. Check your design against the rules in force before you build.
+- **Hashes can leak too.** The hash of an easy-to-guess value, such as an ID number or a date of birth, can be cracked by trying every possibility in turn. Don't write hashes of personal data without a security expert designing how it's done.
+- **The traces that come with it.** Even if no data is written, timing, frequency and edits can still reveal information.
 
-## Đọc nhiều, ghi ít
+## Read a lot, write a little
 
-Đọc dữ liệu trên Ethereum là miễn phí; chỉ ghi mới tốn [phí gas](../basics/how-it-works/gas.mdx). Theo EF, hệ thống danh tính số của Bhutan chủ yếu đọc và rất ít khi ghi.
+Reading data on Ethereum is free; only writing costs a [gas fee](../basics/how-it-works/gas.mdx). According to the EF, Bhutan's digital identity system mostly reads and very rarely writes.
 
-Một nghiên cứu của Đại học Rutgers mà EF dẫn lại ghi nhận phí trung vị trong quý 1 năm 2026 khoảng 0,012 USD trên Ethereum và khoảng 0,0015 USD trên ba mạng Layer 2. Phí thay đổi theo độ đông của mạng, nên hãy kiểm tra lại số liệu hiện tại.
+A Rutgers University study cited by the EF found a median fee in Q1 2026 of about 0.012 USD on Ethereum and about 0.0015 USD on three Layer 2 networks. Fees change with how busy the network is, so check the current figures.
 
-## Tóm tắt
+## Summary
 
-- Lên chuỗi: mã băm, danh sách bên cấp, trạng thái thu hồi, dòng tiền. Dữ liệu gốc ở lại hệ thống của cơ quan.
-- Mã băm chứng minh văn bản không bị sửa từ một thời điểm, không chứng minh nội dung đúng.
-- Dữ liệu cá nhân không lên chuỗi công khai: không sửa, không xóa được, và cả mã băm của nó cũng có thể làm lộ.
+- Onchain: hashes, issuer lists, revocation status, money flows. The original data stays in the agency's systems.
+- A hash proves a document hasn't been changed since a certain time, not that its content is correct.
+- Personal data doesn't go on a public chain: it can't be corrected or deleted, and even its hash can leak it.
 
-## Đọc tiếp
+## Read next
 
-- [Danh tính số và chứng chỉ](./identity-and-credentials.mdx)
-- [Chuỗi khối là gì?](../basics/how-it-works/blockchain.mdx): mã băm nối các khối thế nào
+- [Digital identity and credentials](./identity-and-credentials.mdx)
+- [What is a blockchain?](../basics/how-it-works/blockchain.mdx): how hashes link blocks together
 
-## Nguồn
+## Sources
 
-- Quỹ Ethereum: [Đánh giá Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/), [Ứng dụng tiềm năng](https://publicsector.ethereum.foundation/potential-applications/), [Bộ Thương mại Hoa Kỳ: số liệu kinh tế](https://publicsector.ethereum.foundation/case-studies/us-commerce-economic-data/)
-- [Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15](https://thuvienphapluat.vn/van-ban/Cong-nghe-thong-tin/Luat-Bao-ve-du-lieu-ca-nhan-2025-91-2025-QH15-625628.aspx)
+- Ethereum Foundation: [Evaluating Ethereum](https://publicsector.ethereum.foundation/evaluating-ethereum/), [Potential applications](https://publicsector.ethereum.foundation/potential-applications/), [US Department of Commerce: economic data](https://publicsector.ethereum.foundation/case-studies/us-commerce-economic-data/)
+- [Law on Personal Data Protection No. 91/2025/QH15](https://thuvienphapluat.vn/van-ban/Cong-nghe-thong-tin/Luat-Bao-ve-du-lieu-ca-nhan-2025-91-2025-QH15-625628.aspx)

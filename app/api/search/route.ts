@@ -6,16 +6,12 @@ import { ethereum, source } from "@/lib/source";
  * Ethereum wiki text left out of the index because it only repeats other
  * pages and then outranks them: link lists ("Read next", "Sources",
  * "Reading order") and the lesson tables on group intro pages (index.mdx).
- * The Vietnamese ids cover the content until it is translated.
  */
 const SKIP_SECTIONS = new Set([
   "read-next",
   "sources",
   "reading-order",
   "sources-for-this-section",
-  "đọc-tiếp",
-  "nguồn",
-  "đọc-theo-thứ-tự",
 ]);
 const isTable = (text: string) => text.trimStart().startsWith("|");
 
