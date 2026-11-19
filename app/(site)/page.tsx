@@ -1,122 +1,60 @@
-import TerminalMenu from "@/components/terminal-menu";
-import KeyboardNav from "@/components/keyboard-nav";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Prompt, TerminalWindow } from "@/components/terminal/terminal-window";
+import { ProjectList, type TerminalLink } from "@/components/terminal/project-list";
+import { StatusBar } from "@/components/terminal/status-bar";
+
+// Single source for the listing *and* the keyboard shortcuts: an item's
+// position is its number, so the two can never drift apart.
+const projects: TerminalLink[] = [
+  { name: "DeFi Vietnam", url: "https://www.defi.vn" },
+  { name: "ETH Vietnam", url: "https://www.eth.vn" },
+  { name: "Works", url: "/works" },
+  { name: "Labs", url: "/labs" },
+  { name: "CV", url: "/cv" },
+  { name: "Writing", url: "/writing" },
+];
 
 export default function Home() {
-  const menuItems = [
-    {
-      id: 1,
-      name: "DeFi Vietnam",
-      url: "https://www.defi.vn",
-    },
-    {
-      id: 2,
-      name: "ETH Vietnam",
-      url: "https://www.eth.vn",
-    },
-    {
-      id: 3,
-      name: "Works",
-      url: "/works",
-    },
-    {
-      id: 4,
-      name: "Labs",
-      url: "/labs",
-    },
-    {
-      id: 5,
-      name: "CV",
-      url: "/cv",
-    },
-    {
-      id: 6,
-      name: "Writing",
-      url: "/writing",
-    },
-  ];
-
-  const keyboardNavItems = [
-    {
-      keyboard: "1",
-      description: "Sections",
-      url: "https://unitmetal.com",
-    },
-    {
-      keyboard: "2",
-      description: "Sections",
-      url: "https://www.defi.vn",
-    },
-    {
-      keyboard: "3",
-      description: "Sections",
-      url: "https://www.weth.vn",
-    },
-    {
-      keyboard: "4",
-      description: "Sections",
-      url: "/works",
-    },
-    {
-      keyboard: "5",
-      description: "Sections",
-      url: "/labs",
-    },
-    {
-      keyboard: "6",
-      description: "Sections",
-      url: "/cv",
-    },
-    {
-      keyboard: "7",
-      description: "Sections",
-      url: "https://writing.zxstim.com",
-    },
-  ];
-
   return (
     <>
       <Header />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0">
-        <div className="flex flex-col gap-4 w-full md:w-5/6 text-left">
-          <div className="flex flex-row gap-2 items-center">
-            <span className="text-sm bg-primary text-secondary font-bold px-2 py-1">
-              00.
-            </span>
-            <h1 className="text-md font-bold">Index</h1>
+      <TerminalWindow title="zxstim@web: ~" meta="zsh">
+        <div className="grid grid-cols-1 divide-primary max-md:divide-y-2 md:grid-cols-2 md:divide-x-2">
+          {/* Left pane: who */}
+          <div className="flex flex-col gap-4 p-4 md:p-6">
+            <Prompt command="whoami" />
+            <h1 className="text-xl font-bold md:text-3xl">Currently on oss arc</h1>
+            <Prompt command="cat about.md" />
+            <div className="flex max-w-prose flex-col gap-4 text-muted-foreground">
+              <p>
+                Long time Ethereum holder. Crash of 2018 survivor. DeFi summer
+                survivor. NFT mania survivor. FTX survivor.
+              </p>
+              <p>
+                Currently, I am building open source software products for
+                developers and DeFi protocols.
+              </p>
+              <p>
+                I firmly believe that the future of the internet is onchain,
+                that we can build a better money for everyone, and that our
+                conviction will make a lasting impact.
+              </p>
+            </div>
           </div>
-          <h1 className="text-xl md:text-3xl font-bold">
-            Currently on oss arc
-          </h1>
-          <div className="flex flex-col gap-12 mt-4">
-            <p className="text-md">
-              Long time Ethereum holder. Crash of 2018 survivor. DeFi summer
-              survivor. NFT mania survivor. FTX survivor.
+
+          {/* Right pane: where to go */}
+          <div className="flex flex-col gap-4 p-4 md:p-6">
+            <Prompt command="ls ~/projects" />
+            <ProjectList items={projects} />
+            <p className="hidden text-sm text-muted-foreground lg:block">
+              # press 1–{projects.length} to open, 0 for index, ←/→ for history
             </p>
-            <p className="text-md">
-              Currently, I am building open source software products for
-              developers and DeFi protocols.
-            </p>
-            <p className="text-md">
-              I firmly believe that the future of the internet is onchain, that
-              we can build a better money for everyone, and that our conviction
-              will make a lasting impact.
-            </p>
+            <Prompt cursor />
           </div>
         </div>
-        <div className="flex flex-col border-2 border-primary gap-2 pb-8">
-          <div className="flex flex-row justify-between items-center bg-primary text-secondary p-2">
-            <h1 className="text-lg md:text-xl font-bold">Terminal</h1>
-            <p className="text-md">_</p>
-          </div>
-          <div className="flex flex-col px-4 py-2">
-            <h2 className="text-md">$ cat projects.md</h2>
-            <TerminalMenu menuItems={menuItems} />
-          </div>
-        </div>
-        <KeyboardNav keyboardNavItems={keyboardNavItems} />
-      </div>
+        <StatusBar session="zxstim" items={projects} />
+      </TerminalWindow>
       <Footer />
     </>
   );

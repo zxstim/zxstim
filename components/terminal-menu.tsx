@@ -1,5 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { isExternalUrl } from "@/lib/links";
 
 export interface MenuItem {
   id: number;
@@ -15,7 +16,8 @@ export default function TerminalMenu({ menuItems }: { menuItems: MenuItem[] }) {
           key={item.id}
           href={item.url}
           className="group relative text-muted-foreground hover:text-primary hover:underline cursor-pointer flex items-center"
-          target={`${item.url.includes('https') ? '_blank' : '_self'}`}
+          target={isExternalUrl(item.url) ? "_blank" : "_self"}
+          rel={isExternalUrl(item.url) ? "noopener noreferrer" : undefined}
         >
           <ChevronRight
             className="absolute -left-9 opacity-0 group-hover:opacity-100 my-auto"

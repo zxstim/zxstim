@@ -7,6 +7,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Terminal cursor blink (used as `motion-safe:animate-blink`). */
+@theme {
+  --animate-blink: blink 1.1s step-end infinite;
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
