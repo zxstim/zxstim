@@ -16,7 +16,10 @@ export function ethereumOptions(): BaseLayoutProps {
       title: "Ethereum Wiki",
       url: "/ethereum",
     },
-    links: [{ text: "ZxStim", url: "/" }],
+    links: [
+      // CC BY 4.0 attribution for the content adapted from ethereum.org
+      { text: "Attribution", url: "/ethereum/attribution" },
+    ],
     githubUrl: "https://github.com/zxstim/zxstim",
   };
 }

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ChevronLeft } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { BackToHome } from "@/components/back-to-home";
 import {
   Prompt,
   TerminalPane,
@@ -158,13 +159,7 @@ function Points({ items }: { items: string[] }) {
 export default function CV() {
   return (
     <div className="flex w-full flex-col gap-4">
-      <Link
-        href="/"
-        className="flex w-fit items-center gap-2 border-2 border-primary px-3 py-1 text-sm font-bold outline-none hover:bg-primary hover:text-primary-foreground focus-visible:bg-primary focus-visible:text-primary-foreground print:hidden"
-      >
-        <ChevronLeft className="size-4" />
-        Back to home
-      </Link>
+      <BackToHome />
 
       <TerminalWindow title="zxstim@web: ~/cv" meta="resume.md">
         <TerminalPanes className="md:grid-cols-[minmax(0,1fr)_18rem]">
