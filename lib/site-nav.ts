@@ -26,4 +26,5 @@ export const socialLinks: TerminalLink[] = [
   { name: "GitHub", url: "https://github.com/zxstim", label: "zxstim" },
   { name: "YouTube", url: "https://youtube.com/@zxstim", label: "@zxstim" },
   { name: "Telegram", url: "https://t.me/zxstim", label: "zxstim" },
+  { name: "Facebook", url: "https://www.facebook.com/zxstim", label: "zxstim" },
 ];
