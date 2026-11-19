@@ -1,5 +1,4 @@
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 import {
   Prompt,
   TerminalPane,
@@ -8,7 +7,7 @@ import {
 } from "@/components/terminal/terminal-window";
 import { ProjectList } from "@/components/terminal/project-list";
 import { StatusBar } from "@/components/terminal/status-bar";
-import { siteLinks } from "@/lib/site-nav";
+import { siteLinks, socialLinks } from "@/lib/site-nav";
 
 export default function Home() {
   return (
@@ -42,6 +41,8 @@ export default function Home() {
           <TerminalPane>
             <Prompt command="ls ~/projects" />
             <ProjectList items={siteLinks} />
+            <Prompt command="cat socials.txt" />
+            <ProjectList items={socialLinks} numbered={false} />
             <p className="hidden text-sm text-muted-foreground lg:block">
               # press 1–{siteLinks.length} to open, 0 for index, ←/→ for history
             </p>
@@ -50,7 +51,6 @@ export default function Home() {
         </TerminalPanes>
         <StatusBar current="/" />
       </TerminalWindow>
-      <Footer />
     </>
   );
 }

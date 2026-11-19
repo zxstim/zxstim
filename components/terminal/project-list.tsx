@@ -51,7 +51,7 @@ export function ProjectList({
               <span className="font-bold">{item.name}</span>
               <DottedLeader />
               <span className={`flex items-center gap-1 ${listRowMutedClass}`}>
-                {shortLinkLabel(item.url)}
+                {item.label ?? shortLinkLabel(item.url)}
                 {external && (
                   <ArrowUpRight aria-label="opens in a new tab" className="size-3.5" />
                 )}
