@@ -22,12 +22,12 @@ const VAL: BoxSpec = { w: 9, d: 9, h: 11, z: TILE_H };
  * left and north is up. Not a map; `n` is how many validators to scatter.
  */
 const REGIONS = [
-  { name: 'Bắc Mỹ', lon: -0.62, lat: 0.45, w: 60, d: 46, n: 7 },
-  { name: 'Nam Mỹ', lon: -0.45, lat: -0.45, w: 34, d: 40, n: 2 },
-  { name: 'Châu Âu', lon: 0.02, lat: 0.55, w: 40, d: 34, n: 7 },
-  { name: 'Châu Phi', lon: 0.08, lat: -0.15, w: 40, d: 46, n: 2 },
-  { name: 'Châu Á', lon: 0.55, lat: 0.4, w: 66, d: 50, n: 6 },
-  { name: 'Châu Đại Dương', lon: 0.72, lat: -0.5, w: 34, d: 26, n: 2 },
+  { name: 'N. America', lon: -0.62, lat: 0.45, w: 60, d: 46, n: 7 },
+  { name: 'S. America', lon: -0.45, lat: -0.45, w: 34, d: 40, n: 2 },
+  { name: 'Europe', lon: 0.02, lat: 0.55, w: 40, d: 34, n: 7 },
+  { name: 'Africa', lon: 0.08, lat: -0.15, w: 40, d: 46, n: 2 },
+  { name: 'Asia', lon: 0.55, lat: 0.4, w: 66, d: 50, n: 6 },
+  { name: 'Oceania', lon: 0.72, lat: -0.5, w: 34, d: 26, n: 2 },
 ] as const;
 const K = 115;
 const centre = (r: (typeof REGIONS)[number]): Pt => [WORLD[0] + 2 * r.lon * K * COS30, WORLD[1] - r.lat * K];
@@ -53,10 +53,10 @@ const DEPOSIT: Pt = [120, 56];
 const PHONE: Pt = [34, 70];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Đặt cọc để tham gia', body: 'Muốn làm trình xác thực, bạn khóa ít nhất 32 ETH vào hợp đồng đặt cọc. Không có tiền cọc thì không được bỏ phiếu.' },
-  { at: 2.8, title: 'Khắp thế giới', body: 'Trình xác thực chạy ở nhà, ở công ty, ở trung tâm dữ liệu trên khắp các châu lục. Không nơi nào nắm giữ mạng lưới.' },
-  { at: 6.4, title: 'Làm đúng được thưởng', body: 'Đề xuất khối và bỏ phiếu đúng hạn thì nhận thêm ETH. Vắng mặt thì bị trừ một ít.' },
-  { at: 9, title: 'Gian lận bị phạt nặng', body: 'Ký hai khối mâu thuẫn cho cùng một khe là gian lận: bị cắt một phần tiền cọc và bị loại khỏi mạng lưới.' },
+  { at: 0, title: 'Stake to take part', body: 'To become a validator, you lock at least 32 ETH in the deposit contract. No stake, no vote.' },
+  { at: 2.8, title: 'All over the world', body: 'Validators run at home, in offices and in data centers on every continent. No single place controls the network.' },
+  { at: 6.4, title: 'Doing the job earns rewards', body: 'Proposing blocks and voting on time earns extra ETH. Being offline costs a little.' },
+  { at: 9, title: 'Cheating is punished hard', body: 'Signing two conflicting blocks for the same slot is cheating: part of the stake is slashed and the validator is removed from the network.' },
 ];
 
 function render(t: number) {
@@ -100,11 +100,11 @@ function render(t: number) {
           <Box at={[YOURS[0], YOURS[1] - (1 - mine) * 10]} spec={VAL} tone="key" />
           <path className="iso-line" data-tone="key" d={`M${YOURS_LABEL[0] - 56} ${YOURS_LABEL[1] + 4} L${YOURS[0] + 4} ${YOURS[1] - 16}`} opacity={mine} />
           <Text x={YOURS_LABEL[0]} y={YOURS_LABEL[1]} className="iso-note is-key" anchor="end">
-            của bạn
+            yours
           </Text>
           {reward && (
             <Text x={YOURS_LABEL[0]} y={YOURS_LABEL[1] + 15} className="iso-note is-ok" anchor="end">
-              + thưởng
+              + reward
             </Text>
           )}
         </g>
@@ -124,7 +124,7 @@ function render(t: number) {
       <Phone at={PHONE} />
       <Box at={DEPOSIT} spec={{ w: 26, d: 26, h: 18 }} tone="block" />
       <Text x={DEPOSIT[0] + 26} y={DEPOSIT[1] - 6} className="iso-sub" anchor="start">
-        hợp đồng đặt cọc
+        deposit contract
       </Text>
       {t < 9 && <Coins at={[DEPOSIT[0] + 2, DEPOSIT[1] - 22]} n={send >= 1 ? 4 : 0} />}
       {send > 0 && send < 1 && (
@@ -138,9 +138,9 @@ function render(t: number) {
       {/* the cheat */}
       {cheat > 0 && (
         <>
-          <Pill at={[centre(REGIONS[EUROPE])[0], centre(REGIONS[EUROPE])[1] - 58]} text="ký 2 khối mâu thuẫn" tone="bad" opacity={Math.min(1, cheat * 2) * (1 - prog(t, 10, 0.4))} />
+          <Pill at={[centre(REGIONS[EUROPE])[0], centre(REGIONS[EUROPE])[1] - 58]} text="signs 2 conflicting blocks" tone="bad" opacity={Math.min(1, cheat * 2) * (1 - prog(t, 10, 0.4))} />
           <Text x={centre(REGIONS[EUROPE])[0]} y={centre(REGIONS[EUROPE])[1] - 52} className="iso-note is-bad" opacity={prog(t, 10.4, 0.4)}>
-            mất cọc · bị loại
+            slashed · removed
           </Text>
         </>
       )}
@@ -151,7 +151,7 @@ function render(t: number) {
 export function ValidatorsScene() {
   return (
     <IsoFigure
-      title="Trình xác thực: đặt cọc 32 ETH để tham gia, chạy khắp các châu lục, làm đúng được thưởng, gian lận bị cắt tiền cọc và bị loại"
+      title="Validators: stake 32 ETH to take part, run on every continent, earn rewards for doing the job right, and get slashed and removed for cheating"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={7.2}

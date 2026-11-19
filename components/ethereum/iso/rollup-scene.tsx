@@ -38,17 +38,17 @@ const TXS = 8;
 const txAt = (n: number) => 0.2 + n * 0.5;
 
 const COMMON: Step[] = [
-  { at: 0, title: 'Giao dịch trên Layer 2', body: 'Bạn gửi giao dịch tới Layer 2. Bộ sắp xếp (sequencer) xếp thứ tự và xác nhận gần như tức thì, phí thấp.' },
-  { at: 4.6, title: 'Gom thành lô', body: 'Rất nhiều giao dịch được gom lại và nén thành một lô.' },
-  { at: 6.2, title: 'Đăng lên Ethereum', body: 'Dữ liệu của lô được đăng lên Ethereum, thường dưới dạng blob, nên ai cũng tải về và kiểm tra lại được.' },
+  { at: 0, title: 'Transactions on Layer 2', body: 'You send transactions to the Layer 2. The sequencer puts them in order and confirms them almost instantly, for a low fee.' },
+  { at: 4.6, title: 'Bundled into a batch', body: 'Many transactions are gathered up and compressed into one batch.' },
+  { at: 6.2, title: 'Posted to Ethereum', body: "The batch's data is posted to Ethereum, usually as a blob, so anyone can download it and check it again." },
 ];
 const LAST: Record<Kind, Step> = {
   optimistic: {
     at: 8,
-    title: 'Chờ khiếu nại',
-    body: 'Rollup lạc quan coi lô là đúng. Trong thời gian khiếu nại (thường vài ngày tới một tuần), ai thấy sai có thể nộp bằng chứng gian lận để sửa lại.',
+    title: 'Wait for challenges',
+    body: 'An optimistic rollup assumes the batch is correct. During the challenge period (usually a few days to a week), anyone who spots a mistake can submit a fraud proof to correct it.',
   },
-  zk: { at: 8, title: 'Kèm bằng chứng', body: 'ZK-rollup gửi kèm bằng chứng hợp lệ. Ethereum kiểm tra bằng chứng, nên không cần thời gian khiếu nại.' },
+  zk: { at: 8, title: 'Proof attached', body: 'A ZK-rollup sends a validity proof along with the batch. Ethereum checks the proof, so no challenge period is needed.' },
 };
 
 function render(t: number, kind: Kind) {
@@ -99,7 +99,7 @@ function render(t: number, kind: Kind) {
       <Shadow at={L2} spec={SEQ} />
       <Box at={L2} spec={SEQ} tone="l2" />
       <Text x={L2[0]} y={L2[1] + 30} className="iso-sub">
-        bộ sắp xếp
+        sequencer
       </Text>
 
       {/* transactions flying to the sequencer */}
@@ -112,7 +112,7 @@ function render(t: number, kind: Kind) {
       })}
       {absorbed > 0 && batch <= 0 && (
         <Text x={L2[0]} y={SEQ_TOP[1] - 26} className="iso-note is-tx">
-          {absorbed} giao dịch ✓
+          {absorbed} {absorbed === 1 ? 'transaction' : 'transactions'} ✓
         </Text>
       )}
 
@@ -122,7 +122,7 @@ function render(t: number, kind: Kind) {
           <Cube at={blobPos} spec={{ ...BLOB, h: BLOB.h * (posted ? 1 : Math.max(0.15, batch)) }} tone="l2" />
           {!posted && post <= 0 && (
             <Text x={L2[0]} y={SEQ_TOP[1] - 26} className="iso-note is-l2" opacity={batch}>
-              1 lô · đã nén
+              1 batch · compressed
             </Text>
           )}
           {post > 0 && <Arrow from={[seqBatch[0], seqBatch[1] - 6]} to={[BLOB_AT[0] - 10, BLOB_AT[1] + 10]} tone="l2" head={false} opacity={0.5} />}
@@ -148,10 +148,10 @@ function render(t: number, kind: Kind) {
             transform={`rotate(-90 ${PROOF[0]} ${PROOF[1]})`}
           />
           <Text x={PROOF[0]} y={PROOF[1] + 30} className="iso-note is-key">
-            ~7 ngày
+            ~7 days
           </Text>
           <Text x={PROOF[0]} y={PROOF[1] + 44} className="iso-sub">
-            khiếu nại
+            challenge
           </Text>
         </g>
       )}
@@ -166,10 +166,10 @@ function render(t: number, kind: Kind) {
       {kind === 'zk' && t >= 9 && (
         <g opacity={reset}>
           <Text x={PROOF[0]} y={PROOF[1] + 30} className="iso-note is-ok">
-            bằng chứng
+            validity
           </Text>
           <Text x={PROOF[0]} y={PROOF[1] + 44} className="iso-sub">
-            hợp lệ
+            proof
           </Text>
         </g>
       )}
@@ -193,7 +193,7 @@ export function RollupScene() {
   );
   return (
     <IsoFigure
-      title="Rollup: giao dịch chạy trên Layer 2, được gom thành lô và đăng lên Ethereum; rollup lạc quan chờ khiếu nại, ZK-rollup kèm bằng chứng hợp lệ"
+      title="Rollup: transactions run on Layer 2, are bundled into a batch and posted to Ethereum; an optimistic rollup waits out a challenge period, a ZK-rollup attaches a validity proof"
       viewBox="0 0 440 330"
       duration={DURATION}
       poster={11.8}
@@ -201,7 +201,7 @@ export function RollupScene() {
       render={(t) => render(t, kind)}
       controls={
         <div className="flex shrink-0 border border-fd-border">
-          {tab('optimistic', 'Lạc quan')}
+          {tab('optimistic', 'Optimistic')}
           {tab('zk', 'ZK')}
         </div>
       }

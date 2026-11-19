@@ -34,10 +34,10 @@ const top = (p: Pt): Pt => [p[0], p[1] - 22];
 const STATUS: Pt = [358, 60];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Bài toán', body: 'Các cánh quân vây một thành, chỉ liên lạc bằng người đưa tin. Cùng tấn công thì thắng, nhưng trong số họ có kẻ phản bội.' },
-  { at: 2.6, title: 'Kẻ phản bội nói hai lời', body: 'Tướng D báo B là "rút lui", báo C là "tấn công". Các tướng trung thành không còn thống nhất.' },
-  { at: 6.4, title: 'Đặt cọc và bỏ phiếu công khai', body: 'Ai muốn bỏ phiếu phải đặt cọc. Mỗi phiếu được ký và gửi cho tất cả, nên không ai giả được lời người khác.' },
-  { at: 9.6, title: '2/3 là quyết, nói hai lời là mất cọc', body: 'Khi 2/3 số phiếu cùng chọn một hướng, cả nhóm theo hướng đó. Kẻ gửi hai phiếu trái nhau bị phát hiện và mất cọc.' },
+  { at: 0, title: 'The problem', body: 'Several armies surround a city and can only talk through messengers. If they attack together they win, but there is a traitor among them.' },
+  { at: 2.6, title: 'The traitor says two things', body: 'General D tells B to "retreat" and tells C to "attack". The loyal generals no longer agree.' },
+  { at: 6.4, title: 'Stake and vote in the open', body: "Anyone who wants to vote must put up a stake. Every vote is signed and sent to everyone, so no one can fake someone else's word." },
+  { at: 9.6, title: '2/3 decides, saying two things costs the stake', body: 'When 2/3 of the votes pick the same course, the whole group follows it. Whoever sends two conflicting votes is caught and loses their stake.' },
 ];
 
 /** A message pill flying from camp a to camp b during [start, start + dur]. */
@@ -63,12 +63,12 @@ function render(t: number) {
   const pills: { at: Pt; text: string; tone: 'lane' | 'ok' | 'bad' }[] = [];
   for (const b of [1, 2, 3]) {
     const at = flight(t, 0, b, 0.5, 1.2);
-    if (at) pills.push({ at, text: 'tấn công', tone: 'lane' });
+    if (at) pills.push({ at, text: 'attack', tone: 'lane' });
   }
   const lie = flight(t, TRAITOR, 1, 2.6, 1.2);
-  if (lie) pills.push({ at: lie, text: 'rút lui', tone: 'lane' });
+  if (lie) pills.push({ at: lie, text: 'retreat', tone: 'lane' });
   const half = flight(t, TRAITOR, 2, 2.6, 1.2);
-  if (half) pills.push({ at: half, text: 'tấn công', tone: 'lane' });
+  if (half) pills.push({ at: half, text: 'attack', tone: 'lane' });
 
   // phase B: every camp sends a signed vote to every other camp
   const votes: { at: Pt; ok: boolean }[] = [];
@@ -106,7 +106,7 @@ function render(t: number) {
       <Box at={CITY} spec={{ w: 46, d: 46, h: 26 }} />
       <Box at={CITY} spec={{ w: 16, d: 16, h: 22, z: 26 }} />
       <Text x={CITY[0] + 40} y={CITY[1] + 26} className="iso-sub" anchor="start">
-        thành
+        city
       </Text>
 
       {/* the camps, their generals and their stakes */}
@@ -121,11 +121,11 @@ function render(t: number) {
             <path d={`M${c[0]} ${c[1] - 38} l12 4 l-12 4 Z`} style={{ fill: traitor ? 'var(--bad)' : 'var(--key)' }} />
             {stake > 0 && <Coins at={coinAt} n={3 * stake} tone={i === TRAITOR && slashed > 0.3 ? 'bad' : 'key'} opacity={i === TRAITOR ? 1 - slashed : 1} />}
             <Text x={LABEL_AT[i][0]} y={LABEL_AT[i][1]}>
-              Tướng {NAMES[i]}
+              General {NAMES[i]}
             </Text>
             {traitor && (
               <Text x={LABEL_AT[i][0]} y={LABEL_AT[i][1] + 14} className="iso-note is-bad">
-                phản bội
+                traitor
               </Text>
             )}
           </g>
@@ -135,11 +135,11 @@ function render(t: number) {
       {/* what B and C ended up believing */}
       {confused && (
         <>
-          <Pill at={[CAMPS[1][0] - 66, CAMPS[1][1] - 12]} text="B: rút lui?" tone="bad" />
-          <Pill at={[CAMPS[2][0], CAMPS[2][1] - 60]} text="C: tấn công?" tone="ok" />
+          <Pill at={[CAMPS[1][0] - 66, CAMPS[1][1] - 12]} text="B: retreat?" tone="bad" />
+          <Pill at={[CAMPS[2][0], CAMPS[2][1] - 60]} text="C: attack?" tone="ok" />
           <Badge at={STATUS} ok={false} scale={backOut(prog(t, 4.4, 0.3))} r={10} />
           <Text x={STATUS[0]} y={STATUS[1] + 26} className="iso-note is-bad" opacity={prog(t, 4.4, 0.3)}>
-            không thống nhất
+            no agreement
           </Text>
         </>
       )}
@@ -155,14 +155,14 @@ function render(t: number) {
       {decided > 0 && (
         <>
           <Badge at={STATUS} ok scale={decided} r={10} />
-          <Pill at={[STATUS[0], STATUS[1] + 26]} text="tấn công · 3/4 phiếu" tone="ok" opacity={Math.min(1, decided)} />
+          <Pill at={[STATUS[0], STATUS[1] + 26]} text="attack · 3/4 votes" tone="ok" opacity={Math.min(1, decided)} />
         </>
       )}
       <Text x={CAMPS[TRAITOR][0] + 64} y={CAMPS[TRAITOR][1] + 2} className="iso-note is-bad" anchor="start" opacity={slashed > 0 ? Math.min(1, slashed * 2) : 0}>
-        hai phiếu trái nhau
+        two conflicting votes
       </Text>
       <Text x={CAMPS[TRAITOR][0] + 64} y={CAMPS[TRAITOR][1] + 16} className="iso-note is-bad" anchor="start" opacity={slashed > 0 ? Math.min(1, slashed * 2) : 0}>
-        → mất cọc
+        → loses stake
       </Text>
     </g>
   );
@@ -171,7 +171,7 @@ function render(t: number) {
 export function ByzantineScene() {
   return (
     <IsoFigure
-      title="Bài toán các vị tướng Byzantine: kẻ phản bội nói hai lời làm các tướng không thống nhất; khi mọi người đặt cọc và bỏ phiếu công khai, 2/3 quyết định và kẻ nói hai lời mất cọc"
+      title="The Byzantine Generals Problem: a traitor who says two different things leaves the generals divided; when everyone stakes and votes in the open, 2/3 decides and the one who said two things loses their stake"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={10.9}

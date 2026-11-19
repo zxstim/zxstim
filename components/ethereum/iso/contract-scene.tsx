@@ -25,18 +25,18 @@ const NODES: Pt[] = [
 const NODE_SPEC: BoxSpec = { w: 18, d: 18, h: 24 };
 const TX: BoxSpec = { w: 8, d: 8, h: 8 };
 
-const CODE = ['nếu số dư < số: hủy', 'trừ số dư người gửi', 'cộng số dư người nhận'];
+const CODE = ['if balance < amt: stop', 'subtract from sender', 'add to recipient'];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Mã nằm trên chuỗi', body: 'Hợp đồng thông minh là một chương trình kèm dữ liệu, đặt tại một địa chỉ trên Ethereum. Ai cũng đọc được mã.' },
-  { at: 1.2, title: 'Gọi bằng giao dịch', body: 'An gửi một giao dịch tới địa chỉ của hợp đồng, kèm lệnh: chuyển 30 USDC cho Bình.' },
-  { at: 2.8, title: 'Mọi nút chạy như nhau', body: 'Mỗi nút chạy cùng đoạn mã và ra cùng kết quả. Số dư được cập nhật mà không cần ai duyệt.' },
-  { at: 6.4, title: 'Sai luật là hủy', body: 'Chuyển nhiều hơn số dư thì mã dừng lại và hoàn tác. Dữ liệu giữ nguyên, nhưng phí gas cho phần đã chạy vẫn mất.' },
+  { at: 0, title: 'The code lives onchain', body: 'A smart contract is a program plus its data, stored at an address on Ethereum. Anyone can read the code.' },
+  { at: 1.2, title: 'Called by a transaction', body: "Alice sends a transaction to the contract's address with an instruction: send 30 USDC to Bob." },
+  { at: 2.8, title: 'Every node runs it the same way', body: 'Every node runs the same code and gets the same result. The balances are updated without anyone having to approve it.' },
+  { at: 6.4, title: 'Break the rules and it stops', body: 'Send more than the balance and the code stops and reverts. The data stays as it was, but the gas fee for the part that already ran is still lost.' },
 ];
 
 function render(t: number) {
   const second = t >= 6.4;
-  const call = second ? 'chuyển(Bình, 500)' : 'chuyển(Bình, 30)';
+  const call = second ? 'send(Bob, 500)' : 'send(Bob, 30)';
   const hop = second ? prog(t, 6.6, 1.2) : prog(t, 1.2, 1.2);
   const run = second ? prog(t, 8, 0.8) : prog(t, 2.8, 1);
   const updated = t >= 3.8 && t < 11.4;
@@ -56,7 +56,7 @@ function render(t: number) {
 
   return (
     <>
-      <Card x={12} y={12} w={162} title="MÃ · chuyển(tới, số)" rows={CODE} active={active} highlight={failing} />
+      <Card x={12} y={12} w={162} title="CODE · send(to, amt)" rows={CODE} active={active} highlight={failing} />
 
       {/* the contract */}
       <Shadow at={CONTRACT} spec={SPEC} />
@@ -64,13 +64,13 @@ function render(t: number) {
         <path className="vent" d={code} />
       </Box>
       <Text x={CONTRACT[0]} y={CONTRACT[1] + 66}>
-        Hợp đồng token
+        Token contract
       </Text>
       <Text x={CONTRACT[0]} y={CONTRACT[1] + 80} className="iso-hash">
         0xC0de…7a1F
       </Text>
       <Text x={CONTRACT[0]} y={CONTRACT_TOP[1] - 16} className="iso-note is-bad" opacity={reverted ? 1 : 0}>
-        hủy · hoàn tác
+        stopped · reverted
       </Text>
 
       {/* its data */}
@@ -78,15 +78,15 @@ function render(t: number) {
         x={304}
         y={92}
         w={126}
-        title="DỮ LIỆU"
-        rows={[updated ? 'An      70 USDC' : 'An     100 USDC', updated ? 'Bình    80 USDC' : 'Bình    50 USDC']}
+        title="DATA"
+        rows={[updated ? 'Alice   70 USDC' : 'Alice  100 USDC', updated ? 'Bob     80 USDC' : 'Bob     50 USDC']}
         active={fresh ? 0 : undefined}
       />
 
       {/* the caller */}
       <Phone at={PHONE} lit={hop > 0 && hop < 0.3} />
       <Text x={PHONE[0] + 10} y={PHONE[1] + 36}>
-        Ví của An
+        Alice&apos;s wallet
       </Text>
       <Card x={12} y={150} w={140} rows={[call]} highlight={second && t >= 8.4 && t < 11.4 ? 0 : undefined} />
       {hop > 0 && hop < 1 && (
@@ -112,7 +112,7 @@ function render(t: number) {
         </g>
       ))}
       <Text x={NODES[1][0]} y={NODES[1][1] + 28} className="iso-sub">
-        mọi nút chạy cùng mã
+        every node runs it
       </Text>
     </>
   );
@@ -121,7 +121,7 @@ function render(t: number) {
 export function ContractScene() {
   return (
     <IsoFigure
-      title="Hợp đồng thông minh: một giao dịch gọi hợp đồng, mọi nút chạy cùng đoạn mã và cập nhật dữ liệu; lệnh sai luật bị hủy và hoàn tác"
+      title="A smart contract: a transaction calls the contract, every node runs the same code and updates the data; a call that breaks the rules is stopped and reverted"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={4.8}

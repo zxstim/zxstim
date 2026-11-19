@@ -35,13 +35,13 @@ const METER = { x: 304, top: 108, bottom: 196 };
 const slabAt = (n: number) => 0.3 + n * 0.62;
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Gom giao dịch', body: 'Giao dịch được chọn từ mempool và xếp vào khối, tới khi gần chạm giới hạn gas của khối.' },
+  { at: 0, title: 'Collect transactions', body: "Transactions are picked from the mempool and packed into the block until it nears the block's gas limit." },
   {
     at: 5.6,
-    title: 'Ghi phần đầu khối',
-    body: 'Phần đầu khối ghi số khe, người đề xuất, mã băm khối cha và gốc trạng thái: bản tóm tắt mọi tài khoản sau khi chạy các giao dịch.',
+    title: 'Write the header',
+    body: "The block header records the slot number, the proposer, the parent block's hash and the state root: a summary of every account after the transactions have run.",
   },
-  { at: 7.4, title: 'Niêm phong và nối', body: 'Mã băm của khối tính từ nội dung. Các nút chạy lại giao dịch để kiểm tra, rồi nối khối vào sau khối cha.' },
+  { at: 7.4, title: 'Seal and link', body: "The block's hash is computed from its contents. Nodes re-run the transactions to check them, then link the block after its parent." },
 ];
 
 function render(t: number) {
@@ -54,7 +54,7 @@ function render(t: number) {
   const seal = easeInOut(prog(t, 7.4, 0.6));
   const link = easeInOut(prog(t, 8.2, 0.7));
 
-  const rows = ['Khe          15.610.344', 'Người đề xuất  #412.087', 'Khối cha       #5e08', 'Gốc trạng thái 0xd1e4…'];
+  const rows = ['Slot        15,610,344', 'Proposer    #412,087', 'Parent      #5e08', 'State root  0xd1e4…'];
   const sealedSpec: BoxSpec = { w: FRAME.w, d: FRAME.d, h: LAYERS * SLAB_H + BASE.h };
 
   return (
@@ -66,7 +66,7 @@ function render(t: number) {
         #5e08
       </Text>
       <Text x={PARENT[0]} y={PARENT[1] + 40}>
-        Khối cha
+        Parent block
       </Text>
       <Arrow from={[PARENT[0] - PARENT_SPEC.w * COS30 - 4, PARENT[1] - 18]} to={[8, PARENT[1] - 18]} tone="block" head={false} opacity={0.5} />
 
@@ -80,7 +80,7 @@ function render(t: number) {
         Mempool
       </Text>
       <Text x={MEMPOOL[0]} y={MEMPOOL[1] + 60} className="iso-sub">
-        giao dịch đang chờ
+        pending txs
       </Text>
 
       {/* the new block: a frame that fills with transactions, then seals */}
@@ -102,10 +102,10 @@ function render(t: number) {
         </Text>
       </g>
       <Text x={NEW[0]} y={NEW[1] + 50}>
-        Khối mới
+        New block
       </Text>
       <Text x={NEW[0]} y={NEW[1] + 64} className="iso-sub">
-        {count} giao dịch
+        {count} {count === 1 ? 'transaction' : 'transactions'}
       </Text>
 
       {/* a transaction hopping from the mempool into the block */}
@@ -129,14 +129,14 @@ function render(t: number) {
       />
       <line x1={METER.x - 7} x2={METER.x + 7} y1={METER.top} y2={METER.top} className="iso-line" data-tone="bad" style={{ strokeDasharray: 'none' }} />
       <Text x={METER.x + 10} y={METER.top + 4} className="iso-sub" anchor="start">
-        giới hạn gas
+        gas limit
       </Text>
       <Text x={METER.x + 10} y={METER.bottom} className="iso-sub" anchor="start">
         gas
       </Text>
 
       {/* the header */}
-      <Card x={262} y={10} w={170} title="PHẦN ĐẦU KHỐI" rows={rows.slice(0, rowsShown)} opacity={card * reset} />
+      <Card x={262} y={10} w={170} title="BLOCK HEADER" rows={rows.slice(0, rowsShown)} opacity={card * reset} />
 
       {/* the link back to the parent */}
       <Arrow from={[NEW[0] - FRAME.w * COS30 - 4, NEW[1] - 22]} to={[PARENT[0] + PARENT_SPEC.w * COS30 + 4, NEW[1] - 22]} tone="block" k={link * reset} />
@@ -147,7 +147,7 @@ function render(t: number) {
 export function BlockAnatomy() {
   return (
     <IsoFigure
-      title="Một khối: giao dịch từ mempool được xếp vào tới giới hạn gas, phần đầu khối ghi khe, người đề xuất, khối cha và gốc trạng thái, rồi khối nối vào chuỗi"
+      title="A block: transactions from the mempool are packed in up to the gas limit, the block header records the slot, proposer, parent block and state root, then the block links onto the chain"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={9.6}

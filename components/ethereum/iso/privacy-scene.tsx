@@ -17,21 +17,21 @@ const YOU: Pt = [220, 162];
 const NODE: BoxSpec = { w: 22, d: 22, h: 14 };
 const ME: BoxSpec = { w: 30, d: 30, h: 18 };
 const PEERS: { at: Pt; hex: string; who: string }[] = [
-  { at: [92, 100], hex: '0xa1…4e', who: 'sàn X' },
-  { at: [220, 62], hex: '0x3c…9b', who: 'công ty (lương)' },
-  { at: [348, 100], hex: '0x5f…21', who: 'chủ nhà' },
-  { at: [380, 196], hex: '0x8d…07', who: 'quán cà phê' },
-  { at: [60, 196], hex: '0x2b…c3', who: 'bạn bè' },
+  { at: [92, 100], hex: '0xa1…4e', who: 'exchange X' },
+  { at: [220, 62], hex: '0x3c…9b', who: 'employer (salary)' },
+  { at: [348, 100], hex: '0x5f…21', who: 'landlord' },
+  { at: [380, 196], hex: '0x8d…07', who: 'coffee shop' },
+  { at: [60, 196], hex: '0x2b…c3', who: 'friends' },
 ];
 const EXCHANGE = 0;
 const FRESH: Pt = [220, 262];
 const FRESH_PEER: Pt = [330, 262];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Mọi giao dịch đều công khai', body: 'Ai cũng xem được mọi giao dịch của một địa chỉ: gửi cho ai, nhận từ đâu, bao nhiêu, lúc nào.' },
-  { at: 3, title: 'Địa chỉ chỉ là bút danh', body: 'Trên chuỗi không ghi tên bạn, chỉ có địa chỉ. Ethereum là công khai dưới bút danh, không phải ẩn danh.' },
-  { at: 5.4, title: 'Lộ một lần là lộ hết', body: 'Rút tiền từ sàn đã xác minh danh tính, hay khoe địa chỉ công khai, là gắn tên bạn vào địa chỉ. Từ đó toàn bộ lịch sử là của bạn.' },
-  { at: 8.6, title: 'Tách địa chỉ cho từng việc', body: 'Dùng địa chỉ khác nhau cho những việc khác nhau, và đừng nạp tiền cho chúng từ cùng một nơi. Cách này giảm rủi ro, nhưng không làm bạn ẩn danh.' },
+  { at: 0, title: 'Every transaction is public', body: 'Anyone can see every transaction of an address: who it sent to, where it received from, how much, and when.' },
+  { at: 3, title: 'An address is only a pseudonym', body: 'The chain does not record your name, only your address. Ethereum is public under a pseudonym (pseudonymous), not anonymous.' },
+  { at: 5.4, title: 'Exposed once, exposed for good', body: 'Withdrawing from an exchange that has verified your identity, or showing off your address in public, ties your name to that address. From then on, its whole history is yours.' },
+  { at: 8.6, title: 'A separate address for each purpose', body: 'Use different addresses for different purposes, and do not fund them from the same place. This lowers the risk, but it does not make you anonymous.' },
 ];
 
 function render(t: number) {
@@ -67,24 +67,24 @@ function render(t: number) {
       <Shadow at={YOU} spec={ME} />
       <Box at={YOU} spec={ME} tone={exposed ? 'bad' : 'tx'} />
       <Text x={YOU[0]} y={YOU[1] + 30} className={exposed ? 'iso-hash is-bad' : 'iso-hash'}>
-        {exposed ? 'An Nguyễn' : '0x71C7…976F'}
+        {exposed ? 'Alice Smith' : '0x71C7…976F'}
       </Text>
       {t >= 3 && t < 5.4 && (
-        <Pill at={[YOU[0], YOU[1] - 48]} text="tên? không ghi" tone="tx" opacity={prog(t, 3, 0.3)} />
+        <Pill at={[YOU[0], YOU[1] - 48]} text="name? not recorded" tone="tx" opacity={prog(t, 3, 0.3)} />
       )}
       {t < 3 && t > 2 && (
         <Text x={YOU[0]} y={YOU[1] - 44} className="iso-note is-tx" opacity={prog(t, 2, 0.3)}>
-          ai cũng xem được
+          anyone can see
         </Text>
       )}
 
       {/* the exchange knows who you are */}
       {kyc > 0 && t < 11.4 && (
-        <Card x={10} y={16} w={152} title="SÀN X · ĐÃ XÁC MINH" rows={['An Nguyễn', 'CCCD ✓']} opacity={kyc} highlight={exposed ? 0 : undefined} />
+        <Card x={10} y={16} w={152} title="VERIFIED BY X" rows={['Alice Smith', 'Citizen ID ✓']} opacity={kyc} highlight={exposed ? 0 : undefined} />
       )}
       {exposed && (
         <Text x={YOU[0]} y={YOU[1] + 46} className="iso-note is-bad">
-          cả lịch sử lộ theo
+          whole history exposed
         </Text>
       )}
 
@@ -99,7 +99,7 @@ function render(t: number) {
             0x9b2E…51d0
           </Text>
           <Text x={FRESH[0] - 20} y={FRESH[1] + 18} className="iso-sub" anchor="end">
-            địa chỉ khác, việc khác
+            new address, new purpose
           </Text>
         </g>
       )}
@@ -110,7 +110,7 @@ function render(t: number) {
 export function PrivacyScene() {
   return (
     <IsoFigure
-      title="Quyền riêng tư: mọi giao dịch của một địa chỉ đều công khai; khi địa chỉ bị gắn với danh tính, toàn bộ lịch sử bị lộ; dùng địa chỉ riêng cho từng việc"
+      title="Privacy: every transaction of an address is public; once the address is tied to an identity, its whole history is exposed; use a separate address for each purpose"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={7.4}

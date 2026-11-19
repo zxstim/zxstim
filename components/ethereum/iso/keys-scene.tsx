@@ -19,17 +19,17 @@ const KEY: BoxSpec = { w: 32, d: 32, h: 30 };
 const TAG: BoxSpec = { w: 44, d: 22, h: 10 };
 
 const STAGES: { label: string; sub: string; value: string; tone: Tone; secret: boolean }[] = [
-  { label: 'Cụm từ khôi phục', sub: '12 hoặc 24 từ', value: 'apple · river · …', tone: 'device', secret: true },
-  { label: 'Khóa riêng tư', sub: 'số 256 bit', value: '0x4c08…a1f2', tone: 'key', secret: true },
-  { label: 'Khóa công khai', sub: 'tính từ khóa riêng', value: '0x04b3…9e1c', tone: 'tx', secret: false },
-  { label: 'Địa chỉ', sub: '20 byte', value: '0x71C7…976F', tone: 'final', secret: false },
+  { label: 'Recovery phrase', sub: '12 or 24 words', value: 'apple · river · …', tone: 'device', secret: true },
+  { label: 'Private key', sub: '256-bit number', value: '0x4c08…a1f2', tone: 'key', secret: true },
+  { label: 'Public key', sub: 'from private key', value: '0x04b3…9e1c', tone: 'tx', secret: false },
+  { label: 'Address', sub: '20 bytes', value: '0x71C7…976F', tone: 'final', secret: false },
 ];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Cụm từ khôi phục', body: 'Ví tạo một số ngẫu nhiên rất lớn và ghi lại thành 12 hoặc 24 từ. Từ cụm từ này, ví tính ra khóa riêng tư.' },
-  { at: 1.6, title: 'Khóa công khai', body: 'Từ khóa riêng tư, ví tính ra khóa công khai bằng một phép toán chỉ đi một chiều.' },
-  { at: 3.2, title: 'Địa chỉ', body: 'Băm khóa công khai rồi lấy 20 byte cuối, viết thành 0x và 40 ký tự. Đó là địa chỉ của bạn.' },
-  { at: 5.2, title: 'Không đi ngược được', body: 'Biết địa chỉ hay khóa công khai cũng không suy ra được khóa riêng tư. Địa chỉ cứ chia sẻ; khóa và cụm từ phải giữ kín.' },
+  { at: 0, title: 'Recovery phrase', body: 'The wallet generates a very large random number and writes it down as 12 or 24 words. From this phrase, the wallet computes the private key.' },
+  { at: 1.6, title: 'Public key', body: 'From the private key, the wallet computes the public key using a math operation that only goes one way.' },
+  { at: 3.2, title: 'Address', body: 'Hash the public key and take the last 20 bytes, written as 0x followed by 40 characters. That is your address.' },
+  { at: 5.2, title: 'No way back', body: 'Knowing the address or the public key does not let anyone work out the private key. Share your address freely; keep the key and the phrase secret.' },
 ];
 
 /** When stage i becomes known: the first at 0, then one every 1.6 s. */
@@ -63,7 +63,7 @@ function Stage({ i, t }: { i: number; t: number }) {
         {s.label}
       </Text>
       <Text x={at[0]} y={Y + 55} className={s.secret ? 'iso-sub is-key' : 'iso-sub'} opacity={0.4 + 0.6 * on}>
-        {s.secret ? 'giữ bí mật' : 'chia sẻ được'}
+        {s.secret ? 'keep secret' : 'safe to share'}
       </Text>
       <Text x={at[0]} y={Y - 48} className="iso-sub" opacity={on}>
         {s.sub}
@@ -103,7 +103,7 @@ function render(t: number) {
             <Badge key={j} at={[(XS[j + 1] + XS[j + 2]) / 2, Y + 4]} ok={false} scale={j === 0 ? denied : backOut(prog(t, 6.0, 0.35))} />
           ))}
           <Text x={(XS[1] + XS[3]) / 2} y={Y + 82} className="iso-note is-bad" opacity={prog(t, 6.3, 0.3)}>
-            không tính ngược được
+            cannot be reversed
           </Text>
         </>
       )}
@@ -117,7 +117,7 @@ function render(t: number) {
 export function KeysScene() {
   return (
     <IsoFigure
-      title="Từ cụm từ khôi phục ra khóa riêng tư, khóa công khai rồi địa chỉ; mỗi bước chỉ đi một chiều"
+      title="From the recovery phrase to the private key, the public key and then the address; each step only goes one way"
       viewBox="0 0 480 260"
       duration={DURATION}
       poster={7.4}

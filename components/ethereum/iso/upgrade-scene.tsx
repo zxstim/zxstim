@@ -39,10 +39,10 @@ const BLOCK: BoxSpec = { w: 26, d: 26, h: 22 };
 const HALF = BLOCK.w * COS30;
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Đề xuất (EIP)', body: 'Ai cũng có thể viết một đề xuất cải tiến Ethereum (EIP) và đưa ra thảo luận công khai.' },
-  { at: 2.6, title: 'Bàn công khai, chọn đợt nâng cấp', body: 'Các nhóm phát triển bàn trong các cuộc họp mở, chọn những EIP nào vào đợt nâng cấp tới.' },
-  { at: 5.2, title: 'Nhiều nhóm cùng làm, chạy thử', body: 'Mỗi nhóm phần mềm tự làm thay đổi trong phần mềm của mình, rồi chạy thử trên các mạng thử nghiệm.' },
-  { at: 8, title: 'Nâng cấp cùng một lúc', body: 'Tới một mốc định trước, mọi nút đã cập nhật cùng chuyển sang luật mới. Nút không cập nhật bị tách khỏi mạng lưới.' },
+  { at: 0, title: 'Proposal (EIP)', body: 'Anyone can write an Ethereum Improvement Proposal (EIP) and put it up for public discussion.' },
+  { at: 2.6, title: 'Discussed in public, picked for an upgrade', body: 'The development teams talk it over in open meetings and choose which EIPs go into the next upgrade.' },
+  { at: 5.2, title: 'Many teams build and test', body: 'Each client team makes the change in its own software, then tries it out on testnets.' },
+  { at: 8, title: 'Everyone upgrades at once', body: 'At a point set in advance, every updated node switches to the new rules together. A node that did not update is split off from the network.' },
 ];
 
 function render(t: number) {
@@ -60,7 +60,7 @@ function render(t: number) {
   return (
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
       {/* 1. the proposal */}
-      <Card x={12} y={30} w={118} title="EIP-XXXX" rows={['đề xuất', 'cải tiến']} opacity={eip} />
+      <Card x={12} y={30} w={118} title="EIP-XXXX" rows={['improvement', 'proposal']} opacity={eip} />
       <Arrow from={[134, 56]} to={[158, 60]} tone="block" k={toMeet} />
 
       {/* 2. the public calls */}
@@ -68,9 +68,9 @@ function render(t: number) {
         <Box key={i} at={p} spec={PERSON} tone={talk ? 'tx' : 'device'} />
       ))}
       <Text x={192} y={110} className="iso-sub">
-        họp công khai
+        open meetings
       </Text>
-      {talk && <Pill at={[192, 18]} text={t >= 4.4 ? 'chọn ✓' : 'bàn…'} tone={t >= 4.4 ? 'ok' : 'tx'} opacity={Math.min(1, chosen + 0.6)} />}
+      {talk && <Pill at={[192, 18]} text={t >= 4.4 ? 'chosen ✓' : 'discussing…'} tone={t >= 4.4 ? 'ok' : 'tx'} opacity={Math.min(1, chosen + 0.6)} />}
       <Arrow from={[222, 62]} to={[252, 62]} tone="block" k={prog(t, 4.8, 0.5)} />
 
       {/* 3. several teams, several programs */}
@@ -81,10 +81,10 @@ function render(t: number) {
         </g>
       ))}
       <Text x={336} y={104} className="iso-sub">
-        nhiều nhóm, nhiều phần mềm
+        many teams, many clients
       </Text>
       <Text x={TEST_XS[0] - 30} y={TEST_Y - 6} className="iso-sub" anchor="end">
-        mạng thử nghiệm
+        testnets
       </Text>
       {TEST_XS.map((x, i) => {
         const k = test(i);
@@ -98,7 +98,7 @@ function render(t: number) {
 
       {/* 4. mainnet: the fork at a set point */}
       <Text x={14} y={MAIN_Y - 46} className="iso-sub" anchor="start">
-        mạng chính
+        mainnet
       </Text>
       {OLD_XS.map((x, i) => (
         <g key={x}>
@@ -109,7 +109,7 @@ function render(t: number) {
       {fork > 0 && (
         <g>
           <path className="iso-line" data-tone="key" d={`M${FORK_X} ${MAIN_Y + 18} V${MAIN_Y - 50}`} style={{ strokeDasharray: '3 3' }} />
-          <Pill at={[FORK_X, MAIN_Y - 62]} text="mốc nâng cấp" tone="key" opacity={Math.min(1, fork)} />
+          <Pill at={[FORK_X, MAIN_Y - 62]} text="upgrade point" tone="key" opacity={Math.min(1, fork)} />
         </g>
       )}
       {NEW_XS.map((x, i) => {
@@ -128,7 +128,7 @@ function render(t: number) {
           <Arrow from={[NEW_XS[0] + 6 - HALF, MAIN_Y + 34]} to={[OLD_XS[2] + HALF, MAIN_Y - 4]} tone="lane" />
           <Badge at={[NEW_XS[0] + 46, MAIN_Y + 40]} ok={false} scale={backOut(prog(t, 9.8, 0.3))} r={7} />
           <Text x={NEW_XS[0] + 58} y={MAIN_Y + 44} className="iso-note is-bad" anchor="start">
-            nút không cập nhật: bị tách ra
+            not updated: split off
           </Text>
         </g>
       )}
@@ -139,7 +139,7 @@ function render(t: number) {
 export function UpgradeScene() {
   return (
     <IsoFigure
-      title="Ethereum nâng cấp thế nào: đề xuất EIP, thảo luận công khai, nhiều nhóm phần mềm cùng làm và chạy thử, rồi cả mạng lưới chuyển sang luật mới tại một mốc định trước"
+      title="How Ethereum upgrades: an EIP is proposed and discussed in public, several client teams build and test it, then the whole network switches to the new rules at a point set in advance"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={10.6}

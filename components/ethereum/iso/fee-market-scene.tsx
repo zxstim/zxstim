@@ -32,14 +32,14 @@ const FEE = FULL.reduce<number[]>((fees, _, i) => {
   return fees;
 }, []);
 
-const gwei = new Intl.NumberFormat('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const pct = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+const gwei = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const pct = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Mục tiêu là nửa khối', body: 'Mỗi khối có giới hạn gas, và mức mục tiêu bằng một nửa. Khối dùng đúng mục tiêu thì phí cơ sở của khối sau giữ nguyên.' },
-  { at: 2.5, title: 'Đông người: khối đầy, phí tăng', body: 'Khi nhiều người cùng gửi, khối đầy tới giới hạn. Mỗi khối đầy làm phí cơ sở của khối sau tăng 12,5%. Bốn khối đầy liền nhau làm phí tăng khoảng 60%.' },
-  { at: 6.6, title: 'Phí cao, người không vội chờ', body: 'Phí cao khiến những ai không vội gửi sau. Khối bớt đầy, phí tăng chậm lại rồi dừng.' },
-  { at: 8.8, title: 'Vắng người: phí giảm', body: 'Khối dùng ít hơn mục tiêu thì phí cơ sở giảm, mỗi khối tối đa 12,5%. Phí có thể đổi sau mỗi khối, tức mỗi 12 giây.' },
+  { at: 0, title: 'The target is half a block', body: "Each block has a gas limit, and the target is half of it. When a block uses exactly the target, the next block's base fee stays the same." },
+  { at: 2.5, title: 'Busy: blocks fill up, fees rise', body: "When many people send at once, blocks fill up to the limit. Each full block raises the next block's base fee by 12.5%. Four full blocks in a row raise the fee by about 60%." },
+  { at: 6.6, title: 'High fees: whoever can wait, waits', body: 'High fees make people who are not in a hurry send later. Blocks get less full, and the fee rises more slowly, then stops.' },
+  { at: 8.8, title: 'Quiet: fees fall', body: 'When a block uses less than the target, the base fee drops, by at most 12.5% per block. The fee can change after every block, that is, every 12 seconds.' },
 ];
 
 /** how many transactions are waiting, over the loop */
@@ -64,7 +64,7 @@ function render(t: number) {
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
       {/* the current base fee */}
       <Text x={14} y={24} anchor="start" className="iso-sub">
-        phí cơ sở của khối mới nhất (minh họa)
+        base fee of the latest block (illustration)
       </Text>
       <text x={14} y={50} className="iso-lbl" style={{ fontSize: 22 }}>
         {gwei.format(fee)} gwei
@@ -76,7 +76,7 @@ function render(t: number) {
       {/* the legend for the dashed line */}
       <path className="iso-line" d="M14 274 h22" strokeDasharray="4 3" style={{ stroke: 'var(--amber)' }} />
       <Text x={42} y={278} anchor="start" className="iso-sub">
-        mục tiêu: nửa giới hạn gas
+        target: half the gas limit
       </Text>
 
       {/* the blocks, newest on the right */}
@@ -109,7 +109,7 @@ function render(t: number) {
               {gwei.format(FEE[i])}
             </Text>
             <Text x={x} y={Y + 38} className={over ? 'iso-sub is-tx' : 'iso-sub'}>
-              {full === 1 ? 'đầy' : `dùng ${Math.round(full * 100)}%`}
+              {full === 1 ? 'full' : `${Math.round(full * 100)}% used`}
             </Text>
           </g>
         );
@@ -121,10 +121,10 @@ function render(t: number) {
         <Box key={k} at={MEMPOOL} spec={{ ...TILE, z: k * 5 }} tone="tx" />
       ))}
       <Text x={MEMPOOL[0]} y={MEMPOOL[1] + 24} className="iso-sub">
-        đang chờ
+        waiting
       </Text>
       <Text x={MEMPOOL[0]} y={MEMPOOL[1] + 37} className="iso-sub">
-        {n} giao dịch
+        {n} {n === 1 ? 'tx' : 'txs'}
       </Text>
     </g>
   );
@@ -133,7 +133,7 @@ function render(t: number) {
 export function FeeMarketScene() {
   return (
     <IsoFigure
-      title="Phí cơ sở lên xuống: khối nào dùng quá nửa giới hạn gas thì phí cơ sở của khối sau tăng, tối đa 12,5%; khối dùng ít hơn thì phí giảm"
+      title="The base fee goes up and down: when a block uses more than half the gas limit, the next block's base fee rises, by at most 12.5%; when it uses less, the fee falls"
       viewBox="0 0 440 290"
       duration={DURATION}
       poster={6.2}

@@ -25,10 +25,10 @@ const FAKE = { head: '0x71C7', mid: 'a3E09c1d44B2F0e8C5d6aB91f3E2c7d0', tail: '9
 const SHORT = '0x71C7…976F';
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Kẻ gian tạo địa chỉ giống', body: 'Máy tính thử hàng tỷ địa chỉ cho tới khi ra một địa chỉ có vài ký tự đầu và cuối giống địa chỉ bạn hay gửi tới.' },
-  { at: 3, title: 'Chen vào lịch sử của bạn', body: 'Kẻ gian tạo một giao dịch giá trị 0 với địa chỉ giả, để nó hiện trong lịch sử giao dịch của bạn. Rút gọn lại, hai dòng trông như nhau.' },
-  { at: 5.8, title: 'Chép nhầm từ lịch sử', body: 'Lần sau, bạn chép địa chỉ từ lịch sử và chọn nhầm dòng. 1.000 USDC đi tới kẻ gian, và không đòi lại được.' },
-  { at: 9, title: 'Đối chiếu toàn bộ', body: 'Hai địa chỉ chỉ giống ở đầu và cuối. Dùng danh bạ trong ví, và đối chiếu toàn bộ địa chỉ trước khi gửi.' },
+  { at: 0, title: 'The attacker makes a look-alike', body: 'A computer tries billions of addresses until it finds one whose first and last few characters match an address you often send to.' },
+  { at: 3, title: 'Slipping into your history', body: 'The attacker creates a zero-value transaction from the fake address so it shows up in your transaction history. Shortened, the two rows look the same.' },
+  { at: 5.8, title: 'Copying the wrong one', body: 'Next time, you copy the address from your history and pick the wrong row. 1,000 USDC goes to the attacker, and there is no getting it back.' },
+  { at: 9, title: 'Check the whole address', body: "The two addresses only match at the start and the end. Use your wallet's address book, and check the whole address before you send." },
 ];
 
 /** a pseudo-random shortened address, for the grinder's attempts */
@@ -63,14 +63,14 @@ function render(t: number) {
   const dim = 1 - compare * 0.75;
 
   const rows = poisoned
-    ? [`nhận  ${SHORT}       0 USDC`, `gửi   ${SHORT}     500 USDC`, 'nhận  0x3f9A…12bE   0,2 ETH']
-    : [`gửi   ${SHORT}     500 USDC`, 'nhận  0x3f9A…12bE   0,2 ETH'];
+    ? [`from  ${SHORT}       0 USDC`, `to    ${SHORT}     500 USDC`, 'from  0x3f9A…12bE   0.2 ETH']
+    : [`to    ${SHORT}     500 USDC`, 'from  0x3f9A…12bE   0.2 ETH'];
   const picked = copy > 0;
 
   const pills: { at: Pt; text: string; tone: 'tx' | 'ok' | 'bad' | 'key' | 'lane' }[] = [];
   if (dust > 0 && dust < 1) pills.push({ at: fly(above(THIEF), above(ME), dust, 40), text: '0 USDC', tone: 'lane' });
-  if (copy > 0 && copy < 1) pills.push({ at: fly([HISTORY.x + 60, HISTORY.y + 34], above(ME), copy, 0), text: 'chép địa chỉ', tone: 'tx' });
-  if (send > 0 && send < 1) pills.push({ at: fly(above(ME), above(THIEF), send, 50), text: `gửi 1.000 USDC → ${SHORT}`, tone: 'tx' });
+  if (copy > 0 && copy < 1) pills.push({ at: fly([HISTORY.x + 60, HISTORY.y + 34], above(ME), copy, 0), text: 'copy address', tone: 'tx' });
+  if (send > 0 && send < 1) pills.push({ at: fly(above(ME), above(THIEF), send, 50), text: `send 1,000 USDC → ${SHORT}`, tone: 'tx' });
 
   return (
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
@@ -80,7 +80,7 @@ function render(t: number) {
           x={HISTORY.x}
           y={HISTORY.y}
           w={HISTORY.w}
-          title="LỊCH SỬ GIAO DỊCH"
+          title="TRANSACTION HISTORY"
           rows={rows}
           active={picked && !lost ? 0 : undefined}
           highlight={lost ? 0 : undefined}
@@ -93,36 +93,36 @@ function render(t: number) {
           {found ? SHORT : attempt(Math.floor(t / 0.11))}
         </Text>
         <Text x={GRINDER[0]} y={GRINDER[1] - 66} className="iso-sub">
-          {found ? 'khớp đầu và cuối' : 'thử địa chỉ ngẫu nhiên'}
+          {found ? 'start and end match' : 'guessing addresses'}
         </Text>
         <Text x={GRINDER[0]} y={GRINDER[1] + 30} className="iso-sub">
-          máy tạo địa chỉ
+          address generator
         </Text>
 
         {/* people */}
         <Phone at={ME} lit={copy > 0.8 && send < 0.2} />
         <Text x={ME[0] + 8} y={ME[1] + 30}>
-          Bạn
+          You
         </Text>
         <Phone at={FRIEND} />
         <Text x={FRIEND[0] + 8} y={FRIEND[1] + 30}>
-          Bình
+          Bob
         </Text>
         <Text x={FRIEND[0] + 8} y={FRIEND[1] + 44} className="iso-sub">
-          {SHORT} thật
+          real {SHORT}
         </Text>
         <Badge at={[FRIEND[0] + 8, FRIEND[1] - 62]} ok={false} scale={lost ? backOut(prog(t, 8.1, 0.3)) : 0} r={8} />
         <g className="tone-bad">
           <Phone at={THIEF} />
         </g>
         <Text x={THIEF[0] + 8} y={THIEF[1] + 30} className="iso-note is-bad">
-          kẻ gian
+          attacker
         </Text>
         <Text x={THIEF[0] + 8} y={THIEF[1] + 44} className="iso-sub">
-          {SHORT} giả
+          fake {SHORT}
         </Text>
         <Text x={THIEF[0] - 14} y={THIEF[1] - 12} anchor="end" className="iso-note is-bad" opacity={lost ? prog(t, 8.1, 0.3) : 0}>
-          tiền tới kẻ gian
+          sent to attacker
         </Text>
 
         {pills.map((p, i) => (
@@ -136,17 +136,17 @@ function render(t: number) {
           x={14}
           y={104}
           w={412}
-          title="ĐỐI CHIẾU TOÀN BỘ"
+          title="COMPARE IN FULL"
           opacity={compare}
           rows={[
             <>
-              {'thật  '}
+              {'real  '}
               {REAL.head}
               <tspan style={{ fill: 'var(--vote)', fontWeight: 700 }}>{REAL.mid}</tspan>
               {REAL.tail}
             </>,
             <>
-              {'giả   '}
+              {'fake  '}
               {FAKE.head}
               <tspan style={{ fill: 'var(--bad)', fontWeight: 700 }}>{FAKE.mid}</tspan>
               {FAKE.tail}
@@ -161,7 +161,7 @@ function render(t: number) {
 export function PoisoningScene() {
   return (
     <IsoFigure
-      title="Đầu độc địa chỉ: kẻ gian tạo một địa chỉ có đầu và cuối giống địa chỉ bạn hay gửi tới, chen nó vào lịch sử giao dịch của bạn bằng một giao dịch giá trị 0; chép nhầm thì tiền tới kẻ gian; chỉ đối chiếu toàn bộ địa chỉ mới thấy khác"
+      title="Address poisoning: an attacker makes an address whose start and end match one you often send to, and slips it into your transaction history with a zero-value transaction; copy the wrong one and the money goes to the attacker; only comparing the whole address shows the difference"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={7.6}

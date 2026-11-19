@@ -28,10 +28,10 @@ const mine = (i: number): Pt => iso(XS[i], Y, -22, -12);
 const desk = (i: number): Pt => iso(XS[i], Y, 20, 12);
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Cùng địa chỉ trên nhiều mạng', body: 'Cùng một khóa cho ra cùng một địa chỉ trên Ethereum và các mạng tương thích như Base hay Arbitrum. Nhưng mỗi mạng giữ sổ số dư riêng.' },
-  { at: 3, title: 'Ví chỉ hiện mạng đang chọn', body: 'Ví đang ở mạng Ethereum thì chỉ thấy số dư trên Ethereum. 10 USDC trên Base vẫn còn đó, chỉ là ở mạng khác.' },
-  { at: 6, title: 'Cầu nối chuyển giữa các mạng', body: 'Muốn đưa tiền sang mạng khác, dùng cầu nối (bridge): tiền bị khóa hoặc đốt ở mạng này, rồi được trả ra ở mạng kia.' },
-  { at: 9, title: 'Gửi nhầm mạng', body: 'Sàn chỉ nhận USDC trên Ethereum mà bạn gửi trên Arbitrum: tiền tới đúng địa chỉ nhưng ở mạng sàn không theo dõi. Lấy lại được hay không tùy sàn, có khi mất hẳn.' },
+  { at: 0, title: 'Same address on many networks', body: 'The same key gives the same address on Ethereum and on compatible networks such as Base or Arbitrum. But each network keeps its own record of balances.' },
+  { at: 3, title: 'The wallet shows the selected network', body: 'When the wallet is set to Ethereum, you only see the balance on Ethereum. The 10 USDC on Base is still there, just on a different network.' },
+  { at: 6, title: 'A bridge moves funds between networks', body: 'To move money to another network, use a bridge: the funds are locked or burned on one network, then paid out on the other.' },
+  { at: 9, title: 'Sending on the wrong network', body: 'The exchange only accepts USDC on Ethereum, but you send it on Arbitrum: the money reaches the right address, but on a network the exchange does not watch. Whether you can get it back depends on the exchange; sometimes it is lost for good.' },
 ];
 
 function render(t: number) {
@@ -45,7 +45,7 @@ function render(t: number) {
   const deposit = prog(t, 9.6, 1.3);
   const lost = t >= 10.9;
 
-  const balances = ['0,5 ETH', bridge > 0.1 ? '0 USDC' : '10 USDC', lost ? '0 USDC' : bridged ? '10 USDC' : '0 USDC'];
+  const balances = ['0.5 ETH', bridge > 0.1 ? '0 USDC' : '10 USDC', lost ? '0 USDC' : bridged ? '10 USDC' : '0 USDC'];
   const phoneLine = selected < 0 ? '' : `${NAMES[selected]} · ${balances[selected]}`;
 
   // the bridge arc, Base → Arbitrum
@@ -61,7 +61,7 @@ function render(t: number) {
   return (
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
       <Text x={220} y={26} className="iso-lbl" opacity={shown}>
-        cùng địa chỉ {ADDRESS} trên cả ba mạng
+        same address {ADDRESS} on all three networks
       </Text>
 
       {XS.map((x, i) => {
@@ -88,7 +88,7 @@ function render(t: number) {
         <>
           <path className="iso-line" data-tone="l2" d={`M${a[0]} ${a[1]} Q${c[0]} ${c[1]} ${b[0]} ${b[1]}`} strokeDasharray="4 3" />
           <Text x={c[0]} y={c[1] + 26} className="iso-sub">
-            cầu nối
+            bridge
           </Text>
           <Pill at={onArc(bridge)} text="10 USDC" tone="ok" />
         </>
@@ -99,11 +99,11 @@ function render(t: number) {
         <g opacity={exchange}>
           <Box at={desk(0)} spec={EXCHANGE} tone="device" />
           <Text x={desk(0)[0] + 16} y={desk(0)[1] + 2} anchor="start" className="iso-sub">
-            sàn
+            exchange
           </Text>
           <path className="iso-line" d={boxEdges(desk(2)[0], desk(2)[1], EXCHANGE)} strokeDasharray="3 3" />
           <Text x={desk(2)[0] - 14} y={desk(2)[1] + 4} anchor="end" className="iso-sub">
-            địa chỉ sàn
+            exchange address
           </Text>
         </g>
       )}
@@ -114,7 +114,7 @@ function render(t: number) {
             const to = desk(2);
             return [lerp(PHONE[0] + 40, to[0], e), lerp(PHONE[1] - 50, to[1] - 34, e) - Math.sin(Math.PI * e) * 40] as Pt;
           })()}
-          text="nạp 10 USDC cho sàn"
+          text="deposit 10 USDC"
           tone="tx"
         />
       )}
@@ -126,7 +126,7 @@ function render(t: number) {
           </Text>
           <Badge at={[desk(0)[0] + 22, desk(0)[1] - 26]} ok={false} scale={backOut(prog(t, 11.2, 0.3))} r={8} />
           <Text x={desk(0)[0] + 16} y={desk(0)[1] + 16} anchor="start" className="iso-note is-bad">
-            không thấy
+            not seen
           </Text>
         </g>
       )}
@@ -134,7 +134,7 @@ function render(t: number) {
       {/* your wallet, set to one network at a time */}
       <Phone at={PHONE} />
       <Text x={PHONE[0] + 24} y={PHONE[1] - 6} anchor="start" className="iso-sub">
-        ví đang ở mạng
+        wallet set to
       </Text>
       <Text x={PHONE[0] + 24} y={PHONE[1] + 10} anchor="start" opacity={selected < 0 ? 0 : 1}>
         {phoneLine}
@@ -146,7 +146,7 @@ function render(t: number) {
 export function NetworksScene() {
   return (
     <IsoFigure
-      title="Một địa chỉ, nhiều mạng: cùng khóa cho cùng địa chỉ trên Ethereum, Base và Arbitrum, nhưng mỗi mạng giữ số dư riêng; cầu nối chuyển tiền giữa các mạng; gửi nhầm mạng thì tiền tới đúng địa chỉ nhưng ở mạng người nhận không theo dõi"
+      title="One address, many networks: the same key gives the same address on Ethereum, Base and Arbitrum, but each network keeps its own balances; a bridge moves funds between networks; send on the wrong network and the money reaches the right address, but on a network the recipient does not watch"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={5.4}

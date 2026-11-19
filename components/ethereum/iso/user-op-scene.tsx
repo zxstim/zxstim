@@ -28,10 +28,10 @@ const PAYMASTER_SPEC: BoxSpec = { w: 32, d: 32, h: 20 };
 const OP: BoxSpec = { w: 10, d: 10, h: 4 };
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Ví tạo UserOperation', body: 'Ví không gửi giao dịch thường mà tạo một UserOperation: muốn làm gì, ký bằng gì (passkey, nhiều chữ ký…), ai trả phí. Lệnh đi vào hàng chờ riêng của những người gom lệnh (bundler).' },
-  { at: 3, title: 'Gom lệnh, trả phí trước', body: 'Người gom lệnh gói nhiều UserOperation vào một giao dịch thường gửi tới EntryPoint, hợp đồng cổng vào dùng chung, và tự trả phí gas trước.' },
-  { at: 5.4, title: 'Vòng 1: kiểm tra', body: 'EntryPoint hỏi từng tài khoản: chữ ký có đúng luật của tài khoản không? Rồi hỏi paymaster có đồng ý trả phí không. Lệnh nào không qua thì bị loại trước khi chạy.' },
-  { at: 8.6, title: 'Vòng 2: chạy và hoàn phí', body: 'EntryPoint chạy từng lệnh. Phí lấy từ tài khoản, hoặc từ paymaster nếu có, để hoàn cho người gom lệnh. Mọi thứ là hợp đồng, nên không cần nâng cấp mạng lưới.' },
+  { at: 0, title: 'The wallet builds a UserOperation', body: 'Instead of a regular transaction, the wallet builds a UserOperation: what you want to do, how it is signed (passkey, multisig…) and who pays the fee. It goes into a separate waiting line for bundlers.' },
+  { at: 3, title: 'Bundled, gas paid up front', body: 'A bundler packs several UserOperations into one regular transaction sent to the EntryPoint, the shared entry contract, and pays the gas fee up front itself.' },
+  { at: 5.4, title: 'Round 1: checks', body: "The EntryPoint asks each account: does the signature follow the account's rules? Then it asks the paymaster whether it agrees to pay the fee. Any operation that fails is dropped before it runs." },
+  { at: 8.6, title: 'Round 2: run and repay', body: 'The EntryPoint runs each operation. The fee comes from the account, or from the paymaster if there is one, and repays the bundler. It is all contracts, so no network upgrade is needed.' },
 ];
 
 function fly(from: Pt, to: Pt, k: number, arc = 24): Pt {
@@ -57,13 +57,13 @@ function render(t: number) {
 
   const pills: { at: Pt; text: string; tone: 'tx' | 'ok' | 'bad' | 'key' | 'lane' }[] = [];
   if (mine > 0 && mine < 1) pills.push({ at: fly([PHONE[0] + 8, PHONE[1] - 54], [PILE[0], PILE[1] - 20], mine), text: 'UserOperation', tone: 'tx' });
-  if (other1 > 0 && other1 < 1) pills.push({ at: fly([-10, 150], [PILE[0], PILE[1] - 20], other1), text: 'lệnh khác', tone: 'lane' });
-  if (other2 > 0 && other2 < 1) pills.push({ at: fly([-10, 210], [PILE[0], PILE[1] - 20], other2), text: 'lệnh khác', tone: 'lane' });
-  if (bundle > 0 && bundle < 1) pills.push({ at: fly(bundlerTop, entryTop, bundle, 30), text: '1 giao dịch · 3 lệnh', tone: 'tx' });
-  if (check > 0 && check < 1) pills.push({ at: fly(entryTop, accTop, check, 0), text: 'đúng luật?', tone: 'key' });
-  if (pay > 0 && pay < 1) pills.push({ at: fly(entryTop, payTop, pay, 0), text: 'trả phí?', tone: 'key' });
-  if (run > 0 && run < 1) pills.push({ at: fly(entryTop, accTop, run, 0), text: 'chạy: đổi 100 USDC', tone: 'tx' });
-  if (refund > 0 && refund < 1) pills.push({ at: fly(payTop, bundlerTop, refund, 60), text: 'hoàn phí gas', tone: 'ok' });
+  if (other1 > 0 && other1 < 1) pills.push({ at: fly([-10, 150], [PILE[0], PILE[1] - 20], other1), text: 'other op', tone: 'lane' });
+  if (other2 > 0 && other2 < 1) pills.push({ at: fly([-10, 210], [PILE[0], PILE[1] - 20], other2), text: 'other op', tone: 'lane' });
+  if (bundle > 0 && bundle < 1) pills.push({ at: fly(bundlerTop, entryTop, bundle, 30), text: '1 transaction · 3 ops', tone: 'tx' });
+  if (check > 0 && check < 1) pills.push({ at: fly(entryTop, accTop, check, 0), text: 'rules OK?', tone: 'key' });
+  if (pay > 0 && pay < 1) pills.push({ at: fly(entryTop, payTop, pay, 0), text: 'pay the fee?', tone: 'key' });
+  if (run > 0 && run < 1) pills.push({ at: fly(entryTop, accTop, run, 0), text: 'run: swap 100 USDC', tone: 'tx' });
+  if (refund > 0 && refund < 1) pills.push({ at: fly(payTop, bundlerTop, refund, 60), text: 'repay gas fee', tone: 'ok' });
 
   return (
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
@@ -73,7 +73,7 @@ function render(t: number) {
         y={12}
         w={196}
         title="USEROPERATION"
-        rows={['lệnh: đổi 100 USDC', 'chữ ký: passkey', 'phí: paymaster trả']}
+        rows={['action: swap 100 USDC', 'signature: passkey', 'fee: paymaster pays']}
         opacity={0.4 + 0.6 * (1 - prog(t, 3, 0.4))}
         active={mine > 0 && mine < 1 ? 1 : undefined}
       />
@@ -92,11 +92,11 @@ function render(t: number) {
         Bundler
       </Text>
       <Text x={BUNDLER[0] + 6} y={BUNDLER[1] + 48} className="iso-sub">
-        người gom lệnh
+        packs operations
       </Text>
       <Coins at={[BUNDLER[0] - 30, BUNDLER[1] + 6]} n={t >= 11.6 ? 3 : t >= 3.1 ? 1 : 3} />
       <Text x={BUNDLER[0] - 2} y={bundlerTop[1] - 8} className="iso-note is-key" opacity={prog(t, 3.4, 0.3) * (1 - prog(t, 5.4, 0.3))}>
-        trả gas trước
+        pays gas up front
       </Text>
 
       {/* the EntryPoint */}
@@ -106,14 +106,14 @@ function render(t: number) {
         EntryPoint
       </Text>
       <Text x={ENTRY[0] + 56} y={ENTRY[1] - 16} anchor="start" className="iso-sub">
-        hợp đồng cổng vào
+        entry contract
       </Text>
 
       {/* your smart account */}
       <Shadow at={ACCOUNT} spec={ACCOUNT_SPEC} />
       <Box at={ACCOUNT} spec={ACCOUNT_SPEC} tone="tx" />
       <Text x={ACCOUNT[0]} y={ACCOUNT[1] + 34}>
-        Tài khoản thông minh
+        Smart account
       </Text>
       <Badge at={[accTop[0] + 24, accTop[1] + 6]} ok scale={(check >= 1 ? backOut(prog(t, 6.6, 0.3)) : 0) * (1 - prog(t, 8.6, 0.2)) + (run >= 1 ? backOut(prog(t, 9.8, 0.3)) : 0)} r={7} />
 
@@ -125,14 +125,14 @@ function render(t: number) {
         Paymaster
       </Text>
       <Text x={PAYMASTER[0]} y={PAYMASTER[1] + 46} className="iso-sub">
-        trả phí hộ
+        pays your fee
       </Text>
       <Badge at={[payTop[0] + 22, payTop[1] + 8]} ok scale={pay >= 1 ? backOut(prog(t, 7.8, 0.3)) * (1 - prog(t, 10.2, 0.2)) : 0} r={7} />
 
       {/* you */}
       <Phone at={PHONE} lit={mine > 0 && mine < 0.3} />
       <Text x={PHONE[0] + 8} y={PHONE[1] + 30}>
-        Ví
+        Wallet
       </Text>
 
       {pills.map((p, i) => (
@@ -145,7 +145,7 @@ function render(t: number) {
 export function UserOpScene() {
   return (
     <IsoFigure
-      title="ERC-4337: ví tạo UserOperation, người gom lệnh gói nhiều lệnh vào một giao dịch gửi tới EntryPoint và trả gas trước; EntryPoint kiểm tra chữ ký theo luật của từng tài khoản và hỏi paymaster, rồi chạy lệnh và hoàn phí cho người gom lệnh"
+      title="ERC-4337: the wallet builds a UserOperation; a bundler packs several into one transaction to the EntryPoint and pays the gas up front; the EntryPoint checks each signature against its account's rules and asks the paymaster, then runs the operations and repays the bundler"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={9.4}

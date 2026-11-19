@@ -45,10 +45,10 @@ const TX_AT = slotAt(TX.e, TX.s);
 const TX_FINAL = finalAt(1);
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Khe và kỷ nguyên', body: 'Mỗi khe 12 giây có thể có một khối, khe nào người đề xuất vắng thì trống. 32 khe là một kỷ nguyên, dài 6,4 phút. Giao dịch của bạn đã vào khối, nhưng chưa đạt tính cuối cùng.' },
-  { at: 3, title: 'Mốc và phiếu 2/3', body: 'Khối đầu mỗi kỷ nguyên là một mốc. Trong mỗi kỷ nguyên, mọi trình xác thực bỏ phiếu một lần. Khi phiếu đạt 2/3 tổng số ETH đặt cọc, mốc được chứng minh (justified).' },
-  { at: 7.6, title: 'Hai mốc liền nhau', body: 'Mốc sau cũng được chứng minh thì mốc trước đạt tính cuối cùng, kéo theo mọi khối trước nó. Tính từ lúc vào khối, việc này mất 2 tới 3 kỷ nguyên, khoảng 13 tới 19 phút.' },
-  { at: 9.6, title: 'Đảo ngược là tự đốt tiền', body: 'Muốn đảo ngược một khối đã đạt tính cuối cùng, ít nhất 1/3 tổng số ETH đặt cọc phải vi phạm luật, và số tiền cọc đó bị cắt.' },
+  { at: 0, title: 'Slots and epochs', body: 'Each 12-second slot can hold one block; if the proposer is absent, the slot stays empty. 32 slots make an epoch, 6.4 minutes long. Your transaction is in a block, but it is not finalized yet.' },
+  { at: 3, title: 'Checkpoints and the 2/3 vote', body: 'The first block of each epoch is a checkpoint. In each epoch, every validator votes once. When the votes reach 2/3 of all staked ETH, the checkpoint is justified.' },
+  { at: 7.6, title: 'Two checkpoints in a row', body: 'Once the next checkpoint is justified too, the earlier one is finalized, along with every block before it. Counting from when a transaction lands in a block, this takes 2 to 3 epochs, about 13 to 19 minutes.' },
+  { at: 9.6, title: 'Reversing it burns your own money', body: 'To reverse a finalized block, at least 1/3 of all staked ETH would have to break the rules, and that stake gets slashed.' },
 ];
 
 function render(t: number) {
@@ -72,10 +72,10 @@ function render(t: number) {
     <g opacity={fade < 1 ? 0.3 + 0.7 * fade : 1}>
       {/* the clock, time-lapsed */}
       <Text x={12} y={22} anchor="start" className={txFinal ? 'iso-lbl is-ok' : 'iso-lbl'} opacity={prog(t, TX_AT, 0.3)}>
-        {txFinal ? `tính cuối cùng sau ≈ ${Math.round(minutes)} phút` : `${Math.round(minutes)} phút kể từ khi vào khối`}
+        {txFinal ? `finalized after ≈ ${Math.round(minutes)} min` : `${Math.round(minutes)} min since it entered a block`}
       </Text>
       <Text x={12} y={36} anchor="start" className="iso-sub">
-        tua nhanh: 1 giây ≈ 2 phút
+        time-lapse: 1 second ≈ 2 minutes
       </Text>
 
       {XS.map((x, e) => {
@@ -103,8 +103,9 @@ function render(t: number) {
               <>
                 <path className="iso-line" d={`M${flagTop[0]} ${flagTop[1] - 20} V${flagTop[1] - 36}`} />
                 <path d={`M${flagTop[0]} ${flagTop[1] - 36} l10 3.5 l-10 3.5 Z`} style={{ fill: finalized ? 'var(--vote)' : 'var(--amber)' }} />
-                <Text x={flagTop[0] - 6} y={flagTop[1] - 28} anchor="end" className="iso-sub">
-                  mốc
+                {/* right of the flag: "checkpoint" is too long to sit left of the first one */}
+                <Text x={flagTop[0] + 13} y={flagTop[1] - 29} anchor="start" className="iso-sub">
+                  checkpoint
                 </Text>
                 <Arrow from={[x, gaugeY + 27]} to={[flagTop[0] + 4, flagTop[1] - 40]} head={false} opacity={0.6} />
                 <rect className="card" x={x - 38} y={gaugeY} width={76} height={7} />
@@ -114,12 +115,12 @@ function render(t: number) {
                   2/3
                 </Text>
                 <Text x={x} y={gaugeY + 20} className={finalized ? 'iso-note is-ok' : justified ? 'iso-lbl' : 'iso-sub'}>
-                  {finalized ? 'tính cuối cùng' : justified ? 'được chứng minh' : 'đang bỏ phiếu'}
+                  {finalized ? 'finalized' : justified ? 'justified' : 'voting'}
                 </Text>
               </>
             )}
             <Text x={x} y={Y + 52} className="iso-sub">
-              {e === 0 ? 'Kỷ nguyên N' : `Kỷ nguyên N+${e}`}
+              {e === 0 ? 'Epoch N' : `Epoch N+${e}`}
             </Text>
           </g>
         );
@@ -132,7 +133,7 @@ function render(t: number) {
         return (
           <>
             {land > 0 && t < 3.2 && (
-              <Pill at={[at[0], at[1] - 26]} text="giao dịch của bạn" tone="tx" opacity={Math.min(land, 1 - prog(t, 2.9, 0.3))} />
+              <Pill at={[at[0], at[1] - 26]} text="your transaction" tone="tx" opacity={Math.min(land, 1 - prog(t, 2.9, 0.3))} />
             )}
             <Badge at={[at[0], at[1] - 18]} ok scale={txFinal ? backOut(prog(t, TX_FINAL + 0.4, 0.35)) * (1 - prog(t, 9.8, 0.2)) : 0} r={7} />
             <Badge at={[at[0], at[1] - 18]} ok={false} scale={refused ? backOut(prog(t, 10.9, 0.3)) : 0} r={8} />
@@ -148,7 +149,7 @@ function render(t: number) {
             const e = easeInOut(attack);
             return [lerp(330, to[0] + 10, e), lerp(250, to[1] - 34, e) - Math.sin(Math.PI * e) * 30] as Pt;
           })()}
-          text="đảo ngược?"
+          text="reverse?"
           tone="bad"
         />
       )}
@@ -156,7 +157,7 @@ function render(t: number) {
         <g opacity={prog(t, 10.9, 0.3)}>
           <Flame at={[150, 256]} scale={0.6 + 0.08 * Math.sin(t * 9)} />
           <Text x={164} y={250} anchor="start" className="iso-note is-bad">
-            phải mất ≥ 1/3 tổng tiền cọc
+            costs ≥ 1/3 of all stake
           </Text>
         </g>
       )}
@@ -167,7 +168,7 @@ function render(t: number) {
 export function FinalityScene() {
   return (
     <IsoFigure
-      title="Tính cuối cùng: các khối được gom thành kỷ nguyên 32 khe; khi mốc của hai kỷ nguyên liền nhau đều nhận phiếu từ 2/3 tổng số ETH đặt cọc, mốc trước và mọi khối trước nó đạt tính cuối cùng, sau khoảng 13 tới 19 phút"
+      title="Finality: blocks are grouped into epochs of 32 slots; when the checkpoints of two consecutive epochs both get votes from 2/3 of all staked ETH, the earlier checkpoint and every block before it are finalized, after about 13 to 19 minutes"
       viewBox="0 0 440 266"
       duration={DURATION}
       poster={8.6}

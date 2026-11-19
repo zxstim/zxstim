@@ -29,10 +29,10 @@ const TILE: BoxSpec = { w: 9, d: 9, h: 7 };
 const tileAt = (node: Pt, k: number): Pt => [node[0] - 24 + k * 16, node[1] - 58];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Nối khối mới', body: 'Mỗi khối ghi mã băm (hash) của khối liền trước. Đó là sợi dây nối các khối thành chuỗi.' },
-  { at: 2, title: 'Mọi nút có cùng bản sao', body: 'Khối mới được gửi tới mọi nút. Mỗi nút tự kiểm tra rồi thêm vào bản sao của mình.' },
-  { at: 4.4, title: 'Thử sửa một khối cũ', body: 'Đổi một giao dịch làm mã băm của khối đó đổi theo. Khối sau vẫn ghi mã băm cũ, nên chuỗi bị đứt.' },
-  { at: 7.4, title: 'Bản sửa bị loại', body: 'Các nút khác so bản sao này với chuỗi của mình, thấy không khớp và bỏ qua nó.' },
+  { at: 0, title: 'Add a new block', body: 'Each block records the hash of the block right before it. That is the thread that ties the blocks into a chain.' },
+  { at: 2, title: 'Every node has the same copy', body: 'The new block is sent to every node. Each node checks it for itself, then adds it to its own copy.' },
+  { at: 4.4, title: 'Try editing an old block', body: "Changing one transaction changes that block's hash too. The next block still records the old hash, so the chain breaks." },
+  { at: 7.4, title: 'The edited copy is rejected', body: 'The other nodes compare this copy with their own chain, see that it does not match, and ignore it.' },
 ];
 
 function render(t: number) {
@@ -77,7 +77,7 @@ function render(t: number) {
               #{hashOf(k)}
             </Text>
             <Text x={x} y={Y + 36} className={k === 2 && broken ? 'iso-sub is-bad' : 'iso-sub'} opacity={opacity}>
-              cha #{k === 0 ? PARENT_OF_FIRST : HASHES[k - 1]}
+              parent #{k === 0 ? PARENT_OF_FIRST : HASHES[k - 1]}
             </Text>
           </g>
         );
@@ -92,7 +92,7 @@ function render(t: number) {
       })}
       {broken && <Badge at={[(XS[1] + XS[2]) / 2, Y - 16]} ok={false} scale={backOut(prog(t, 5.4, 0.3))} />}
       <Text x={XS[1]} y={Y - 80} className="iso-note is-bad" opacity={Math.min(1, bad * 2) * (1 - prog(t, 9.8, 0.4))}>
-        sửa 1 giao dịch
+        edit 1 transaction
       </Text>
 
       {/* packets on their way to the nodes */}
@@ -114,13 +114,13 @@ function render(t: number) {
             return <Box key={k} at={tileAt(n, k)} spec={TILE} tone={tone} opacity={k === 3 ? 1 - leave : 1} />;
           })}
           <Text x={n[0]} y={n[1] + 32} className="iso-sub">
-            Nút {'ABC'[i]}
+            Node {'ABC'[i]}
           </Text>
           {verdict > 0 && <Badge at={[n[0] + 22, n[1] - 30]} ok={i !== 0} scale={verdict} />}
         </g>
       ))}
       <Text x={NODES[0][0]} y={NODES[0][1] + 46} className="iso-note is-bad" opacity={verdict}>
-        không khớp
+        mismatch
       </Text>
     </>
   );
@@ -129,7 +129,7 @@ function render(t: number) {
 export function ChainScene() {
   return (
     <IsoFigure
-      title="Chuỗi khối: mỗi khối ghi mã băm của khối trước; sửa một khối cũ làm đứt chuỗi và các nút khác bỏ qua bản bị sửa"
+      title="A blockchain: each block records the hash of the block before it; editing an old block breaks the chain, and the other nodes ignore the edited copy"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={3.6}

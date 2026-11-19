@@ -31,17 +31,17 @@ const BURN_TO: Pt = [372, 182];
 const ISSUE = 3;
 const PHASES = [
   { until: 3, burn: 0, label: '' },
-  { until: 5.6, burn: 2.4, label: 'bình thường' },
-  { until: 9.4, burn: 6.6, label: 'bận' },
-  { until: DURATION, burn: 0.9, label: 'vắng' },
+  { until: 5.6, burn: 2.4, label: 'normal' },
+  { until: 9.4, burn: 6.6, label: 'busy' },
+  { until: DURATION, burn: 0.9, label: 'quiet' },
 ];
 const START_LEVEL = 30;
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Phát hành mới', body: 'Giao thức tạo ETH mới để thưởng cho trình xác thực, với tốc độ do giao thức quy định. Phần này làm tổng cung tăng.' },
-  { at: 3, title: 'Phí cơ sở bị đốt', body: 'Mỗi giao dịch trả phí cơ sở, và phần đó bị đốt, tức là xóa vĩnh viễn khỏi tổng cung.' },
-  { at: 5.6, title: 'Mạng bận: đốt nhiều hơn', body: 'Khi nhiều người giao dịch, phí cơ sở cao. Lượng ETH bị đốt có thể vượt lượng phát hành, và tổng cung giảm.' },
-  { at: 9.4, title: 'Mạng vắng: tổng cung tăng nhẹ', body: 'Khi mạng vắng, phí thấp và đốt ít hơn phát hành, nên tổng cung tăng nhẹ. Số liệu thật có trên các trang như ultrasound.money.' },
+  { at: 0, title: 'New issuance', body: 'The protocol creates new ETH to reward validators, at a rate the protocol sets. This makes the total supply grow.' },
+  { at: 3, title: 'The base fee is burned', body: 'Every transaction pays a base fee, and that part is burned, meaning it is permanently removed from the total supply.' },
+  { at: 5.6, title: 'Busy network: more is burned', body: 'When many people are transacting, the base fee is high. The amount of ETH burned can exceed the amount issued, and the total supply falls.' },
+  { at: 9.4, title: 'Quiet network: supply grows slightly', body: 'When the network is quiet, fees are low and less is burned than issued, so the total supply grows slightly. Real figures are on sites like ultrasound.money.' },
 ];
 
 function phaseAt(t: number) {
@@ -85,12 +85,12 @@ function render(t: number) {
       {/* the state of the network, and the net change */}
       {phase.label && (
         <Text x={14} y={26} anchor="start" className="iso-lbl">
-          mạng: {phase.label}
+          network: {phase.label}
         </Text>
       )}
       <Pill
         at={[phase.label ? 190 : 72, 21]}
-        text={net > 0.5 ? 'tổng cung tăng' : net < -0.5 ? 'tổng cung giảm' : 'gần như không đổi'}
+        text={net > 0.5 ? 'supply rising' : net < -0.5 ? 'supply falling' : 'almost unchanged'}
         tone={net > 0.5 ? 'ok' : net < -0.5 ? 'bad' : undefined}
         opacity={prog(t, 0.6, 0.4)}
       />
@@ -100,10 +100,10 @@ function render(t: number) {
         <Server key={i} at={v} spec={{ w: 22, d: 22, h: 28 }} />
       ))}
       <Text x={80} y={278} className="iso-sub">
-        trình xác thực
+        validators
       </Text>
       <Text x={(ISSUE_FROM[0] + ISSUE_TO[0]) / 2 - 6} y={78} className="iso-note is-ok">
-        phát hành mới
+        new issuance
       </Text>
       {stream(t, ISSUE_FROM, ISSUE_TO, ISSUE, 'i', 0.4)}
 
@@ -112,17 +112,17 @@ function render(t: number) {
       <Box at={TANK} spec={{ ...TANK_SPEC, h: lv }} tone="block" />
       <path className="iso-line" d={boxEdges(TANK[0], TANK[1], TANK_SPEC)} strokeDasharray="2 2" />
       <Text x={TANK[0]} y={TANK[1] + 52}>
-        Tổng cung ETH
+        Total ETH supply
       </Text>
 
       {/* burn: base fees → flame */}
       <Text x={(BURN_FROM[0] + BURN_TO[0]) / 2 + 20} y={78} className="iso-note is-bad" opacity={phase.burn > 0 ? 1 : 0.3}>
-        phí cơ sở bị đốt
+        base fees burned
       </Text>
       {stream(t, BURN_FROM, BURN_TO, phase.burn, 'b', 3)}
       <Flame at={FLAME} scale={(phase.burn > 0 ? 0.8 + 0.35 * burnRate : 0.4) * (1 + 0.08 * Math.sin(t * 9))} />
       <Text x={FLAME[0]} y={FLAME[1] + 22} className="iso-sub">
-        đốt
+        burn
       </Text>
     </g>
   );
@@ -131,7 +131,7 @@ function render(t: number) {
 export function SupplyScene() {
   return (
     <IsoFigure
-      title="Nguồn cung ETH: ETH mới được phát hành để thưởng trình xác thực, phí cơ sở của mọi giao dịch bị đốt; mạng bận thì đốt có thể nhiều hơn phát hành và tổng cung giảm, mạng vắng thì tổng cung tăng nhẹ"
+      title="ETH supply: new ETH is issued to reward validators and the base fee of every transaction is burned; when the network is busy, more can be burned than issued and the total supply falls; when it is quiet, the total supply grows slightly"
       viewBox="0 0 440 290"
       duration={DURATION}
       poster={7.6}

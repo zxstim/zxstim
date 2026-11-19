@@ -21,10 +21,10 @@ const CARD_FROM: Pt = [14, 40];
 const CARD_TO: Pt = [262, 40];
 
 const STEPS: Step[] = [
-  { at: 0, title: 'Ký trên ví', body: 'Ví dùng khóa riêng tư để ký nội dung giao dịch. Khóa không bao giờ rời khỏi ví.' },
-  { at: 2.2, title: 'Gửi lên mạng', body: 'Thứ được gửi đi là nội dung kèm chữ ký. Ai thấy chữ ký cũng không lấy được khóa.' },
-  { at: 3.8, title: 'Nút kiểm tra', body: 'Từ chữ ký và nội dung, nút tính ra địa chỉ người ký. Khớp với người gửi thì giao dịch hợp lệ.' },
-  { at: 6, title: 'Sửa là lộ', body: 'Đổi số tiền làm chữ ký không còn khớp: nút tính ra một địa chỉ khác, và từ chối giao dịch.' },
+  { at: 0, title: 'Sign in the wallet', body: 'The wallet uses the private key to sign the transaction contents. The key never leaves the wallet.' },
+  { at: 2.2, title: 'Send to the network', body: 'What gets sent is the contents plus the signature. Seeing the signature does not let anyone get the key.' },
+  { at: 3.8, title: 'The node checks', body: "From the signature and the contents, the node works out the signer's address. If it matches the sender, the transaction is valid." },
+  { at: 6, title: 'Tampering shows', body: 'Changing the amount means the signature no longer matches: the node works out a different address and rejects the transaction.' },
 ];
 
 function render(t: number) {
@@ -41,11 +41,11 @@ function render(t: number) {
   const recovered = t >= 7.4 ? '0x9e2D…01aF' : '0x71C7…976F';
 
   const rows = [
-    'Từ       0x71C7…976F',
-    'Tới      0xAb58…3c12',
-    `Số tiền  ${tampered ? '10 ETH' : '0,1 ETH'}`,
-    'Nonce    7',
-    signed ? 'Chữ ký   0x3f9a…c41b' : 'Chữ ký   …',
+    'From      0x71C7…976F',
+    'To        0xAb58…3c12',
+    `Amount    ${tampered ? '10 ETH' : '0.1 ETH'}`,
+    'Nonce     7',
+    signed ? 'Signature 0x3f9a…c41b' : 'Signature …',
   ];
 
   // the key token rises from the wallet to the card while signing
@@ -58,27 +58,27 @@ function render(t: number) {
       <Shadow at={KEY} spec={KEY_SPEC} />
       <Box at={KEY} spec={KEY_SPEC} tone="key" />
       <Text x={PHONE[0] + 14} y={PHONE[1] + 34}>
-        Ví
+        Wallet
       </Text>
       <Text x={PHONE[0] + 14} y={PHONE[1] + 48} className="iso-sub is-key">
-        giữ khóa riêng tư
+        holds the private key
       </Text>
 
       <Server at={NODE} />
       <Text x={NODE[0]} y={NODE[1] + 34}>
-        Nút
+        Node
       </Text>
       <Text x={NODE[0]} y={NODE[1] + 48} className="iso-sub">
-        bất kỳ ai
+        run by anyone
       </Text>
 
       {/* signing: the key travels to the card and leaves a signature */}
       {stamp > 0 && stamp < 1 && <circle cx={keyPos[0]} cy={keyPos[1]} r={5} style={{ fill: 'var(--key)' }} />}
 
-      <Card x={card[0]} y={card[1]} w={CARD_W} title="GIAO DỊCH" rows={rows} opacity={show} highlight={tampered ? 2 : undefined} />
+      <Card x={card[0]} y={card[1]} w={CARD_W} title="TRANSACTION" rows={rows} opacity={show} highlight={tampered ? 2 : undefined} />
       {tampered && (
         <Text x={card[0] + CARD_W / 2} y={card[1] - 8} className="iso-note is-bad" opacity={prog(t, 6.2, 0.3) * (1 - prog(t, 11.2, 0.6))}>
-          ai đó sửa số tiền
+          someone edits the amount
         </Text>
       )}
 
@@ -89,7 +89,7 @@ function render(t: number) {
       {(ok > 0 || bad > 0) && (
         <>
           <Text x={NODE[0] - 30} y={NODE[1] - 74} className="iso-sub" anchor="end">
-            người ký:
+            signer:
           </Text>
           <Text x={NODE[0] - 30} y={NODE[1] - 60} className={bad > 0 ? 'iso-hash is-bad' : 'iso-hash is-ok'} anchor="end">
             {recovered}
@@ -99,10 +99,10 @@ function render(t: number) {
       <Badge at={[NODE[0] + 24, NODE[1] - 64]} ok scale={ok} />
       <Badge at={[NODE[0] + 24, NODE[1] - 64]} ok={false} scale={bad} />
       <Text x={NODE[0] - 30} y={NODE[1] - 44} className="iso-note is-bad" anchor="end" opacity={Math.min(1, bad)}>
-        ≠ người gửi · từ chối
+        ≠ sender · rejected
       </Text>
       <Text x={NODE[0] - 30} y={NODE[1] - 44} className="iso-note is-ok" anchor="end" opacity={Math.min(1, ok)}>
-        = người gửi · hợp lệ
+        = sender · valid
       </Text>
     </>
   );
@@ -111,7 +111,7 @@ function render(t: number) {
 export function SignatureScene() {
   return (
     <IsoFigure
-      title="Chữ ký số: ví ký giao dịch bằng khóa riêng tư, nút kiểm tra người ký; sửa nội dung thì chữ ký không còn khớp"
+      title="Digital signature: the wallet signs the transaction with the private key and the node checks who signed it; change the contents and the signature no longer matches"
       viewBox="0 0 440 300"
       duration={DURATION}
       poster={5.2}

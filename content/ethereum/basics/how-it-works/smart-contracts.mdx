@@ -37,7 +37,7 @@ A contract has no private key. No one can sign on its behalf; it just follows it
 
 <ContractScene />
 
-In the animation, An calls the USDC token contract to send 30 USDC to Bình. Every node runs the same code, gets the same result, and the balances are updated. When An tries to send 500 USDC, more than An has, the code stops at the line that checks the balance. The transaction is **reverted**: the data stays as if nothing had happened, but the gas fee for the part that already ran is still charged.
+In the animation, Alice calls the USDC token contract to send 30 USDC to Bob. Every node runs the same code, gets the same result, and the balances are updated. When Alice tries to send 500 USDC, more than Alice has, the code stops at the line that checks the balance. The transaction is **reverted**: the data stays as if nothing had happened, but the gas fee for the part that already ran is still charged.
 
 ## What makes smart contracts special?
 

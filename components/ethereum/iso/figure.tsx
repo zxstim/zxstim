@@ -128,7 +128,7 @@ export function IsoFigure({
         <button
           type="button"
           onClick={() => setUserPlaying(!playing)}
-          aria-label={playing ? 'Tạm dừng' : 'Phát'}
+          aria-label={playing ? 'Pause' : 'Play'}
           className="inline-flex size-7 shrink-0 items-center justify-center text-fd-muted-foreground transition-colors hover:text-fd-foreground [&_svg]:size-3.5"
         >
           {playing ? <Pause /> : <Play />}

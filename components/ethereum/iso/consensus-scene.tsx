@@ -32,14 +32,14 @@ const METER = { x: 416, top: 140, bottom: 226 };
 
 const STEPS: Record<Kind, Step[]> = {
   pow: [
-    { at: 0, title: 'Thi giải đố', body: 'Thợ đào cho máy thử hàng tỷ con số mỗi giây, tìm lời giải cho một câu đố chỉ có thể giải bằng cách đoán.' },
-    { at: 2.8, title: 'Ai giải trước thì tạo khối', body: 'Ai tìm ra trước được thêm khối và nhận thưởng. Muốn gian lận phải có hơn nửa sức mạnh tính toán của cả mạng.' },
-    { at: 5, title: 'Tốn rất nhiều điện', body: 'Thứ bảo vệ mạng lưới là sức mạnh tính toán, và sức mạnh đó tốn điện thật. Bitcoin vẫn dùng cách này.' },
+    { at: 0, title: 'A puzzle race', body: 'Miners have their machines try billions of numbers per second, looking for the answer to a puzzle that can only be solved by guessing.' },
+    { at: 2.8, title: 'First to solve makes the block', body: "Whoever finds it first gets to add the block and earns a reward. Cheating takes more than half of the whole network's computing power." },
+    { at: 5, title: 'It uses a lot of electricity', body: 'What protects the network is computing power, and that power burns real electricity. Bitcoin still works this way.' },
   ],
   pos: [
-    { at: 0, title: 'Đặt cọc ETH', body: 'Trình xác thực khóa ETH làm tiền cọc. Tiền cọc càng nhiều, phiếu càng nặng và càng hay được chọn.' },
-    { at: 2.8, title: 'Chọn ngẫu nhiên, số còn lại bỏ phiếu', body: 'Mỗi khe 12 giây, một trình xác thực được chọn ngẫu nhiên để đề xuất khối. Các trình xác thực khác kiểm tra và bỏ phiếu.' },
-    { at: 5, title: 'Gian lận là mất cọc', body: 'An toàn đến từ tiền cọc, không phải điện năng. Ethereum dùng cách này từ năm 2022 và tốn ít điện hơn rất nhiều.' },
+    { at: 0, title: 'Stake ETH', body: 'Validators lock up ETH as a stake. The bigger the stake, the more their vote counts and the more often they are picked.' },
+    { at: 2.8, title: 'One picked at random, the rest vote', body: 'In each 12-second slot, one validator is picked at random to propose a block. The other validators check it and vote.' },
+    { at: 5, title: 'Cheating costs the stake', body: 'Security comes from the stake, not from electricity. Ethereum has worked this way since 2022 and uses far less electricity.' },
   ],
 };
 
@@ -58,7 +58,7 @@ function render(t: number, kind: Kind) {
     <>
       {/* the chain */}
       <Text x={16} y={CHAIN_Y - 6} anchor="start">
-        Chuỗi khối
+        Blockchain
       </Text>
       {CHAIN_XS.map((x, i) => (
         <g key={x}>
@@ -94,7 +94,7 @@ function render(t: number, kind: Kind) {
         );
       })}
       <Text x={(ROW[0][0] + ROW[3][0]) / 2} y={ROW[0][1] + 38} className="iso-sub">
-        {kind === 'pow' ? 'thợ đào: thi nhau đoán' : 'trình xác thực: đặt cọc ETH'}
+        {kind === 'pow' ? 'miners: racing to guess' : 'validators: staking ETH'}
       </Text>
 
       {/* the new block: from the winner up to the chain */}
@@ -118,7 +118,7 @@ function render(t: number, kind: Kind) {
         style={{ fill: kind === 'pow' ? 'var(--amber)' : 'var(--vote)' }}
       />
       <Text x={METER.x} y={METER.top - 8} className="iso-sub" anchor="end">
-        điện năng
+        electricity
       </Text>
     </>
   );
@@ -138,7 +138,7 @@ export function ConsensusScene() {
   );
   return (
     <IsoFigure
-      title="Ai được thêm khối mới: bằng chứng công việc cho các thợ đào thi nhau giải đố và tốn nhiều điện; bằng chứng cổ phần chọn ngẫu nhiên một trình xác thực đã đặt cọc, các trình xác thực khác bỏ phiếu"
+      title="Who gets to add the next block: proof of work has miners race to solve a puzzle and uses a lot of electricity; proof of stake picks a staked validator at random, and the other validators vote"
       viewBox="0 0 440 280"
       duration={DURATION}
       poster={5.4}
@@ -146,8 +146,8 @@ export function ConsensusScene() {
       render={(t) => render(t, kind)}
       controls={
         <div className="flex shrink-0 border border-fd-border">
-          {tab('pow', 'Công việc')}
-          {tab('pos', 'Cổ phần')}
+          {tab('pow', 'Work')}
+          {tab('pos', 'Stake')}
         </div>
       }
     />
