@@ -1,0 +1,13 @@
+{
+  "title": "Dùng Ethereum",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "reading-a-transaction",
+    "tokens-stablecoins-nfts",
+    "smart-wallets",
+    "eip-7702",
+    "erc-4337",
+    "privacy"
+  ]
+}

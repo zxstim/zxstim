@@ -1,0 +1,12 @@
+{
+  "title": "Bắt đầu",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "what-is-ethereum",
+    "what-is-ether",
+    "wallets-and-accounts",
+    "gas-fees",
+    "staying-safe"
+  ]
+}

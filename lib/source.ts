@@ -1,10 +1,26 @@
 import { defineCollections, defineDocs } from "fumadocs-mdx/macro";
 import { loader } from "fumadocs-core/source";
-import { pageSchema } from "fumadocs-core/source/schema";
+import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
+import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { z } from "zod";
 
 const docs = defineDocs({
   dir: "content/docs",
+});
+
+// Ethereum wiki (from ethvn-web-wiki). Each root folder ("root": true in its
+// meta.json) is a section: basics, investors, enterprise, government.
+const ethereumDocs = defineDocs({
+  dir: "content/ethereum",
+  docs: {
+    schema: pageSchema.extend({
+      // ethereum.org / EF pages a page was adapted from (CC BY 4.0)
+      sources: z.array(z.string()).optional(),
+    }),
+    // processed Markdown for the "Copy Markdown" / open-in-AI page actions
+    postprocess: { includeProcessedMarkdown: true },
+  },
+  meta: { schema: metaSchema },
 });
 
 // Long-form posts. `status` is a render-time filter, not access control: the
@@ -47,6 +63,12 @@ export const source = loader({
 export const blog = loader({
   baseUrl: "/writing",
   source: blogPosts.toFumadocsSource(),
+});
+
+export const ethereum = loader({
+  baseUrl: "/ethereum",
+  source: ethereumDocs.toFumadocsSource(),
+  plugins: [lucideIconsPlugin()],
 });
 
 export type TweetEntry = (typeof tweets.entries)[number];

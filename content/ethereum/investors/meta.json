@@ -1,0 +1,17 @@
+{
+  "title": "Nhà đầu tư",
+  "description": "ETH như tài sản lưu trữ giá trị: nguồn cung, an ninh, công dụng và rủi ro",
+  "icon": "ChartLine",
+  "root": true,
+  "pages": [
+    "index",
+    "eth-as-store-of-value",
+    "burned-fees-are-not-a-floor",
+    "cost-of-maximizing-fees",
+    "crops-and-stability",
+    "store-of-value-criteria",
+    "supply-and-security",
+    "why-hold-eth",
+    "risks-and-counterviews"
+  ]
+}

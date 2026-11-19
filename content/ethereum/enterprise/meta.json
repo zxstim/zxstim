@@ -1,0 +1,15 @@
+{
+  "title": "Doanh nghiệp",
+  "description": "Ethereum cho doanh nghiệp: trung lập, kiểm chứng được, Layer 2 và tuân thủ",
+  "icon": "Building",
+  "root": true,
+  "pages": [
+    "index",
+    "neutral-blockspace",
+    "verifiability",
+    "layer-2-for-enterprise",
+    "customizing-layer-2",
+    "compliance",
+    "tokenization-and-payments"
+  ]
+}

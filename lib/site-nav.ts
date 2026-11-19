@@ -5,7 +5,7 @@ export interface TerminalLink {
 
 /**
  * Site-wide navigation. An item's position is its keyboard shortcut on every
- * page (1 = DeFi Vietnam … 6 = Writing; 0 is always the index), and the same
+ * page (1 = DeFi Vietnam … 7 = Ethereum; 0 is always the index), and the same
  * list feeds the home `ls ~/projects` listing and every status bar.
  */
 export const siteLinks: TerminalLink[] = [
@@ -15,4 +15,5 @@ export const siteLinks: TerminalLink[] = [
   { name: "Labs", url: "/labs" },
   { name: "CV", url: "/cv" },
   { name: "Writing", url: "/writing" },
+  { name: "Ethereum", url: "/ethereum" },
 ];

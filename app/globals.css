@@ -94,6 +94,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Ethereum wiki section colours (keep in step with SECTION_HEX in lib/ethereum/sections.tsx) */
+  --section-basics: #2563eb;
+  --section-investors: #d97706;
+  --section-enterprise: #059669;
+  --section-government: #e11d48;
 }
 
 .dark {
@@ -128,6 +133,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --section-basics: #60a5fa;
+  --section-investors: #fbbf24;
+  --section-enterprise: #34d399;
+  --section-government: #fb7185;
 }
 
 @layer base {
