@@ -1,0 +1,162 @@
+---
+title: From mempool to block
+description: Where your transaction goes after you send it, who puts it into a block, and in what order. The mempool, MEV, MEV-Boost with block builders and relays, and what ePBS and FOCIL will change.
+sources:
+  - https://epf.wiki/#/wiki/EL/block-production
+  - https://epf.wiki/#/wiki/research/PBS/mev
+  - https://epf.wiki/#/wiki/research/PBS/mev-boost
+  - https://epf.wiki/#/wiki/research/PBS/pbs
+  - https://epf.wiki/#/wiki/research/PBS/ePBS
+  - https://ethereum.org/developers/docs/mev/
+  - https://ethereum.org/developers/docs/blocks/
+  - https://ethereum.org/roadmap/glamsterdam/
+  - https://ethereum.org/roadmap/hegota/
+---
+
+When you hit "send", your transaction doesn't go onto the blockchain right away. It passes through many nodes, waits, and then someone picks it and puts it at some position in a block. Who picks it, and in what order, decides the price you get when you swap tokens, and whether anyone profits off your transaction.
+
+This page follows that path on mainnet today (after the Fusaka upgrade), then covers what has been planned. The basics of blocks are in the [Blocks](../../basics/how-it-works/blocks.mdx) page of the Basics section.
+
+## Mempool: a queue nobody owns
+
+A wallet sends a signed transaction to a node over RPC (`eth_sendRawTransaction`). The node checks the signature, the nonce, whether the balance can cover the max fee, and whether the gas limit is over what's allowed (since Fusaka, at most 2<sup>24</sup> gas per transaction). If it's valid, the transaction goes into that node's **mempool** (the queue of waiting transactions), then gets passed on to its **peers**. The transaction types and their fields are covered in [Transactions](./transactions.mdx), and how nodes connect to each other in [Peer-to-peer network](./peer-to-peer.mdx).
+
+- **Each node has its own mempool.** There's no single shared mempool. Two nodes can be holding slightly different sets of transactions.
+- **Two ways of spreading.** Under the `eth` protocol between execution layer nodes, a node sends the full transaction to some peers, and only announces its hash to the rest. Any node that doesn't have it yet asks for it. Blob transactions are only ever announced by hash (EIP-4844 requires this). Some clients, like Geth, also only announce the hash of large transactions.
+- **Ready to run, or waiting on a nonce.** A transaction whose nonce comes right after the account's current nonce is ready to go into a block. A transaction whose nonce skips ahead has to wait for the nonces before it.
+- **Replacement.** Send a new transaction with the same nonce and a higher fee to replace a pending one. Geth requires a fee at least 10% higher (100% for blob transactions). This is the policy of each client, not a consensus rule.
+
+The most important point: the mempool is public. Anyone running a node can see your transaction, with all its parameters, before it goes into a block. Among them are programs built to hunt for profit.
+
+## How a node builds a block itself
+
+Each node runs two pieces of software: the consensus layer and the execution layer (see [Architecture: the two layers of a node](./architecture.mdx)). When the node's validator is chosen as the **proposer** for a slot (how it's chosen is in [Consensus](./consensus.mdx)), the two layers talk to each other through the Engine API:
+
+```text
+Consensus layer                                Execution layer
+engine_forkchoiceUpdatedV3(head,           ──▶  start building a block,
+  timestamp, RANDAO, fee recipient,             return a payloadId
+  withdrawals list)
+          … a few seconds later …
+engine_getPayloadV5(payloadId)             ──▶  return the execution payload,
+                                                blockValue, blobs
+sign the beacon block, broadcast it
+```
+
+The execution layer software usually makes an empty block right away so it doesn't miss the slot, then keeps filling it:
+
+1. Take the transactions in the mempool paying the highest **priority fee** (see [Gas fees](../../basics/getting-started/gas-fees.mdx)), while keeping each sender's transactions in nonce order.
+2. Trial-run each transaction on the current state. Invalid transactions (wrong nonce, not enough money for the fee) are skipped. A transaction that reverts still goes into the block, and still pays the fee for the part that ran.
+3. Stop when the block's gas limit is used up, or there are no transactions left. Blobs have their own count limit.
+
+`blockValue` is the total priority fees the block pays to the fee recipient address. This number is used to compare against the price offered by outside block builders, covered below. When the block is broadcast, every other node calls `engine_newPayload` so its own execution layer reruns the block and checks it.
+
+No protocol rule dictates the order of transactions in a block. Sorting by fee is just the client software's default. Whoever builds the block is free to choose, drop and order transactions as they like.
+
+## MEV: value from the power to order
+
+**MEV** (maximal extractable value) is the value that can be made from the power to include, exclude and order transactions in a block, beyond the usual rewards and fees. In the proof-of-work days it was called "miner extractable value", because miners held that power.
+
+| Type | How it works | Who pays |
+|---|---|---|
+| **Arbitrage** | Two decentralized exchanges have different prices: buy on the cheap one, sell on the expensive one, in the same transaction | The liquidity providers of the exchange whose price is off |
+| **Liquidation** | A loan no longer has enough collateral: whoever liquidates it first gets the liquidation reward | The borrower, who already accepted this rule |
+| **Sandwich** | Spot a large swap in the mempool: buy right before it (front-running), let that swap push the price up, then sell right after it (back-running) | The person who placed the order, who gets a worse price, down to exactly the slippage they allowed |
+
+Not all MEV is bad. Arbitrage pulls prices on different exchanges back into line, and lending protocols need fast liquidators to stay safe. Sandwiching just takes money from users. There are also "generalized front-running" bots: they spot a profitable transaction in the mempool, copy it, replace the recipient address with their own, and send it with a higher fee.
+
+**Who keeps the MEV?** The people who find the opportunities are **searchers**. They send **bundles** of transactions along with a payment to the block builder. According to ethereum.org, for opportunities everyone can see, like arbitrage, searchers may have to pay 90% of their profit or more to get picked. Competition pushes most of the value upward: from searchers to block builders, then on to the block proposer.
+
+MEV also creates pressure toward centralization: large operators can afford to invest in extracting MEV and earn more than home stakers. If the MEV in a block is large enough, the proposer even has an incentive to reorganize the chain to grab it.
+
+## MEV-Boost: separating block builders from proposers
+
+So that home stakers can get a share of MEV like large operators do, without hunting for MEV themselves, most validators use **MEV-Boost**. This is proposer-builder separation (PBS) **outside the protocol**: the protocol only sees a signed block and doesn't know who built it.
+
+1. **Searchers** send bundles to block builders.
+2. **Block builders** combine bundles, transactions from the public mempool and transactions from **private order flow** into the most profitable block. They send the block, along with a **bid**, to relays. They usually pay the proposer with an ETH transfer transaction at the end of the block.
+3. **Relays** are nodes run by third parties, such as Flashbots or Ultra Sound. A relay is responsible for making sure the block is valid and the bid will really be paid. It then gives the proposer only the block header with the bid, hiding the list of transactions.
+4. **MEV-Boost** is software that runs alongside the validator's node. It asks the configured relays and picks the highest bid. The consensus layer software compares that bid with the `blockValue` of its own block, and can use its own block if the bid is lower.
+5. **The proposer signs a blinded block**: it signs the block header without having seen the transactions inside. The relay receives the signature, then publishes the full block.
+
+<Callout type="info" title="Note">
+MEV-Boost only exists on nodes that run validators. The nodes that wallets or RPC providers use to read the chain and send transactions don't run it. Relays aren't part of a validator's node either: they're a service outside the protocol. Passing transactions and blocks along between nodes, on the other hand, is something every node does.
+</Callout>
+
+This setup relies on trust. The proposer trusts the relay to publish the block after they sign it. If the relay doesn't, the slot ends up empty, and the proposer can't sign another block for the same slot, because signing two blocks is an offense that gets slashed. Block builders trust the relay not to steal their MEV strategies. On top of that, a handful of block builders build most blocks, and some relays filter out transactions involving sanctioned addresses. Each validator chooses which relays to use.
+
+## Private order flow and private RPCs
+
+Instead of putting your transaction into the public mempool, you can send it straight to block builders through a **private RPC**, for example Flashbots Protect or MEV Blocker. Bots in the mempool can't see the transaction, so it's harder for them to sandwich your order. Some services even give you back part of the profit from transactions that back-run yours.
+
+The price you pay:
+
+- **You have to trust the RPC operator** not to front-run your order themselves, and not to leak it.
+- **It can be slower.** Only the block builders that receive the transaction can put it into a block.
+- **More centralization.** Block builders with private order flow win more auctions, which concentrates the block-building market among fewer parties.
+- **It doesn't replace a slippage limit.** The price can still change because of other transactions in the same block.
+
+On many Layer 2s, transactions go straight to the **sequencer** rather than through a public mempool, so MEV takes a different form there. Read the docs for the network you use.
+
+## Coming changes: ePBS and inclusion lists
+
+**ePBS** (EIP-7732) brings the separation of block builders into the protocol itself. It's the headline change of the Glamsterdam upgrade, per EIP-7773. Glamsterdam has been running on the Sepolia testnet since October 6, 2026, but as of November 2026 it has no mainnet date. Everything below is still a plan:
+
+- The beacon block no longer contains the execution payload, only a signed bid from a block builder. The block builder publishes the execution payload later, in the same slot.
+- Block builders stake inside the protocol (from 1 ETH), and the payment to the proposer comes straight out of that stake. The exchange doesn't need a trusted relay in the middle.
+- A **Payload Timeliness Committee** (PTC) of 512 validators per slot votes on whether the execution payload was published on time and whether the blob data is available.
+- Under EIP-7732, the transactions in slot N are only checked widely across the network once the beacon block of slot N + 1 is built on top of them.
+
+MEV-Boost and relays can still exist alongside it, because the protocol allows proposers to get paid in other ways.
+
+**FOCIL** (EIP-7805), which adds **inclusion lists**, targets censorship resistance. In each slot, 16 validators each put together a list of up to 8 KiB of transactions from the public mempool. The next block must contain those transactions, unless they're invalid or the block is full. Otherwise the other validators won't vote for the block. FOCIL has been scheduled for the Hegotá upgrade (EIP-8081, still in Draft status, no date yet). FOCIL only protects transactions in the public mempool, not transactions sent through private channels.
+
+## What this means for your app
+
+The two parameters below are the main line of defense against sandwiching. They're part of the transaction itself, so they hold no matter who builds the block:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+abstract contract SwapGuard {
+    error Expired(uint256 deadline);
+    error TooLittleReceived(uint256 amountOut, uint256 minAmountOut);
+
+    function swap(uint256 amountIn, uint256 minAmountOut, uint256 deadline)
+        external
+        returns (uint256 amountOut)
+    {
+        // Waited past the deadline: give up rather than fill the order at a stale price
+        if (block.timestamp > deadline) revert Expired(deadline);
+
+        // The price when the transaction runs in the block, which can differ from the price when the user signed
+        amountOut = _swap(amountIn);
+
+        // Slippage beyond what the user accepted: revert the whole transaction
+        if (amountOut < minAmountOut) revert TooLittleReceived(amountOut, minAmountOut);
+    }
+
+    function _swap(uint256 amountIn) internal virtual returns (uint256 amountOut);
+}
+```
+
+This code was compiled and tested with Foundry (forge 1.5.1, solc 0.8.34) in November 2026, with a test that pushes the price down 1% ahead of the user's order and sees the transaction revert.
+
+- **Always set a slippage limit.** Compute `minAmountOut` from a quote taken just before signing. Never leave it at 0. The slippage you allow is exactly the most a sandwicher can take.
+- **Always set a deadline.** A transaction can sit in the mempool for a long time, then get put into a block when the price is completely different.
+- **Let users choose to send through a private RPC** for large or price-sensitive orders, and explain the trade-offs clearly.
+- **Use commit-reveal** for auctions, votes and games. In step one, the user sends `keccak256(abi.encode(msg.sender, value, salt))`. In step two, in a later block, they send `value` and `salt`. Putting `msg.sender` in the hash stops anyone from copying someone else's commitment.
+- **Don't assume transaction order.** "First sent, first run" doesn't exist. Two transactions from two senders can go into the same block in any order, or into two different blocks. Whatever condition an operation needs, check it in that same transaction.
+- **Don't use `block.timestamp` or `block.prevrandao` as a random number** when money depends on the outcome. `block.timestamp` is predictable, because it's fixed by the slot. `block.prevrandao` is already set before the block is built, so the block builder knows it, and the proposer can influence it by skipping a slot.
+- **Transaction parameters aren't secret.** Every parameter shows up in the mempool before the transaction runs. See also [Privacy](../../basics/using-ethereum/privacy.mdx).
+
+## Sources
+
+- EPF wiki: [Block production](https://epf.wiki/#/wiki/EL/block-production), [MEV](https://epf.wiki/#/wiki/research/PBS/mev), [MEV-Boost](https://epf.wiki/#/wiki/research/PBS/mev-boost), [PBS](https://epf.wiki/#/wiki/research/PBS/pbs), [ePBS](https://epf.wiki/#/wiki/research/PBS/ePBS)
+- ethereum.org: [MEV](https://ethereum.org/developers/docs/mev/), [Blocks](https://ethereum.org/developers/docs/blocks/), [Glamsterdam](https://ethereum.org/roadmap/glamsterdam/), [Hegotá](https://ethereum.org/roadmap/hegota/)
+- [Engine API](https://github.com/ethereum/execution-apis/tree/main/src/engine) and [builder-specs](https://github.com/ethereum/builder-specs) (the interface MEV-Boost uses)
+- [flashbots/mev-boost](https://github.com/flashbots/mev-boost)
+- EIPs: [4844](https://eips.ethereum.org/EIPS/eip-4844), [7732](https://eips.ethereum.org/EIPS/eip-7732), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7805](https://eips.ethereum.org/EIPS/eip-7805), [7825](https://eips.ethereum.org/EIPS/eip-7825), [8081](https://eips.ethereum.org/EIPS/eip-8081)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

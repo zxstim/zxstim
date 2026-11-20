@@ -6,6 +6,16 @@ export const siteUrl = "https://www.zxstim.com";
 export const ethereumRoute = "/ethereum";
 const markdownRoute = "/llms.mdx/ethereum";
 
+/**
+ * The wiki's text licence. CC BY-SA because the Developer pages adapt the EPF
+ * wiki (CC BY-SA 4.0); ethereum.org's CC BY 4.0 text may be shared under it
+ * too. Code samples in the articles are MIT. See content/ethereum/attribution.mdx.
+ */
+export const contentLicense = {
+  name: "CC BY-SA 4.0",
+  url: "https://creativecommons.org/licenses/by-sa/4.0/",
+} as const;
+
 const getMarkdownUrl = createGetUrl(markdownRoute);
 
 /** Where a page's Markdown copy lives: /ethereum/a/b -> /llms.mdx/ethereum/a/b/content.md */
@@ -40,5 +50,9 @@ export function absoluteLinks(markdown: string, dir = "") {
 export const ethereumLlms = llms(ethereum, {
   renderPage: async (page) => `# ${page.data.title} (${siteUrl}${page.url})
 
-${absoluteLinks(await page.data.getText("processed"), page.path.split("/").slice(0, -1).join("/"))}`,
+${absoluteLinks(await page.data.getText("processed"), page.path.split("/").slice(0, -1).join("/"))}
+
+---
+
+Ethereum Wiki (${siteUrl}${ethereumRoute}), licensed under ${contentLicense.name} (${contentLicense.url}).`,
 });

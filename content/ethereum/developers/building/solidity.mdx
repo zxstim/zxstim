@@ -1,0 +1,148 @@
+---
+title: Solidity for programmers
+description: A contract is a class whose state is stored forever, every function is an API anyone can call, and every write costs money. Data types, data locations, functions, errors and events through a short example.
+sources:
+  - https://docs.soliditylang.org/
+  - https://docs.soliditylang.org/en/latest/security-considerations.html
+---
+
+**Solidity** is the most popular language for writing smart contracts on Ethereum. Its syntax looks like JavaScript or C++, so you'll be able to read it right away. But three things make it very different from what you're used to:
+
+1. **A contract is like a class with exactly one instance, living forever onchain.** State variables are stored permanently, and the code can't be changed after it's deployed.
+2. **Every `public` or `external` function is an API open to the whole world.** Anyone can call it, with any arguments, in any order, including contracts written for the sole purpose of attacking yours.
+3. **Every write costs real money.** The caller pays a gas fee for each instruction the contract runs, and writing to storage is the most expensive thing of all. The [EVM](../protocol/evm.mdx) page explains why.
+
+## An example: a guestbook
+
+The contract below is a guestbook: anyone can sign it, optionally with a tip, and the guestbook's owner can withdraw the tips. The sections that follow explain each idea in it.
+
+```solidity title="src/Guestbook.sol"
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+/// Guestbook: anyone can sign it, optionally with a tip.
+contract Guestbook {
+    struct Entry {
+        address author;
+        string message;
+        uint64 time;
+    }
+
+    address public immutable owner; // set once in the constructor
+    Entry[] public entries; // storage: kept permanently onchain
+    mapping(address => uint256) public signedCount; // defaults to 0, can't be iterated
+
+    event Signed(address indexed author, uint256 index);
+
+    error EmptyMessage();
+    error NotOwner();
+    error TransferFailed();
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) revert NotOwner();
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    /// calldata: input data, read-only. payable: can receive ETH along with the call.
+    function sign(string calldata message) external payable {
+        if (bytes(message).length == 0) revert EmptyMessage();
+        entries.push(Entry(msg.sender, message, uint64(block.timestamp)));
+        signedCount[msg.sender] += 1;
+        emit Signed(msg.sender, entries.length - 1);
+    }
+
+    /// view: read-only. Calling it from outside (not in a transaction) is free.
+    function count() external view returns (uint256) {
+        return entries.length;
+    }
+
+    function withdrawTips() external onlyOwner {
+        (bool ok,) = owner.call{value: address(this).balance}("");
+        if (!ok) revert TransferFailed();
+    }
+}
+```
+
+## Data types
+
+- **`uint256`**, a 256-bit unsigned integer, is the default number type. Solidity has no floating-point numbers. Money is counted in **wei** (1 ETH = 10<sup>18</sup> wei), and ratios are computed with integers: multiply first, divide last.
+- Since Solidity 0.8, an arithmetic overflow stops the function with an error, instead of wrapping around as in C. When you're sure it can't overflow, you can wrap the arithmetic in `unchecked { ... }` to save gas.
+- **`address`** is a 20-byte address. There are also `bool`, `bytes32`, `bytes` and `string`.
+- **`mapping(K => V)`** is a hash table where every key "already has" the value 0. You can't count its entries and you can't iterate over it. If you need to iterate, store an array as well.
+- `struct`, arrays `T[]` and `enum` work the way you're used to.
+- There's no `null`. A variable that hasn't been assigned always holds its type's zero value: `0`, `false`, an empty string, or the address `0x0000…0000`.
+
+## Where data lives
+
+Reference-type variables (arrays, structs, `string`, `bytes`) must state their location:
+
+| Location | How long it lives | Notes |
+|---|---|---|
+| `storage` | Forever | The contract's state. Most expensive |
+| `memory` | During one function call | A temporary copy, gone when the function returns |
+| `calldata` | During one function call | Input arguments, read-only. Cheapest |
+
+Assigning from `storage` to a `memory` variable makes a copy. But a local variable declared `storage` is a pointer: changing it changes the real state.
+
+Values that never change should be declared `constant` (known at compile time) or `immutable` (set once in the constructor, like `owner` above). Both are stored directly in the contract's code, so reading them is much cheaper than reading storage.
+
+## Functions
+
+- **Visibility:** `public` (anyone can call it, including from inside), `external` (only from outside), `internal` (this contract and contracts that inherit from it), `private` (this contract only).
+- **`view`** only reads state, **`pure`** neither reads nor writes it. Calling a `view` function from outside doesn't create a transaction, so it's free.
+- **`payable`** lets a function receive ETH. Sending ETH to a function without `payable` makes the transaction fail.
+- A **`modifier`** is code wrapped around a function body, usually used to check permissions. The `_` marks where the function body is inserted.
+- **`receive()`** runs when someone sends ETH without calling any function. **`fallback()`** runs when a call doesn't match any function.
+
+## Who is calling
+
+- `msg.sender`: the address that just called the function. It can be a wallet, or another contract.
+- `msg.value`: the amount of wei sent along with the call.
+- `block.timestamp`: the block's time, in seconds. Ethereum produces one block every 12 seconds, so don't rely on it for anything that needs to be accurate to the second.
+- `address(this).balance`: the amount of ETH the contract holds.
+
+<Callout type="warn" title="Warning">
+Don't use `tx.origin` (the wallet that started the transaction) to check permissions. A malicious contract can trick you into calling it, then call into your contract: at that point `tx.origin` is still you, even though the real caller is the attacker. Use `msg.sender`.
+</Callout>
+
+## Errors and reverts
+
+- `revert` stops the function and **undoes every change** made by that call, like a database transaction being rolled back. The gas already used is not refunded.
+- **Custom errors** like `error EmptyMessage();` are cheaper than the old style `require(condition, "message")`, and they can carry parameters. Wallets and libraries such as viem can read out the error's name to show the user.
+- `try/catch` only catches errors from calls to other contracts. It doesn't work for code inside the same contract.
+
+## Events
+
+`emit Signed(...)` writes an **event** into the transaction's receipt. Events are much cheaper than storage, but the contract itself can't read them back. They're meant for the outside world: web frontends, wallets, and indexing services. `indexed` parameters (up to three) allow fast filtering, for example "every signature from this address".
+
+## Sending ETH
+
+Use `call` and always check the result, as in `withdrawTips`:
+
+```solidity
+(bool ok,) = to.call{value: amount}("");
+if (!ok) revert TransferFailed();
+```
+
+Avoid the two old functions `transfer` and `send`. They only forward 2,300 gas, which isn't enough when the recipient is a contract that needs to do more work, such as a smart wallet.
+
+Sending ETH also hands over control. If the recipient is a contract, its code runs right then and can call back into your contract before your function has finished. So do things in this order: check conditions, update state, and only then call out (the checks-effects-interactions pattern).
+
+## Inheritance and libraries
+
+`contract VendingMachine is ERC20, Ownable` inherits from two OpenZeppelin contracts. A function that child contracts are allowed to override must be marked `virtual`, and the overriding function must be marked `override`. For tokens, access control and other common pieces, use an audited library instead of writing your own.
+
+## Everything is public
+
+`private` only stops other contracts from reading a variable through code. The data is still onchain, and anyone can read it with `cast storage <address> <slot>`. Never store passwords or secrets in a contract.
+
+Likewise, the EVM has no safe source of randomness. Everything the contract sees, others can see too, and the block proposer can influence it to some extent. If you need fair randomness (lotteries, games), use a verifiable random function (VRF) service from an oracle.
+
+## Read next
+
+- [Token vending machine](./token-vending-machine.mdx): apply all of the above to a real contract.
+- [EVM](../protocol/evm.mdx): the stack, storage and the gas cost of each instruction.

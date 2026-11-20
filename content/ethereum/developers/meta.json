@@ -1,0 +1,7 @@
+{
+  "title": "Developers",
+  "description": "Understand the protocol, write Solidity contracts and build a web frontend",
+  "icon": "Code",
+  "root": true,
+  "pages": ["index", "protocol", "building"]
+}

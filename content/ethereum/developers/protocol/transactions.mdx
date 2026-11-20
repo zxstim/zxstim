@@ -1,0 +1,227 @@
+---
+title: Transactions
+description: A transaction is a signed message with about a dozen fields. The five transaction types, EIP-1559 fees, how the network knows who sent it, nonces, receipts and the new limits, plus a real transaction signed and decoded byte by byte.
+sources:
+  - https://epf.wiki/#/wiki/EL/transaction
+  - https://epf.wiki/#/wiki/EL/el-data-structures-summary
+  - https://epf.wiki/#/wiki/research/scaling/core-changes/eip-4844
+  - https://epf.wiki/#/wiki/research/account-abstraction/eip-7702
+  - https://ethereum.org/developers/docs/transactions/
+  - https://ethereum.org/developers/docs/gas/
+---
+
+Every change a user makes on Ethereum starts with a **transaction**. It's a message signed by an account's private key, saying roughly: "I, with this sequence number, send this many wei and this data to that address, and agree to pay at most this much in fees." A contract can't send a transaction on its own. It only runs when a transaction calls it, directly or through another contract.
+
+The [Reading a transaction](../../basics/using-ethereum/reading-a-transaction.mdx) page shows a transaction on a block explorer, and the [Gas](../../basics/how-it-works/gas.mdx) page explains why you have to pay fees. This page goes through every field, every byte.
+
+## The fields of a transaction
+
+A type 2 transaction, the most common kind today, has these fields:
+
+| Field | Meaning |
+|---|---|
+| `chainId` | The network's ID; mainnet is 1. A signature for this network can't be reused on another network |
+| `nonce` | The sender's transaction sequence number, counting from 0 |
+| `maxPriorityFeePerGas` | The maximum **priority fee** per unit of gas |
+| `maxFeePerGas` | The **max fee** per unit of gas, base fee included |
+| `gasLimit` | The **gas limit**: the most gas the transaction may use |
+| `to` | The recipient address. If it's empty, the transaction creates a new contract, and `data` is the initialization code |
+| `value` | The amount of wei sent to the recipient |
+| `data` | The input data. When calling a contract, this is the function selector and the arguments, encoded per the [ABI](./evm.mdx#abi-how-a-function-gets-called) |
+| `accessList` | A list of addresses and storage slots the transaction will touch (EIP-2930). Usually empty |
+| `yParity`, `r`, `s` | The sender's secp256k1 signature |
+
+There's no `from` field. The network works out the sender from the signature, as a section below explains.
+
+## Typed envelopes
+
+At first Ethereum had only one transaction format: the RLP list `[nonce, gasPrice, gasLimit, to, value, data, v, r, s]`. To add new fields without breaking the old format, EIP-2718 (Berlin, 2021) introduced the **typed transaction envelope**:
+
+```text
+transaction = type (1 byte, from 0x00 to 0x7f) || payload
+```
+
+A legacy transaction is an RLP list, so its first byte is always `0xc0` or higher. Looking at the first byte tells you which kind you're reading. The payload of the new types is also an RLP list (see [State and data structures](./state.mdx#rlp)). The type byte is part of the signed data, and the **transaction hash** is the Keccak-256 of the whole byte string, type byte included.
+
+| Type | Name | Since | What it adds |
+|---|---|---|---|
+| 0 | Legacy | 2015 | A single `gasPrice` field. No separate `chainId`: since EIP-155 (2016), the chain ID is packed into `v` |
+| 1 | Access list | Berlin, 2021 (EIP-2930) | `chainId`, `accessList`, and a signature in `yParity` form |
+| 2 | Dynamic fee | London, 2021 (EIP-1559) | Replaces `gasPrice` with `maxPriorityFeePerGas` and `maxFeePerGas` |
+| 3 | Blob | Dencun, 2024 (EIP-4844) | `maxFeePerBlobGas` and `blobVersionedHashes`. `to` can't be empty |
+| 4 | Set code | Pectra, 2025 (EIP-7702) | `authorizationList`, each entry `[chainId, address, nonce, yParity, r, s]`. The list can't be empty, and `to` can't be empty |
+
+**Type 3** carries **blobs**: data that rollups post to Ethereum, 128 KiB per blob. Since Fusaka, each transaction carries at most 6 blobs. The transaction itself only records the hash of each blob. Blobs travel with the block on the consensus layer and are kept for only about 18 days (4,096 **epochs**). Blobs have their own fee market, and blob fees are burned too. [Scaling and data availability](./scaling.mdx) goes into more detail.
+
+**Type 4** carries the **authorizations** of [EIP-7702](../../basics/using-ethereum/eip-7702.mdx). Each one is signed separately, with the key of the account that wants to delegate, over `keccak256(0x05 || rlp([chainId, address, nonce]))`. So the sender of the transaction can be a different party that pays the fees on its behalf. An authorization with `chainId` set to 0 is valid on every network.
+
+## EIP-1559 fees
+
+Since London (2021), every block has a **base fee** that the protocol calculates by itself. A block's gas target is half the block's gas limit:
+
+```text
+new base fee = old base fee × (1 + (gas used − target) / target / 8)
+```
+
+If a block is full, the next block's base fee goes up 12.5%. If it's empty, the base fee goes down 12.5%. If it hits the target exactly, the base fee stays the same. The base fee is **burned**: nobody receives it.
+
+The actual price paid per unit of gas is:
+
+```text
+effective price = base fee + min(maxPriorityFeePerGas, maxFeePerGas − base fee)
+```
+
+- A transaction can only go into a block whose base fee is no higher than its `maxFeePerGas`. If the base fee rises above that, the transaction waits.
+- The priority fee goes to the block's fee recipient address, which the block's **proposer** chooses. When the block is bought through MEV-Boost, the **block builder** usually puts its own address there, then pays the proposer the amount it bid.
+- The sender must have at least `value + gasLimit × maxFeePerGas`. The network holds back `gasLimit × effective price`, then refunds the gas that wasn't used.
+- For type 0 and type 1 transactions, `gasPrice` is used as both caps. Everything above the base fee becomes the priority fee. That's why you should use type 2.
+
+## Who sent the transaction?
+
+For type 1 and above, the sender signs the Keccak-256 hash of `type || rlp([fields, without the signature])`. From that hash and the signature, the ECDSA algorithm can recover the public key. The sender's address is the last 20 bytes of the Keccak-256 hash of the public key. `yParity` (0 or 1) says which of the two possible points on the curve to pick.
+
+Every node does this calculation for every transaction. So `from` doesn't need to be sent along, and nobody can fake it. Two other rules protect the signature:
+
+- **Chain ID** (EIP-155, 2016). Type 0 packs `chainId` into `v = chainId × 2 + 35` or `+ 36`. A type 0 transaction without a chain ID is still valid under the protocol, so it can be replayed on another network. By default, Geth refuses to accept them over RPC. The newer types always have a `chainId`.
+- **Low `s`** (EIP-2). `s` must be in the lower half of its range. That way each transaction has only one valid signature, and nobody can tweak the signature to change the transaction hash.
+
+The [Cryptography](./cryptography.mdx) page explains secp256k1 and ECDSA.
+
+## Nonce: ordering and replacing transactions
+
+An account's transactions run strictly in **nonce** order. A transaction can only go into a block when its nonce is exactly the account's current nonce.
+
+- **Lower nonce**: rejected ("nonce too low"). That nonce has already been used.
+- **Higher nonce**: waits in the mempool until the missing nonces are filled in. One stuck transaction blocks every transaction after it.
+
+To **replace** a pending transaction, send a new transaction with the same nonce and a higher fee. This is a rule of each client's mempool, not a consensus rule. By default, Geth requires raising both `maxFeePerGas` and `maxPriorityFeePerGas` by at least 10%, and by 100% for blob transactions. To **cancel**, send 0 ETH to yourself with the same nonce and a higher fee. Nothing is guaranteed: if the old transaction makes it into a block first, the replacement is rejected. [From mempool to block](./from-mempool-to-block.mdx) covers the mempool.
+
+## Receipts
+
+Each transaction in a block has a **receipt**. The part committed to in the block, through `receiptsRoot`, contains only five things: the type, `status`, `cumulativeGasUsed` (the total gas used in the block up to and including this transaction), the Bloom filter and the logs. The other fields the RPC returns, such as `gasUsed`, `effectiveGasPrice`, `from` or `contractAddress`, are computed by the node. [State and data structures](./state.mdx#receipts-logs-and-bloom-filters) covers logs and Bloom filters.
+
+- **A `status` of 1** means success, and **0** means failure (EIP-658, 2017). A failed transaction is still in the block, still increments the nonce and still costs fees. Only the other changes are reverted.
+- **The revert reason isn't in the receipt.** To find it, trace the transaction, or rerun it with `eth_call` on the state of the previous block. The second way can give a different result if transactions earlier in the block changed the state.
+- **Contract creation.** The new contract's address is the last 20 bytes of `keccak256(rlp([sender, nonce]))`, so it can be known in advance.
+
+## The new limits
+
+- **At most 2<sup>24</sup> gas per transaction** (Fusaka, EIP-7825). A transaction with a `gasLimit` above 16,777,216 is invalid: the mempool rejects it, and a block containing it is rejected. The limit for a whole block is much higher (60 million at the end of 2025, and being raised gradually), but a single transaction can no longer take up an entire block.
+- **A floor price for calldata** (Pectra, EIP-7623). A transaction's gas, leaving aside the contract creation cost, is calculated like this:
+
+  ```text
+  tokens = number of zero bytes + 4 × number of nonzero bytes
+  gas    = 21000 + max(4 × tokens + execution gas, 10 × tokens)
+  ```
+
+  A transaction with a lot of data but little computation has to pay 10 gas per zero byte and 40 gas per nonzero byte, instead of 4 and 16. The `gasLimit` must cover the floor from the start. The goal is to shrink the maximum block size, to make room for more blobs or a higher gas limit.
+
+<Callout type="warn" title="Important">
+anvil 1.5.1 doesn't enforce the 2<sup>24</sup> gas limit, even when run with `--hardfork osaka` (checked November 2026). A transaction that runs on anvil can still be rejected by mainnet. Check `gasLimit` yourself in your code, or test on a testnet.
+</Callout>
+
+The numbers above are mainnet's rules today (Fusaka). The Glamsterdam upgrade has been running on the Sepolia testnet since October 6, 2026, but has no date yet for Hoodi or mainnet. It changes transaction pricing once more:
+
+- The calldata floor rises to 64 gas for every byte, zero or not (EIP-7976).
+- Access lists are charged by data size (EIP-7981).
+- The flat 21,000 gas base cost is split into several parts according to the resources actually used (EIP-2780). Sending ETH to an existing account still costs 21,000 gas, but a transaction that creates a new account or touches an EIP-7702 account costs more.
+- Creating new state and accessing state get more expensive (EIP-8037, EIP-8038).
+
+So the same transaction can cost a different amount of gas on Sepolia and on mainnet. Don't use gas estimates from Sepolia as your numbers for mainnet.
+
+## Try it: sign and decode a transaction
+
+Start `anvil`, Foundry's local test network. In another window, create and sign a transaction that sends 0.01 ETH, with a 1 gwei priority fee and a 3 gwei max fee:
+
+```bash
+# anvil's test key 0. This key is public knowledge:
+# never use it, or send real money to its address, on a real network.
+cast mktx --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+  0x70997970C51812dc3A010C7d01b50e0d17dc79C8 \
+  --value 0.01ether --nonce 0 --gas-limit 21000 \
+  --gas-price 3gwei --priority-gas-price 1gwei
+# 0x02f873827a6980843b9aca0084b2d05e008252089470997970c51812dc3a010c7d01b50e0d17dc79c8872386f26fc1000080c001a0fdb774673687755fec0138e84216a6c1636192e305022fba41f4e3f4e86a02e9a04fe374562184d50a88ec10eefad487b9851c57c6f119027e5ee1fc2cbd2b15d4
+```
+
+For a type 2 transaction, `--gas-price` is `maxFeePerGas`. `cast` asks anvil for the `chainId`, and the other fields are given explicitly. The ECDSA signature here is deterministic, so you'll get exactly the bytes above. Split them apart:
+
+```text
+02                                          type 2
+f8 73                                       RLP list, payload 0x73 = 115 bytes
+82 7a69                                     chainId = 31337 (anvil)
+80                                          nonce = 0
+84 3b9aca00                                 maxPriorityFeePerGas = 1 gwei
+84 b2d05e00                                 maxFeePerGas = 3 gwei
+82 5208                                     gasLimit = 21000
+94 70997970c51812dc3a010c7d01b50e0d17dc79c8 to (20 bytes)
+87 2386f26fc10000                           value = 10^16 wei = 0.01 ETH
+80                                          data: empty
+c0                                          accessList: empty list
+01                                          yParity = 1
+a0 fdb77467…86a02e9                         r (32 bytes)
+a0 4fe37456…cbd2b15d4                       s (32 bytes)
+```
+
+Decode it with `cast`. The `signer` field isn't in the transaction: `cast` recovers it from the signature.
+
+```bash
+cast decode-transaction 0x02f873827a6980843b9aca0084b2d05e008252089470997970c51812dc3a010c7d01b50e0d17dc79c8872386f26fc1000080c001a0fdb774673687755fec0138e84216a6c1636192e305022fba41f4e3f4e86a02e9a04fe374562184d50a88ec10eefad487b9851c57c6f119027e5ee1fc2cbd2b15d4
+```
+
+```json
+{
+  "signer": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+  "type": "0x2",
+  "chainId": "0x7a69",
+  "nonce": "0x0",
+  "gas": "0x5208",
+  "maxFeePerGas": "0xb2d05e00",
+  "maxPriorityFeePerGas": "0x3b9aca00",
+  "to": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+  "value": "0x2386f26fc10000",
+  "accessList": [],
+  "input": "0x",
+  "r": "0xfdb774673687755fec0138e84216a6c1636192e305022fba41f4e3f4e86a02e9",
+  "s": "0x4fe374562184d50a88ec10eefad487b9851c57c6f119027e5ee1fc2cbd2b15d4",
+  "yParity": "0x1",
+  "v": "0x1",
+  "hash": "0x7fc75a49fbde1e8383ad85c3e4cbe7da5309a2475b7993f294761c0d43af39e0"
+}
+```
+
+`hash` is exactly the Keccak-256 of the whole signed byte string: running `cast keccak` on that string gives this same value. Send the transaction to anvil, then read the receipt:
+
+```bash
+cast publish 0x02f873827a6980843b9aca0084b2d05e008252089470997970c51812dc3a010c7d01b50e0d17dc79c8872386f26fc1000080c001a0fdb774673687755fec0138e84216a6c1636192e305022fba41f4e3f4e86a02e9a04fe374562184d50a88ec10eefad487b9851c57c6f119027e5ee1fc2cbd2b15d4
+
+TX=0x7fc75a49fbde1e8383ad85c3e4cbe7da5309a2475b7993f294761c0d43af39e0
+cast receipt $TX status              # 1 (success)
+cast receipt $TX gasUsed             # 21000
+cast receipt $TX effectiveGasPrice   # 2000000000
+cast block 1 -f baseFeePerGas        # 1000000000
+```
+
+The block's base fee is 1 gwei. The effective price is 1 + min(1, 3 − 1) = 2 gwei, below the 3 gwei maximum. The fee is 21,000 × 2 gwei = 42,000 gwei. Of that, 21,000 gwei is burned and 21,000 gwei goes to the fee recipient address. The sending account loses 0.010042 ETH.
+
+The commands above were run with Foundry 1.5.1 on a freshly started anvil, in November 2026.
+
+## What this means for your app
+
+- **Use type 2 transactions**, not type 0. With type 0, everything above the base fee becomes a tip.
+- **Leave headroom in `maxFeePerGas`.** The base fee can rise 12.5% per block. You only pay the effective price, so a higher cap doesn't make you pay more. It just keeps the transaction from getting stuck.
+- **Manage nonces yourself** if your server sends many transactions from one account. Keep track of pending transactions, and when you need to replace one, raise the fee by at least 10%. One stuck transaction blocks every transaction after it.
+- **Check `status` in the receipt**, don't just check whether the transaction made it into a block. For large amounts, wait for the block to reach [finality](../../basics/how-it-works/blocks.mdx#when-can-a-block-no-longer-be-reversed).
+- **Simulate before sending.** `eth_call` and `eth_estimateGas` tell you whether the transaction will revert, and why. The receipt doesn't include the reason.
+- **Split up big jobs.** A single transaction can't use more than 16,777,216 gas. Deploying many contracts or processing a large batch has to be split into several transactions.
+- **For large data, consider blobs or compression.** Calldata has a floor price, and Glamsterdam raises that floor further.
+- **Don't ask users to sign EIP-7702 authorizations.** According to EIP-7702 itself, that's the wallet's job, not the app's. Apps request batched calls through `wallet_sendCalls` (ERC-5792).
+
+## Sources
+
+- EPF wiki: [Transaction](https://epf.wiki/#/wiki/EL/transaction), [EL Data Structures summary](https://epf.wiki/#/wiki/EL/el-data-structures-summary), [EIP-4844](https://epf.wiki/#/wiki/research/scaling/core-changes/eip-4844), [EIP-7702](https://epf.wiki/#/wiki/research/account-abstraction/eip-7702)
+- ethereum.org: [Transactions](https://ethereum.org/developers/docs/transactions/), [Gas and fees](https://ethereum.org/developers/docs/gas/)
+- Specs: [ethereum/execution-specs](https://github.com/ethereum/execution-specs) (the Osaka version: transaction validation, the 6-blob limit)
+- EIPs: [2](https://eips.ethereum.org/EIPS/eip-2), [155](https://eips.ethereum.org/EIPS/eip-155), [658](https://eips.ethereum.org/EIPS/eip-658), [1559](https://eips.ethereum.org/EIPS/eip-1559), [2718](https://eips.ethereum.org/EIPS/eip-2718), [2780](https://eips.ethereum.org/EIPS/eip-2780), [2930](https://eips.ethereum.org/EIPS/eip-2930), [4844](https://eips.ethereum.org/EIPS/eip-4844), [7594](https://eips.ethereum.org/EIPS/eip-7594), [7623](https://eips.ethereum.org/EIPS/eip-7623), [7702](https://eips.ethereum.org/EIPS/eip-7702), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7825](https://eips.ethereum.org/EIPS/eip-7825), [7976](https://eips.ethereum.org/EIPS/eip-7976), [7981](https://eips.ethereum.org/EIPS/eip-7981), [8037](https://eips.ethereum.org/EIPS/eip-8037), [8038](https://eips.ethereum.org/EIPS/eip-8038)
+- Geth: [Command-line options](https://geth.ethereum.org/docs/fundamentals/command-line-options) (`--txpool.pricebump`, `--blobpool.pricebump`, `--rpc.allow-unprotected-txs`)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

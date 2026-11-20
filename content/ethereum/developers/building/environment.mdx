@@ -1,0 +1,148 @@
+---
+title: Your development environment
+description: Install Foundry, create the token vending machine project, install OpenZeppelin and get to know forge, cast and anvil. With a prompt so an AI assistant can set up the project with you.
+sources:
+  - https://www.getfoundry.sh/
+  - https://github.com/foundry-rs/foundry
+  - https://docs.openzeppelin.com/contracts/5.x
+---
+
+**Foundry** is a command-line toolkit for writing, testing and deploying Solidity contracts. Foundry is written in Rust, so it's fast, and you write your tests in Solidity itself, with no second language to learn.
+
+Foundry has four tools:
+
+| Tool | Used to |
+|---|---|
+| `forge` | Compile, test and deploy contracts |
+| `cast` | Call contracts, send transactions, read onchain data, convert units |
+| `anvil` | Run a private Ethereum chain on your computer (a local test network) |
+| `chisel` | Try out Solidity one line at a time, like a REPL |
+
+## Have your AI assistant set it up with you
+
+If you'd like someone to guide you step by step, paste the prompt below into ChatGPT, Claude, Gemini, or the coding assistant in your editor. Edit the "My computer" line to match yours. Sections 1 to 5 below do exactly these things, so you can check the AI's answers against this page.
+
+<div className="ai-prompt">
+
+```text title="Prompt for your AI assistant"
+You are an Ethereum programming tutor. Help me set up a Foundry project for the "Token vending machine" page of the Ethereum Wiki.
+
+My computer: macOS / Linux / Windows (I'll correct this).
+
+Goals:
+1. Install Foundry with foundryup (on Windows, use WSL or Git Bash), then check it with `forge --version`.
+2. Create the project `vending-machine` with `forge init`, run `forge test` to see the sample Counter tests pass, then delete the three Counter sample files. Briefly explain the src, test, script and lib folders and the foundry.toml file.
+3. Install OpenZeppelin Contracts v5.6.1 with `forge install`, then use `forge remappings` to check the `@openzeppelin/contracts/` path.
+4. Show me the everyday commands: forge build, forge test, forge fmt, anvil, cast.
+5. Suggest a Solidity extension for my editor.
+
+How to work:
+- Give me only one step at a time. Wait for me to paste the result before moving on to the next step.
+- When there's an error, explain the cause first, then give the fix.
+- If you're not sure a command is still correct for the latest Foundry version, say so and tell me to check with `--help`.
+- Only use anvil and testnets. Never ask for my private key or recovery phrase, and never tell me to paste them into any file.
+
+Official Foundry documentation: https://www.getfoundry.sh/
+```
+
+</div>
+
+<Callout type="idea" title="Tip">
+An AI may remember the syntax of an older version. When a command fails, run `forge <command> --help` (for example `forge install --help`) to see the correct syntax for the version you have, then paste the output to the AI.
+</Callout>
+
+## 1. Install Foundry
+
+On macOS and Linux:
+
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+```
+
+This command downloads and runs Foundry's official install script. You can open that address in your browser to read it first. Then open a new terminal window and run:
+
+```bash
+foundryup
+forge --version
+```
+
+`foundryup` installs the latest stable version (1.10 as of November 2026). Run `foundryup` again at any time to update.
+
+On Windows, Foundryup doesn't run in PowerShell or Command Prompt. Use [WSL](https://learn.microsoft.com/windows/wsl/install) (Windows Subsystem for Linux) or [Git Bash](https://gitforwindows.org/), then follow the steps above.
+
+## 2. Create the project
+
+```bash
+forge init vending-machine
+cd vending-machine
+forge test
+```
+
+`forge init` needs Git. It creates a new Git repository, installs the `forge-std` testing library, and includes a sample contract called `Counter`. If `forge test` reports that all of Counter's tests pass (`PASS`), your environment works.
+
+```text
+vending-machine/
+├── foundry.toml   project configuration
+├── src/           contracts
+├── test/          tests, written in Solidity
+├── script/        deployment scripts
+└── lib/           libraries, each one a Git submodule
+```
+
+Delete the sample files to start from scratch:
+
+```bash
+rm src/Counter.sol test/Counter.t.sol script/Counter.s.sol
+```
+
+## 3. Install OpenZeppelin Contracts
+
+**OpenZeppelin Contracts** is a library of ready-made, audited contracts: ERC-20 and ERC-721 tokens, access control, and much more. The vending machine uses it to get the XU token without writing one from scratch.
+
+```bash
+forge install OpenZeppelin/openzeppelin-contracts@v5.6.1
+forge remappings
+```
+
+The output of `forge remappings` includes this line:
+
+```text
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+```
+
+This means Foundry has found the library on its own. In Solidity, you just write `import "@openzeppelin/contracts/..."`.
+
+Pin the version (`@v5.6.1`) so that every reinstall, and everyone on your team, uses exactly the same audited code.
+
+## 4. Everyday commands
+
+```bash
+forge build                     # compile
+forge test                      # run the tests
+forge test -vvv                 # print every call made by failing tests
+forge fmt                       # format the code
+anvil                           # run a local chain at http://127.0.0.1:8545
+cast to-wei 0.1                 # 100000000000000000
+cast from-wei 1000000000000000000   # 1.000000000000000000
+```
+
+ETH has 18 decimal places. Contracts don't use floating-point numbers, so every amount of money is counted in the smallest unit, **wei**: 1 ETH = 10<sup>18</sup> wei. `cast to-wei` and `cast from-wei` convert back and forth.
+
+## 5. Your editor
+
+Use VS Code (or an editor built on it, such as Cursor) with the **Solidity** extension from Nomic Foundation. The extension highlights your code, flags errors as you type, jumps to definitions, and understands how Foundry lays out libraries.
+
+## Wallets for development
+
+- `anvil` creates 10 accounts, each with 10,000 fake ETH, and prints their private keys to the screen. These keys are the same on everyone's computer, so only use them on anvil.
+- When you move to a testnet, you'll create a separate wallet for development and store its key in Foundry's encrypted keystore. The [Deployment and web frontend](./deploy-and-frontend.mdx) page has the commands for this.
+- Never use a wallet that holds real money for development.
+
+<Callout type="error" title="Caution">
+Don't keep private keys as plain text in a `.env` file or in your code. A great many people have lost money by accidentally pushing a key to GitHub: bots scan public repositories nonstop and drain the funds within seconds.
+</Callout>
+
+## Read next
+
+- [Solidity for programmers](./solidity.mdx)
+- [Token vending machine](./token-vending-machine.mdx)

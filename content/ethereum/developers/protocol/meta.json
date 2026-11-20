@@ -1,0 +1,18 @@
+{
+  "title": "Understanding the protocol",
+  "defaultOpen": true,
+  "pages": [
+    "index",
+    "architecture",
+    "evm",
+    "state",
+    "transactions",
+    "from-mempool-to-block",
+    "consensus",
+    "peer-to-peer",
+    "cryptography",
+    "scaling",
+    "clients-and-apis",
+    "roadmap"
+  ]
+}

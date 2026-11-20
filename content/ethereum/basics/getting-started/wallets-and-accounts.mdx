@@ -5,6 +5,10 @@ sources:
   - https://ethereum.org/wallets/
   - https://ethereum.org/guides/how-to-create-an-ethereum-account/
   - https://ethereum.org/guides/how-to-use-a-wallet/
+  - https://ethereum.org/developers/docs/accounts/
+  - https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
+  - https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+  - https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
 ---
 
 To use Ethereum, you need a **wallet**. But an Ethereum wallet differs from the wallet in your pocket in one important way: **a wallet doesn't hold money**. Your assets live on the Ethereum network. The wallet is just a tool that lets you see and use them.
@@ -30,10 +34,10 @@ Because a wallet is just a "reader app," you can switch to another wallet at any
 
 ## Recovery phrase
 
-When you create a new wallet, it gives you a **recovery phrase** (also called a seed phrase): 12 or 24 English words in a specific order. For example:
+When you create a new wallet, it gives you a **recovery phrase** (also called a seed phrase): 12 or 24 English words in a specific order. For example (an illustrative phrase that anyone can read; don't use it for a real wallet):
 
 ```
-there aeroplane curve vent formation doge possible product distinct under spirit lamp
+puppy cube hole indicate wall fly thought soda mango library olympic amused
 ```
 
 From this phrase, the wallet generates the private keys for all your accounts. That means:
@@ -44,13 +48,31 @@ From this phrase, the wallet generates the private keys for all your accounts. T
 
 <RecoveryScene />
 
-The animation above shows why: your balance isn't stored on your phone but recorded on every Ethereum node. The recovery phrase produces the private key, and the key produces the address, so anyone who enters the same 12 words gets that same address back, whether it's you or a thief. See [Addresses and keys](../how-it-works/addresses-and-keys.mdx).
+The animation above shows why: your balance isn't stored on your phone but recorded on every Ethereum node. The recovery phrase produces the private key, and the key produces the address, so anyone who enters the same 12 words gets that same address back, whether it's you or a thief. The section [From recovery phrase to keys and address](#from-recovery-phrase-to-keys-and-address) below shows how the wallet works these out.
 
 <Callout type="warn" title="Warning">
 How to keep your recovery phrase:
 - Write it on paper (or engrave it in metal) and store it somewhere safe. You can keep two copies in two different places.
 - **Don't** take a screenshot, **don't** save it in phone notes, email, Google Drive or iCloud, and don't send it over Zalo, Messenger or Telegram.
 - **Never** enter your recovery phrase on a website or give it to anyone, including people who claim to be "tech support."
+</Callout>
+
+## From recovery phrase to keys and address
+
+A recovery phrase isn't a password you set for your wallet. It's the root of every key: from these 12 words, the wallet computes the key pair and the address of each account. The animation below uses the example phrase above, and the values in it are real results.
+
+<SeedScene />
+
+1. **12 words are a number.** Each word is a position in the fixed list of 2,048 words in the BIP-39 standard (counting from 0): "puppy" is number 1392, "cube" is number 427. So the 12 words really record a random 128-bit number that the wallet generated when you created it (24 words: 256 bits). The last word also carries a few check bits, so if you mistype a word, the wallet usually says the phrase is invalid.
+2. **The seed.** The wallet runs the phrase through 2,048 rounds of hashing to get a 512-bit number called the **seed**.
+3. **The key pair.** From the seed and the account's number, the wallet computes a private key. From the private key, it computes the public key with an operation on an elliptic curve. The two keys form a pair: the private key signs transactions, and the public key lets everyone check those signatures.
+4. **The address.** The wallet hashes the public key with Keccak-256, keeps the last 20 bytes and puts `0x` in front.
+5. **The next account.** Change the number (account 1, 2, 3…) and you get a new key pair and a new address, still from the same seed. That's why your wallet doesn't need a new phrase when you tap "Add account."
+
+Every step is a fixed calculation: the same 12 words always give the same keys and addresses, in any wallet that follows the same standards. That's what lets you recover your wallet. And no step can be worked backwards: from an address or a public key, no one can work out the private key or the phrase. That's what lets you share your address safely. See also [Addresses and keys](../how-it-works/addresses-and-keys.mdx).
+
+<Callout type="info" title="Note">
+Most wallets number accounts the same way: the **derivation path** `m/44'/60'/0'/0/0` for account 1, `…/1` for account 2, and so on. Some wallets use a different path. If you enter your phrase in a new wallet and don't see your old accounts, look for a derivation path option in that wallet before assuming the money is gone.
 </Callout>
 
 ## Types of wallets

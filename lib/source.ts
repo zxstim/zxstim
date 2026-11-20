@@ -9,12 +9,12 @@ const docs = defineDocs({
 });
 
 // Ethereum wiki (from ethvn-web-wiki). Each root folder ("root": true in its
-// meta.json) is a section: basics, investors, enterprise, government.
+// meta.json) is a section: basics, investors, developers, enterprise, government.
 const ethereumDocs = defineDocs({
   dir: "content/ethereum",
   docs: {
     schema: pageSchema.extend({
-      // ethereum.org / EF pages a page was adapted from (CC BY 4.0)
+      // pages a page was adapted from (ethereum.org: CC BY 4.0, EPF wiki: CC BY-SA 4.0)
       sources: z.array(z.string()).optional(),
     }),
     // processed Markdown for the "Copy Markdown" / open-in-AI page actions

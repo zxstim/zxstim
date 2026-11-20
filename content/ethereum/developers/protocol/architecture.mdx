@@ -1,0 +1,187 @@
+---
+title: "Architecture: the two layers of a node"
+description: Since The Merge, every Ethereum node is two pieces of software talking to each other through the Engine API. This page follows a block through a node, explains Ethereum's original design choices, and sums up the history from the white paper to Fusaka.
+sources:
+  - https://epf.wiki/#/wiki/protocol/architecture
+  - https://epf.wiki/#/wiki/protocol/design-rationale
+  - https://epf.wiki/#/wiki/protocol/prehistory
+  - https://epf.wiki/#/wiki/protocol/history
+  - https://epf.wiki/#/wiki/EL/el-architecture
+  - https://epf.wiki/#/wiki/EL/engine-api
+  - https://epf.wiki/#/wiki/CL/cl-architecture
+  - https://ethereum.org/developers/docs/nodes-and-clients/
+  - https://ethereum.org/developers/docs/nodes-and-clients/node-architecture/
+  - https://ethereum.org/developers/docs/intro-to-ethereum/
+  - https://ethereum.org/developers/docs/ethereum-stack/
+  - https://ethereum.org/ethereum-forks/
+  - https://github.com/ethereum/execution-apis/tree/main/src/engine
+---
+
+Before 2022, an Ethereum node was a single program, such as Geth. It received transactions, ran the EVM, checked proof of work and picked, on its own, the chain with the most mining work behind it. Since The Merge (September 15, 2022), a node has been two programs running side by side: an **execution client** and a **consensus client**. They talk to each other through a dedicated interface called the **Engine API**.
+
+Your app almost only talks to the execution layer, through JSON-RPC. But it's the consensus layer that decides which block is `latest`, `safe` or `finalized`, and when a new block gets replaced. Understanding how the two layers split the work helps you pick the right level of safety for each action.
+
+[Nodes](../../basics/how-it-works/nodes.mdx) in the Basics section explains what a node is and why you should run your own. This page goes inside.
+
+## Why there are two layers
+
+The proof-of-stake chain, the **Beacon Chain**, launched on December 1, 2020 as a separate network, with its own software and its own peer-to-peer network. It ran alongside the proof-of-work chain for almost two years. The Merge (EIP-3675) joined the two networks: the execution client dropped mining and from then on took orders from the consensus client. Each side kept exactly the work it does well.
+
+| | Execution layer | Consensus layer |
+|---|---|---|
+| Data it holds | State (balances, code, storage), receipts, the mempool (the queue of waiting transactions) | The Beacon state: the validator list, staked balances, **checkpoints**, the RANDAO random number |
+| What it does | Runs transactions in the [EVM](./evm.mdx), checks the state root, builds the execution part of a block | Runs the **fork choice** rule, tracks justified checkpoints and finality, checks validators' signatures |
+| Peer-to-peer network | devp2p: spreads transactions, downloads old blocks during sync | libp2p: spreads blocks, **attestations** and blob data |
+| External API | JSON-RPC | Beacon API (REST) |
+| Spec | `ethereum/execution-specs` | `ethereum/consensus-specs` |
+| Examples | Geth, Nethermind, Besu, Erigon, Reth | Lighthouse, Prysm, Teku, Nimbus, Lodestar, Grandine |
+
+Since The Merge, new blocks are no longer spread over the execution layer's network, because only the consensus layer has enough information to know whether a block is valid. That network now mostly carries transactions.
+
+Anyone who wants to be a [validator](../../basics/how-it-works/validators.mdx) runs a third piece, the **validator client**. It holds the validator's signing keys, asks the consensus layer when its turn comes, then signs blocks and attestations. A node that doesn't stake doesn't need this piece.
+
+The two layers have two specs, so each upgrade has two names joined together: Prague (execution) and Electra (consensus) make Pectra, and Osaka and Fulu make Fusaka.
+
+## Engine API: the consensus layer gives the orders, the execution layer does the work
+
+The execution layer exposes the Engine API, and the consensus layer calls into it. The spec lives in `ethereum/execution-apis` (the `src/engine` folder). The three main methods:
+
+| Method | Who calls it, and when | What it does |
+|---|---|---|
+| `engine_newPayload` | The consensus layer, when it receives a block | Hands the block's execution part to the execution layer to check: rerun every transaction, compare the state root, compare the list of blob hashes. Returns `VALID`, `INVALID`, `SYNCING` (missing data, still downloading) or `ACCEPTED` (the block is on a side branch and hasn't been run) |
+| `engine_forkchoiceUpdated` | The consensus layer, whenever the head of the chain changes | Reports three blocks: the head, the safe block and the finalized block. If it includes **payload attributes**, the execution layer starts building a new block and returns a `payloadId` |
+| `engine_getPayload` | The proposer's consensus layer | Fetches the built block by `payloadId`, along with the total priority fees the proposer will receive and the blob data |
+
+Each upgrade that changes the block structure adds a new version. On mainnet today (Fusaka), they're `engine_newPayloadV4`, `engine_forkchoiceUpdatedV3` and `engine_getPayloadV5`. At startup, the two clients can call `engine_exchangeCapabilities` to learn which versions the other side supports.
+
+The Engine API runs on its own port, 8551 by default, separate from the public JSON-RPC port. Every HTTP request must carry a JWT signed with HMAC-SHA256 using a 256-bit secret key the two clients share, and the signing time must be within 60 seconds of the execution layer's clock. The key usually sits in a file called `jwt.hex`. Geth reads it with the `--authrpc.jwtsecret` flag, Lighthouse with `--execution-jwt`.
+
+```bash
+# Generate the secret key: 32 random bytes, written as 64 hex characters
+openssl rand -hex 32 > jwt.hex
+```
+
+<Callout type="warn" title="Important">
+A JWT only authenticates the caller. It doesn't encrypt the connection. Never expose port 8551 to the internet. The two clients should run on the same machine or inside a local network.
+</Callout>
+
+One consensus client can drive several execution clients for redundancy. The reverse doesn't work: each execution client should take orders from only one consensus layer, because it can only follow one chain head at a time.
+
+## How a block moves through a node
+
+Time is split into 12-second **slots**, and 32 slots make an **epoch**. Each slot has at most one block.
+
+### When the node receives someone else's block
+
+1. **Receive it and run quick checks.** The consensus layer receives the block over the peer-to-peer network and checks that it comes from the right **proposer** for that slot, that the BLS signature is valid, and that the parent block is known.
+2. **Check the blob data.** Since Fusaka (PeerDAS, EIP-7594), a node doesn't download whole blobs. It only keeps and samples some columns of the data, enough to trust that the whole blob is available on the network. [Scaling and data availability](./scaling.mdx) explains this in more detail.
+3. **Hand over the execution part.** The consensus layer calls `engine_newPayload`. The execution layer reruns each transaction, checks the gas, the state root and the receipts root, then answers `VALID` or `INVALID`.
+4. **Update the Beacon state** (attestations, withdrawals, deposits, slashings) and rerun the fork choice rule.
+5. **Report the new head.** The consensus layer calls `engine_forkchoiceUpdated`. From this point on, `latest` in JSON-RPC points to the new block.
+6. **Attest.** If the node has a validator assigned to this slot, the validator votes for the head as soon as it receives a valid block. If the block still hasn't arrived by the 4th second (1/3 of the slot), it votes for the head it currently sees, which is the previous block.
+
+### When the node is the proposer
+
+1. **Know its turn in advance.** The proposer schedule is computed ahead of time. Since Fusaka, the schedule for the next epoch is fixed in the Beacon state (EIP-7917).
+2. **Build the block early.** Before its slot, the consensus layer sends `engine_forkchoiceUpdated` with payload attributes: the timestamp, the random number, the fee recipient address, the list of stake withdrawals and the root of the parent Beacon block. The execution layer immediately builds an empty block as a fallback, then picks transactions from the mempool and gradually improves the block while it waits.
+3. **Get the block.** At the start of the slot, the consensus layer calls `engine_getPayload`. If it uses MEV-Boost, it also asks the relays (nodes run by third parties) how much the **block builders** are bidding, then picks the more profitable block. [From mempool to block](./from-mempool-to-block.mdx) covers this part.
+4. **Sign and broadcast.** The validator client signs the Beacon block, and the consensus layer broadcasts the block and the blob data columns to the network.
+5. The other nodes go through exactly the steps in the previous section. About 13 to 19 minutes later, the block reaches **finality**, as [Blocks](../../basics/how-it-works/blocks.mdx) describes.
+
+<Callout type="idea" title="Tip">
+Since The Merge, `block.timestamp` always equals the start time of the slot: the Beacon Chain's genesis time plus the slot number times 12 seconds. Two consecutive blocks are 12 seconds apart, or 24 seconds if there's an empty slot between them. Don't assume 12 seconds is forever: EIP-8198 (Quick Slots), under consideration for Hegotá, proposes cutting slots to 10 seconds. Glamsterdam, already live on Sepolia but not yet on mainnet, adds a `SLOTNUM` opcode (EIP-7843) so contracts can read the slot number directly instead of computing it from the timestamp.
+</Callout>
+
+## The original design choices
+
+Most of Ethereum's design dates from 2014–2015, and it still affects the code you write today.
+
+### Accounts instead of UTXOs
+
+Bitcoin stores money like bills in a wallet: each **unspent transaction output** (UTXO) is one bill, and your balance is the sum of the bills you hold the keys to spend. Ethereum stores money like a bank account: each address has a balance, a nonce, and, if it's a contract, code and storage.
+
+This makes transactions smaller (one sender, one signature) and contracts much easier to write: a contract holds its state like an object, instead of having to track individual bills. The cost is that each transaction needs a nonce to prevent [replay attacks](./transactions.mdx), an account's transactions must run in order, and privacy is weaker because people reuse the same address.
+
+### 256-bit words
+
+Each item on the EVM's stack is 256 bits wide, to fit the cryptography Ethereum uses: a Keccak-256 hash, or a secp256k1 private key, fits neatly in one item. That's why `uint256` is the EVM's "natural" type. Smaller types only help when Solidity can pack several variables into the same storage slot.
+
+### Keccak-256, not SHA3-256
+
+Ethereum chose Keccak, the winner of NIST's SHA-3 competition, before NIST changed the padding in the final standard. The two functions give different results:
+
+```bash
+cast keccak ""
+# 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+
+printf '' | openssl dgst -sha3-256
+# SHA3-256(stdin)= a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a
+```
+
+Many places still call Keccak-256 "sha3", such as the JSON-RPC method `web3_sha3`. When you compute a function selector or a hash off-chain yourself, use the Keccak-256 function from an Ethereum library (viem has `keccak256`), not the SHA3-256 from a standard crypto library.
+
+### Merkle-Patricia tries
+
+State, transactions and receipts are arranged in Merkle-Patricia tries, and the root of each trie sits in the block header. Change any value and the root changes with it. In the other direction, given the root, you can prove a value with a chain of hashes from the leaf up to the root, which is exactly what `eth_getProof` returns (see [Client software and APIs](./clients-and-apis.mdx)).
+
+The cost is that every state read has to walk through many trie nodes, so reading and writing storage is expensive. Researchers are discussing replacing this structure: first with Verkle trees, more recently with a binary tree (EIP-7864, still a draft, not scheduled for any upgrade). [State and data structures](./state.mdx) goes deeper.
+
+### Gas
+
+The EVM can run any program, so no one can know in advance whether a program will stop. [Gas](../../basics/how-it-works/gas.mdx) solves that: each step costs something, a transaction sets its own maximum, and when the gas runs out, execution stops and reverts, but all the gas that was provided is still charged. The price of each opcode reflects the resources it uses, so opcodes that touch the disk cost more than opcodes that compute.
+
+This is also a principle: the protocol doesn't ban any kind of use. It puts a price on it, so whoever uses more resources pays more.
+
+### Simplicity, and "no features"
+
+The original goal was for an ordinary programmer to be able to read, understand and implement the whole spec on their own, so the protocol wouldn't depend on a small group of experts. Ethereum today is much more complex, but the principle remains: if complexity has to be added, put it in Layer 2 first, then in client software, and only as a last resort in the protocol spec. The two-layer architecture is an example: each layer is complex inside, but the two only talk through a narrow interface.
+
+Ethereum is also deliberately "featureless". The protocol only provides the basic building blocks, while tokens, multisig wallets and domain names are all contracts. ERC-20 is a convention between contracts, not part of the protocol. Smart wallets are the same: [ERC-4337](../../basics/using-ethereum/erc-4337.mdx) has run entirely on contracts since 2023, before the protocol added [EIP-7702](../../basics/using-ethereum/eip-7702.mdx).
+
+## A short history
+
+| Date | Event | Main changes |
+|---|---|---|
+| November 2013 | White paper | Vitalik Buterin describes a blockchain that can run any program |
+| April 2014 | Yellow paper | Gavin Wood writes the first formal specification of Ethereum and the EVM |
+| July 2014 | Ether sale | A 42-day sale, paid in bitcoin |
+| July 30, 2015 | Frontier | Mainnet launches |
+| March 14, 2016 | Homestead | The first stable release, adds the `DELEGATECALL` opcode |
+| July 20, 2016 | DAO fork | Recovers the funds drained from The DAO; Ethereum Classic splits off |
+| October–November 2016 | Tangerine Whistle, Spurious Dragon | Raises the price of opcodes abused for denial-of-service attacks; cross-chain replay protection (EIP-155); a cap on contract code size |
+| October 16, 2017 | Byzantium | `REVERT`, `STATICCALL`, precompiles for zk-SNARKs |
+| December 1, 2020 | Beacon Chain | The proof-of-stake chain runs alongside |
+| April 15, 2021 | Berlin | Multiple transaction types (EIP-2718), cold and warm access (EIP-2929) |
+| August 5, 2021 | London | EIP-1559: the base fee is burned |
+| September 15, 2022 | The Merge | Full switch to proof of stake, the Engine API is born |
+| April 12, 2023 | Shapella | Stake withdrawals; upgrades activate by timestamp instead of block number |
+| March 13, 2024 | Dencun | Blobs (EIP-4844), transient storage |
+| May 7, 2025 | Pectra | EIP-7702 delegated accounts, validators can hold up to 2,048 ETH |
+| December 3, 2025 | Fusaka | PeerDAS, a per-transaction gas limit, `eth_config`, a fixed proposer schedule |
+
+After Fusaka, two Blob Parameter Only (BPO) forks (EIP-7892) raised the target and maximum number of blobs per block: BPO1 (December 9, 2025) to 10 and 15, BPO2 (January 7, 2026) to 14 and 21.
+
+The next upgrade, Glamsterdam, has been live on the Sepolia testnet since October 6, 2026, with no date yet for Hoodi or mainnet (EIP-7773, read on November 20, 2026). For node architecture, the two biggest changes are:
+
+- **ePBS** (EIP-7732): brings the separation of proposers and block builders into the protocol, so the block proposal flow above will change, and it will no longer depend on MEV-Boost relays.
+- **Block-level access lists** (EIP-7928): each block records up front the accounts and storage slots it touches, so nodes can read ahead and run transactions in parallel.
+
+The Engine API spec already has new versions for Glamsterdam (`engine_newPayloadV5`, `engine_forkchoiceUpdatedV4`, `engine_getPayloadV6`). The upgrade after that, Hegotá (EIP-8081), is still a draft with no date. [How Ethereum upgrades](../../basics/how-it-works/upgrades.mdx) and [The roadmap and how the protocol changes](./roadmap.mdx) continue the story.
+
+## What this means for your app
+
+- **Pick the block tag by risk.** `latest` is the head according to the fork choice rule, and it can be replaced within the next few seconds. Use `latest` for displaying the UI, but wait for `finalized` before crediting a deposit or shipping goods.
+- **Be ready for replaced blocks.** Your indexer must be able to handle a block disappearing. When a filter or a WebSocket subscription resends a log with `removed: true`, undo whatever you recorded from that log.
+- **Don't expose port 8551.** If you run your own node, only open JSON-RPC to your own app, and keep the Engine API on the machine.
+- **Use Keccak-256.** Function selectors, event topics and storage locations are all computed with Keccak-256, not SHA3-256.
+- **Each transaction can use at most 16,777,216 gas** (2<sup>24</sup>, since Fusaka). A batch of operations or a large deployment must fit within this limit, even if the block has room left.
+- **Follow the upgrades.** An upgrade can change gas prices, add transaction types and add RPC methods. Read the upgrade's meta EIP, and update your libraries before the activation date.
+
+## Sources
+
+- EPF wiki: [Protocol architecture](https://epf.wiki/#/wiki/protocol/architecture), [Design rationale](https://epf.wiki/#/wiki/protocol/design-rationale), [Prehistory](https://epf.wiki/#/wiki/protocol/prehistory), [History](https://epf.wiki/#/wiki/protocol/history), [EL architecture](https://epf.wiki/#/wiki/EL/el-architecture), [Engine API](https://epf.wiki/#/wiki/EL/engine-api), [CL architecture](https://epf.wiki/#/wiki/CL/cl-architecture)
+- ethereum.org: [Nodes and clients](https://ethereum.org/developers/docs/nodes-and-clients/), [Node architecture](https://ethereum.org/developers/docs/nodes-and-clients/node-architecture/), [Intro to Ethereum](https://ethereum.org/developers/docs/intro-to-ethereum/), [Ethereum stack](https://ethereum.org/developers/docs/ethereum-stack/), [Timeline of all Ethereum forks (2014 to present)](https://ethereum.org/ethereum-forks/)
+- Specs: [Engine API](https://github.com/ethereum/execution-apis/tree/main/src/engine) (`ethereum/execution-apis`), [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs), [ethereum/execution-specs](https://github.com/ethereum/execution-specs)
+- EIPs: [3675](https://eips.ethereum.org/EIPS/eip-3675), [7594](https://eips.ethereum.org/EIPS/eip-7594), [7600](https://eips.ethereum.org/EIPS/eip-7600), [7607](https://eips.ethereum.org/EIPS/eip-7607), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7732](https://eips.ethereum.org/EIPS/eip-7732), [7825](https://eips.ethereum.org/EIPS/eip-7825), [7843](https://eips.ethereum.org/EIPS/eip-7843), [7864](https://eips.ethereum.org/EIPS/eip-7864), [7892](https://eips.ethereum.org/EIPS/eip-7892), [7917](https://eips.ethereum.org/EIPS/eip-7917), [7928](https://eips.ethereum.org/EIPS/eip-7928), [8081](https://eips.ethereum.org/EIPS/eip-8081), [8198](https://eips.ethereum.org/EIPS/eip-8198)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

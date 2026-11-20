@@ -1,0 +1,349 @@
+---
+title: Deployment and web frontend
+description: Sample code to put the token vending machine on the Sepolia testnet and build a web frontend with wagmi and viem. With a prompt so an AI assistant can set up the frontend project with you.
+sources:
+  - https://www.getfoundry.sh/
+  - https://wagmi.sh/react/getting-started
+  - https://viem.sh/
+  - https://ethereum.org/developers/docs/networks/
+---
+
+This page takes the token vending machine from your computer to a testnet, then builds a web page so anyone can buy XU with their own wallet. The page only gives sample code and the main commands. For setting up the project, you can have an AI assistant work with you: a ready-made prompt is at the [end of the page](#have-your-ai-assistant-build-the-frontend).
+
+You need the Foundry project and the `VendingMachine` contract from [Token vending machine](./token-vending-machine.mdx).
+
+## Deploying to Sepolia
+
+**Sepolia** is the testnet for app developers. ETH on it has no value, and you can get it for free from the **faucets** listed on ethereum.org's [Networks](https://ethereum.org/developers/docs/networks/) page.
+
+**1. Create a separate wallet for development.** The command below creates a new key, encrypts it with a password you choose, and saves it in Foundry's keystore folder under the name `dev`. The key never shows up on screen or in a `.env` file.
+
+```bash
+cast wallet new ~/.foundry/keystores dev
+```
+
+The command prints the wallet's address. Get test ETH from a faucet for that address.
+
+**2. Write a deploy script.** Create the file `script/DeployVendingMachine.s.sol`:
+
+```solidity title="script/DeployVendingMachine.s.sol"
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Script, console} from "forge-std/Script.sol";
+import {VendingMachine} from "../src/VendingMachine.sol";
+
+contract DeployVendingMachine is Script {
+    function run() external returns (VendingMachine machine) {
+        // Every transaction between start and stop is signed with the wallet passed in via --account
+        vm.startBroadcast();
+        machine = new VendingMachine(1_000_000 ether);
+        vm.stopBroadcast();
+
+        console.log("VendingMachine:", address(machine));
+    }
+}
+```
+
+**3. Deploy.** You need a Sepolia RPC URL, from an RPC provider or from your own node.
+
+```bash
+foundryup   # update Foundry first
+export SEPOLIA_RPC_URL=https://...
+
+forge script script/DeployVendingMachine.s.sol \
+  --rpc-url $SEPOLIA_RPC_URL --account dev --broadcast
+```
+
+Foundry asks for the `dev` wallet's password, does a dry run of the script, then sends the real transaction. The output includes the line `VendingMachine: 0x…` (the machine's address) and `ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.` Note down that address for the frontend.
+
+<Callout type="info" title="Note">
+Sepolia has been running the Glamsterdam upgrade since October 6, 2026, but mainnet hasn't yet. So the gas used on Sepolia may differ from what you measure on anvil or on mainnet (see [EVM](../protocol/evm.mdx#recent-changes)). Use the latest version of Foundry, because older versions don't understand Glamsterdam's instructions yet.
+</Callout>
+
+**4. Publish the source code.** Once the source code is verified, block explorers show the Solidity code and let users call functions right on the page. Sourcify verifies without an API key:
+
+```bash
+forge verify-contract <machine address> src/VendingMachine.sol:VendingMachine \
+  --chain sepolia --verifier sourcify \
+  --constructor-args $(cast abi-encode "constructor(uint256)" 1000000ether)
+```
+
+`--constructor-args` must match the arguments used at deployment, here 1 million XU. To verify on Etherscan, use `--verifier etherscan` with an Etherscan API key.
+
+## A web frontend with wagmi and viem
+
+**viem** is a TypeScript library for talking to Ethereum: reading contracts, sending transactions, decoding errors and events. **wagmi** is built on viem, brings those tasks into React as hooks, and takes care of connecting wallets. The frontend below has four files.
+
+**`abi.ts`: which functions the contract has.** Get the full ABI with `forge inspect VendingMachine abi --json`. The frontend only needs part of it:
+
+```ts title="src/abi.ts"
+// The part of the ABI the frontend needs, taken from `forge inspect VendingMachine abi --json`.
+// `as const` lets wagmi and viem infer the types of function names, arguments and results.
+export const machineAbi = [
+  { type: 'function', name: 'buy', stateMutability: 'payable', inputs: [], outputs: [{ name: 'amount', type: 'uint256' }] },
+  { type: 'function', name: 'stock', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'uint256' }] },
+  {
+    type: 'function',
+    name: 'balanceOf',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    type: 'event',
+    name: 'Sold',
+    inputs: [
+      { name: 'buyer', type: 'address', indexed: true },
+      { name: 'ethPaid', type: 'uint256', indexed: false },
+      { name: 'tokensOut', type: 'uint256', indexed: false },
+    ],
+  },
+  { type: 'error', name: 'ZeroPayment', inputs: [] },
+  {
+    type: 'error',
+    name: 'SoldOut',
+    inputs: [
+      { name: 'requested', type: 'uint256' },
+      { name: 'available', type: 'uint256' },
+    ],
+  },
+] as const;
+```
+
+**`wagmi.ts`: which networks, which wallets.**
+
+```ts title="src/wagmi.ts"
+import { createConfig, http } from 'wagmi';
+import { anvil, sepolia } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
+
+export const config = createConfig({
+  chains: [sepolia, anvil],
+  // wagmi finds the wallets installed in the browser on its own (EIP-6963).
+  // injected() is the fallback for older wallets.
+  connectors: [injected()],
+  transports: {
+    // Better to pass your own RPC URL: http('https://...').
+    // The default public RPCs limit how many calls you can make.
+    [sepolia.id]: http(),
+    [anvil.id]: http(),
+  },
+});
+
+// Tell TypeScript about the config, so the hooks can check chains and ABIs
+declare module 'wagmi' {
+  interface Register {
+    config: typeof config;
+  }
+}
+```
+
+**`VendingMachine.tsx`: the page for buying XU.**
+
+```tsx title="src/VendingMachine.tsx"
+import { useEffect, useState } from 'react';
+import { BaseError, ContractFunctionRevertedError, formatUnits, parseEther } from 'viem';
+import {
+  useConnect,
+  useConnection,
+  useConnectors,
+  useDisconnect,
+  useReadContract,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWatchContractEvent,
+  useWriteContract,
+} from 'wagmi';
+import { machineAbi } from './abi';
+
+// The address the deploy script prints. This is the anvil address from the previous page:
+// change it to your machine's address on Sepolia.
+const machine = { address: '0x5FbDB2315678afecb367f032d93F642f64180aa3', abi: machineAbi } as const;
+
+export function VendingMachine() {
+  const { address, isConnected } = useConnection();
+  const connectors = useConnectors();
+  const connect = useConnect();
+  const disconnect = useDisconnect();
+  const [eth, setEth] = useState('0.01');
+  const [sales, setSales] = useState<string[]>([]);
+
+  // Reads: no transaction, no fee
+  const stock = useReadContract({ ...machine, functionName: 'stock' });
+  const balance = useReadContract({
+    ...machine,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: Boolean(address) },
+  });
+
+  // Simulate the purchase before the user signs, so errors like SoldOut show up right away
+  const value = toWei(eth);
+  const simulation = useSimulateContract({
+    ...machine,
+    functionName: 'buy',
+    value,
+    query: { enabled: isConnected && value !== undefined && value > 0n },
+  });
+
+  // Writes: the wallet asks the user to sign, then sends the transaction to the network
+  const buy = useWriteContract();
+  const receipt = useWaitForTransactionReceipt({ hash: buy.data });
+
+  // Once the transaction is in a block, read the balance and the stock again
+  useEffect(() => {
+    if (receipt.isSuccess) {
+      stock.refetch();
+      balance.refetch();
+    }
+  }, [receipt.isSuccess]);
+
+  // Listen for the Sold event: you see other people's purchases too
+  useWatchContractEvent({
+    ...machine,
+    eventName: 'Sold',
+    onLogs: (logs) =>
+      setSales((old) =>
+        [...logs.map((log) => `${log.args.buyer} bought ${formatUnits(log.args.tokensOut ?? 0n, 18)} XU`), ...old].slice(0, 5),
+      ),
+  });
+
+  if (!isConnected) {
+    return (
+      <div>
+        {connectors.map((connector) => (
+          <button key={connector.uid} type="button" onClick={() => connect.mutate({ connector })}>
+            Connect {connector.name}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
+  const busy = buy.isPending || receipt.isLoading;
+  return (
+    <div>
+      <p>
+        Wallet: {address}{' '}
+        <button type="button" onClick={() => disconnect.mutate()}>
+          Disconnect
+        </button>
+      </p>
+      <p>Left in the machine: {xu(stock.data)} XU</p>
+      <p>You have: {xu(balance.data)} XU</p>
+
+      <label>
+        Amount of ETH <input value={eth} onChange={(e) => setEth(e.target.value)} />
+      </label>
+      {value !== undefined && <p>You will get {xu(value * 1000n)} XU</p>}
+      <button type="button" disabled={!simulation.data || busy} onClick={() => simulation.data && buy.mutate(simulation.data.request)}>
+        {buy.isPending ? 'Waiting for the wallet to sign…' : receipt.isLoading ? 'Waiting to be included in a block…' : 'Buy'}
+      </button>
+
+      {receipt.isSuccess && <p>Purchase complete.</p>}
+      <p>{explain(simulation.error ?? buy.error ?? receipt.error)}</p>
+
+      <ul>
+        {sales.map((sale, i) => (
+          <li key={i}>{sale}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function toWei(eth: string) {
+  try {
+    return parseEther(eth);
+  } catch {
+    return undefined;
+  }
+}
+
+const xu = (amount?: bigint) => (amount === undefined ? '…' : formatUnits(amount, 18));
+
+/** Turn a contract error into a sentence the user can understand */
+export function explain(error: Error | null) {
+  if (!error) return null;
+  if (!(error instanceof BaseError)) return error.message;
+  const revert = error.walk((e) => e instanceof ContractFunctionRevertedError);
+  if (revert instanceof ContractFunctionRevertedError) {
+    if (revert.data?.errorName === 'SoldOut') return 'The machine does not have enough XU left for this much ETH.';
+    if (revert.data?.errorName === 'ZeroPayment') return 'Enter an amount of ETH greater than 0.';
+  }
+  return error.shortMessage;
+}
+```
+
+**`App.tsx`: wrap the page in the providers.**
+
+```tsx title="src/App.tsx"
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider } from 'wagmi';
+import { VendingMachine } from './VendingMachine';
+import { config } from './wagmi';
+
+const queryClient = new QueryClient();
+
+export function App() {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <VendingMachine />
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+A few points about the code:
+
+- **Reading and writing are different.** `useReadContract` calls a `view` function over RPC, with no wallet signature and no fee. Buying means sending a transaction: the wallet asks the user to sign, and the user pays the gas fee.
+- **Simulate before signing.** `useSimulateContract` runs the purchase against the current state without sending it. If the machine is sold out, the `SoldOut` error shows up before the user opens their wallet, and the Buy button is disabled. The simulation result (`simulation.data.request`) is passed straight to `buy.mutate` to send.
+- **The three states of a purchase:** waiting for the wallet to sign (`buy.isPending`), waiting for the transaction to be included in a block (`receipt.isLoading`), then done. A transaction being included in a block doesn't mean it has reached [finality](../protocol/consensus.mdx). For large amounts, wait longer.
+- **Custom errors are readable.** Because the ABI includes `error SoldOut` and `error ZeroPayment`, viem can decode the revert data into the error's name, and `explain` turns that name into a plain sentence for the user.
+- **Events show you other people.** `useWatchContractEvent` listens for the `Sold` event, so the page updates even when someone else buys.
+
+<Callout type="warn" title="Important">
+wagmi 3 renamed some APIs from wagmi 2: `useAccount` became `useConnection`, the list of wallets comes from `useConnectors`, and functions such as `connect` or `writeContract` were replaced by `mutate`. AI assistants and many older tutorials still write wagmi 2 code. The old code still runs but is marked deprecated.
+</Callout>
+
+If you use Next.js with the App Router, add the line `'use client';` to the top of `VendingMachine.tsx` and `App.tsx`, because hooks and providers only run in the browser.
+
+The code above was type-checked with TypeScript against wagmi 3.7, viem 2.57 and React 19, in November 2026. Reading, simulating, buying, waiting for the receipt and decoding the `SoldOut` error were all actually run on anvil, through a mock wallet from wagmi.
+
+## Have your AI assistant build the frontend
+
+Paste the prompt below into your AI assistant, along with the four files above.
+
+<div className="ai-prompt">
+
+```text title="Prompt for your AI assistant"
+You are an Ethereum programming tutor. Help me build the web frontend for the token vending machine from the "Deployment and web frontend" page of the Ethereum Wiki.
+
+What I already have: a Foundry project with the VendingMachine contract, and four frontend files (abi.ts, wagmi.ts, VendingMachine.tsx, App.tsx) that I'll paste below.
+
+Goals:
+1. Create a React + TypeScript project with Vite, next to the Foundry project.
+2. Install wagmi 3, viem 2 and @tanstack/react-query 5.
+3. Put the four files in the src folder and edit main.tsx to render App.
+4. Run anvil and deploy the machine to anvil as on the previous page, then connect a browser wallet (for example MetaMask or Rabby) to anvil (chain ID 31337, RPC http://127.0.0.1:8545) and try a purchase.
+5. Then change the machine address to its address on Sepolia and try again on Sepolia.
+
+How to work:
+- Give me only one step at a time. Wait for me to paste the result before moving on to the next step.
+- Use the wagmi 3 API (useConnection, useConnectors, mutate), not the old wagmi 2 names.
+- When there's an error, explain the cause first, then give the fix.
+- Only use anvil and testnets. Never ask for the private key or recovery phrase of a real wallet. If I need anvil's test accounts in my browser wallet, remind me to use a separate wallet profile for development.
+
+My four files:
+[paste abi.ts, wagmi.ts, VendingMachine.tsx, App.tsx here]
+```
+
+</div>
+
+## Read next
+
+- [From mempool to block](../protocol/from-mempool-to-block.mdx): where your transaction goes after you click Buy, and why transaction order isn't guaranteed
+- [Consensus](../protocol/consensus.mdx): when to treat a transaction as done

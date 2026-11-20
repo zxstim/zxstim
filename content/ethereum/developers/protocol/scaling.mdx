@@ -1,0 +1,195 @@
+---
+title: Scaling and data availability
+description: Why Ethereum scales with rollups, why the space to post data is the bottleneck, and how blobs, PeerDAS and the blob reserve price shape the Layer 2 fees your app's users pay.
+sources:
+  - https://epf.wiki/#/wiki/research/scaling/scaling
+  - https://epf.wiki/#/wiki/research/scaling/data-availability
+  - https://epf.wiki/#/wiki/research/scaling/core-changes/core-changes
+  - https://epf.wiki/#/wiki/research/scaling/core-changes/eip-4844
+  - https://epf.wiki/#/wiki/research/peerdas
+  - https://ethereum.org/developers/docs/scaling/
+  - https://ethereum.org/developers/docs/data-availability/
+  - https://ethereum.org/roadmap/danksharding/
+  - https://ethereum.org/roadmap/fusaka/
+---
+
+Every Ethereum node downloads and checks every block. The bigger the blocks, the more bandwidth and disk space a node needs, and the fewer people can afford to run one. That's why Ethereum doesn't scale by simply making blocks bigger.
+
+Since 2020, the main direction has been to let transactions run on [Layer 2](../../basics/how-it-works/layer-2.mdx), while Ethereum handles two jobs: settling results, and keeping data so anyone can check it again. What rollups need most from Ethereum, then, isn't computing power but space to post data. This page is about that space: blobs, the blob fee market, PeerDAS, and how they make up your app's Layer 2 fees.
+
+## The rollup-centric roadmap
+
+Vitalik Buterin proposed the **rollup-centric roadmap** on the Ethereum Magicians forum on October 2, 2020. The main ideas:
+
+- Apps and users gradually move to rollups. Each rollup bundles many transactions into a **batch**, runs them outside Ethereum, then posts the data and the results to Ethereum.
+- Ethereum optimizes for two roles: settlement (the place where results are locked in), and the place that guarantees **data availability**.
+- The protocol adds cheap data space reserved for rollups, replacing the old plan of splitting the chain into many pieces (sharding).
+
+This direction doesn't mean Layer 1 stands still. The block gas limit reached 60 million at the end of 2025 and is still being raised. In its 2026 plan, the Ethereum Foundation put Layer 1 scaling and blob scaling under the same priority, called "Scale".
+
+## Why data is the bottleneck
+
+A rollup is only safe if its transaction data is published:
+
+- With an optimistic rollup, if there's no data, no one can recompute the results to submit a fraud proof.
+- With a ZK-rollup, the validity proof guarantees the result is correct. But without the data, users don't know their balances, and can't rebuild the state to withdraw their funds if the operator stops cooperating.
+
+"Published" has a narrow meaning here: the data has been sent to the whole network, and anyone who wants it can download it for a long enough period. The protocol doesn't promise to keep data forever. Keeping it long term is up to the rollup, the users, or archive services.
+
+Before 2024, rollups posted data in the calldata of a regular transaction. This was expensive for three reasons: each nonzero byte cost 16 gas, the data competed for space with every other transaction in the same gas market, and it stayed in the chain's history forever even though the rollup only needed it for a few weeks.
+
+The real problem is: how can the whole network be sure the data has been published, without making every node download all of it? Ethereum solves it in two steps. Step one is blobs (2024): separate space, a separate price, deleted automatically after a few weeks, but every node still downloads everything. Step two is PeerDAS (2025): each node downloads only a part.
+
+## Blobs (EIP-4844)
+
+The Dencun upgrade (March 13, 2024) added **blobs**: packets of data that come with a block, carried by [type 3 transactions](./transactions.mdx).
+
+| Property | Value |
+|---|---|
+| Size | 4,096 elements × 32 bytes = 131,072 bytes (128 KiB) |
+| What the EVM sees | Only the hash of the KZG commitment, through the `BLOBHASH` opcode. It can't read the contents |
+| Who stores them | Consensus layer clients, not the execution layer |
+| How long they're kept | At least 4,096 **epochs**, about 18 days, then deleted |
+| Per transaction | At most 6 blobs, since Fusaka (EIP-7594). Needs a recipient address, so it can't be used to create a contract |
+
+Each 32-byte element must be smaller than a 255-bit prime number, so rollups usually pack only about 31 bytes of data into each element.
+
+Instead of the contents, each blob has a 48-byte KZG **commitment**, a kind of mathematical "fingerprint" of the whole blob (see [Cryptography](./cryptography.mdx)). Contracts only see the hash of this commitment. The precompiled contract at address `0x0a` can check a proof that the blob has the value `y` at point `z`. ZK-rollups use it to tie the validity proof to exactly the data that was posted.
+
+### A separate fee market
+
+Blobs use **blob gas**, completely separate from regular gas:
+
+- Each blob costs 131,072 blob gas (2<sup>17</sup>), or one blob gas per byte.
+- The blob **base fee** adjusts in a way similar to EIP-1559: if a block uses more blobs than the target, the next block's fee goes up, and if it uses fewer, the fee goes down. The block header has an `excess_blob_gas` field that adds up the usage above the target.
+- The minimum fee is 1 wei per blob gas. Blob fees are burned, and aren't refunded if the transaction fails.
+- Contracts read the current fee with the `BLOBBASEFEE` opcode (EIP-7516). Off-chain apps call the `eth_blobBaseFee` RPC method.
+
+Send a test blob on anvil, Foundry's local test network (see [Your development environment](../building/environment.mdx)):
+
+```bash
+anvil --hardfork osaka   # run in another window
+
+printf 'hi from rollups' > data.txt
+cast send --blob --path data.txt \
+  --unlocked --from 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 \
+  0x000000000000000000000000000000000000dEaD
+```
+
+The returned receipt includes:
+
+```text
+gasUsed              21000
+type                 3
+blobGasPrice         1
+blobGasUsed          131072
+```
+
+The data is only 15 bytes, but the transaction still pays for a full blob: 131,072 blob gas, times a price of 1 wei on a freshly started test network. The 21,000 regular gas is charged separately. (Checked with Foundry 1.5.1, November 2026.)
+
+## How many blobs per block
+
+Each block has a **target** and a **maximum** number of blobs.
+
+| Upgrade | Mainnet (UTC) | Target | Max | Set by |
+|---|---|---|---|---|
+| Dencun | March 13, 2024 | 3 | 6 | EIP-4844 |
+| Pectra | May 7, 2025 | 6 | 9 | EIP-7691 |
+| Fusaka | December 3, 2025 | 6 | 9 | Unchanged |
+| BPO1 | December 9, 2025 | 10 | 15 | EIP-7892 |
+| BPO2 | January 7, 2026 | 14 | 21 | EIP-7892 |
+
+With BPO2, each block targets about 1.8 MB of blob data, with a maximum of about 2.75 MB. Since Pectra, a block full of blobs raises the blob fee by about 8.2%, and a block with no blobs lowers it by about 14.5% (EIP-7691). The two BPOs keep this sensitivity unchanged.
+
+**Blob Parameter Only (BPO) forks** (EIP-7892) have existed since Fusaka. They change only three numbers: the target, the maximum and the fee adjustment factor. There's no new code, so the BPO schedule is built into the client releases that support Fusaka. Developer teams raise capacity step by step after watching mainnet, without waiting for a big upgrade. As of November 2026, no BPO after BPO2 has been scheduled on mainnet.
+
+## The blob reserve price (EIP-7918)
+
+Before Fusaka, when demand was below the target, the blob fee kept falling toward 1 wei. At that point a rollup's cost was almost entirely the regular gas of the transaction carrying the blob, so the blob fee no longer regulated demand. When demand came back, it took more than an hour of nearly full blocks for the price to climb back to equilibrium.
+
+Fusaka added a **reserve price**. If the price of a blob is lower than the price of 8,192 regular gas, the blob fee stops falling, and each blob used even pushes the price up. The result: the blob base fee doesn't stay below about 1/16 of the regular gas base fee for long.
+
+For example, if the regular gas base fee is 1 gwei, the blob fee floor is about 0.0625 gwei per blob gas, or about 8,192 gwei (0.000008192 ETH) per blob. When blob demand is low, the blob price follows Layer 1 gas fees instead of sitting at 1 wei as it did in 2024.
+
+## PeerDAS (EIP-7594)
+
+Before Fusaka, every consensus layer node still downloaded every blob, so more blobs meant more bandwidth for every node. **PeerDAS** (Peer Data Availability Sampling, which samples data availability through [peers](./peer-to-peer.mdx)) launched with Fusaka. Each node downloads only a part, yet is still sure the full data has been published. It rests on three ideas.
+
+**Erasure coding.** Each blob is extended to twice its size with a Reed-Solomon code. Any half of the extended data is enough to rebuild the whole. To hide data, the block proposer would have to hide more than half, and hiding that much is very easy to detect.
+
+**Cells and columns.** After extension, each blob is split into 128 **cells** of 2,048 bytes each, each with its own KZG proof, so every cell can be checked on its own. **Column** i is made of cell i from every blob in the block. There are 128 columns, and each column travels on its own subnet.
+
+**Custody and sampling.** Each node is assigned a fixed set of columns, computed from the node's ID, so anyone can check which node must keep which columns.
+
+- A regular node keeps at least 4 columns, and in each **slot** downloads at least 8 columns, about 1/8 of the original data.
+- A node with validators keeps one column for every 32 ETH staked, at least 8 and at most 128. A node that keeps all 128 columns is called a **supernode**.
+- Any node with 64 columns or more rebuilds the missing columns itself and rebroadcasts them to the network.
+
+EIP-7594 calculates that with about 10,000 nodes, the probability that a party hiding data fools 2% of the nodes into believing the data is complete is below 10<sup>-20</sup>.
+
+One change blob senders can see: computing a proof for each cell takes work, so since Fusaka the sender of a blob transaction computes the 128 cell proofs for each blob itself and sends them along, in a new wrapper format (version 1). The library you use to send blobs must support this format.
+
+## After PeerDAS
+
+As of November 2026, none of the steps below is running on mainnet:
+
+- **More BPOs.** Raise the target and maximum when the network can handle it. No schedule yet.
+- **Glamsterdam** has been running on Sepolia since October 6, 2026, with no date yet for Hoodi or mainnet. ePBS (EIP-7732) gives a block's data more time to propagate: according to ethereum.org, from about 2 seconds to about 9 seconds. That leaves room for more blobs. This upgrade also includes a networking protocol change so the execution layer's blob transaction pool mostly samples instead of downloading everything (EIP-8070). See [The roadmap and how the protocol changes](./roadmap.mdx).
+- **Full danksharding** (research): extend the data in both dimensions and sample individual cells instead of whole columns, so each node downloads even less while blocks hold many more blobs. No EIP has been scheduled.
+- **Replacing KZG** (research): KZG commitments need a **trusted setup** (completed before Dencun with more than 140,000 contributions) and aren't safe against quantum computers. The long-term direction is a kind of commitment that needs neither.
+
+## What a Layer 2 fee is made of
+
+A transaction on a rollup usually pays two parts:
+
+| Part | Pays for | Depends on |
+|---|---|---|
+| Execution fee | Running the transaction on Layer 2 | Gas used × the Layer 2 gas fee, that is, how busy the Layer 2 itself is |
+| Layer 1 data fee | Your share of the blob (or calldata) that the rollup posts to Ethereum | The transaction's compressed size in bytes × the blob fee and gas fee on Layer 1 |
+
+Each rollup software stack computes the Layer 1 part its own way:
+
+- **OP Stack** (OP Mainnet, Base…) estimates the transaction's compressed size, then multiplies it by Layer 1's base fee and blob fee through factors set by the chain. Some OP Stack chains charge an extra operator fee. Receipts have extra fields: `l1Fee`, `l1GasUsed`, `l1GasPrice`, `l1BlobBaseFee`. The `GasPriceOracle` contract gives an estimate before you send:
+
+  ```bash
+  # Maximum L1 data fee (wei) for a 200-byte unsigned transaction on OP Mainnet
+  cast call 0x420000000000000000000000000000000000000F \
+    "getL1FeeUpperBound(uint256)(uint256)" 200 \
+    --rpc-url https://mainnet.optimism.io
+  ```
+
+- **Arbitrum** converts the Layer 1 part into extra Layer 2 gas. Receipts have a `gasUsedForL1` field: the part of `gasUsed` that pays for Layer 1.
+
+Why fees drop when blob capacity grows: each BPO adds supply. If demand grows more slowly, the blob fee goes down, and the Layer 1 part of the user's fee goes down with it. There are two limits: EIP-7918's reserve price ties the blob fee to Layer 1 gas fees, and the execution fee still rises when the Layer 2 itself is busy. See also [Gas fees](../../basics/getting-started/gas-fees.mdx).
+
+## Choosing a Layer 2
+
+Low fees aren't enough. Before you deploy, check:
+
+- **Where the data lives.** Rollups post their data to Ethereum. Validiums and optimiums keep data elsewhere: cheaper, but they don't inherit Ethereum's full security. ETHBEAT (formerly L2BEAT) shows which type each network is.
+- **Stage and proof system.** Stages 0, 1 and 2 on ETHBEAT show how much power the operator still has to intervene, and whether the proof system is actually running. See [Layer 2 for enterprise](../../enterprise/layer-2-for-enterprise.mdx).
+- **Escape hatch.** Can users force their own transactions through Ethereum if the sequencer blocks them?
+- **Withdrawal time to Ethereum.** Optimistic rollups take several days. For ZK-rollups, it depends on how long proofs take to generate and the safety delay the network sets.
+- **EVM compatibility.** Each Layer 2 decides when to adopt Layer 1 upgrades. An opcode or precompile that's already on mainnet, like Fusaka's `CLZ` or secp256r1 precompile, isn't necessarily on your Layer 2.
+
+## What this means for your app
+
+- **Fee estimates must include the Layer 1 part.** Use the Layer 2's own estimation method (like `GasPriceOracle`), don't just multiply `eth_estimateGas` by the gas fee. The Layer 1 part moves with the blob market, so show users a range, not a fixed number.
+- **Send fewer bytes.** The Layer 1 part is proportional to the transaction's compressed size. On a rollup, trimming calldata (small data types, no unneeded parameters) is often worth more than optimizing execution gas.
+- **Don't hard-code the blob price.** Read `eth_blobBaseFee` or `BLOBBASEFEE`. Since EIP-7918, the blob price rarely sits at 1 wei.
+- **Don't hard-code the number of blobs per block.** The target and maximum can change with a BPO, without a named upgrade. Read the node's blob schedule with the `eth_config` RPC method (EIP-7910); see [Client software and APIs](./clients-and-apis.mdx).
+- **If you post blobs yourself:** at most 6 blobs per transaction, a recipient address is required, blob fees aren't refunded when a transaction fails, and your library must create cell proofs in Fusaka's format.
+- **Store blob data yourself if you need it long term.** Nodes only keep it for about 18 days, and contracts only see the hash of the commitment, not the contents.
+- **Choose a Layer 2 for its security, not just its fees,** and check that it already has the opcodes and precompiles your code uses.
+
+## Sources
+
+- EPF wiki: [Scaling](https://epf.wiki/#/wiki/research/scaling/scaling), [Data Availability](https://epf.wiki/#/wiki/research/scaling/data-availability), [Changes to Ethereum Core](https://epf.wiki/#/wiki/research/scaling/core-changes/core-changes), [EIP-4844](https://epf.wiki/#/wiki/research/scaling/core-changes/eip-4844), [PeerDAS](https://epf.wiki/#/wiki/research/peerdas)
+- ethereum.org: [Scaling](https://ethereum.org/developers/docs/scaling/), [Data availability](https://ethereum.org/developers/docs/data-availability/), [Danksharding](https://ethereum.org/roadmap/danksharding/), [Fusaka](https://ethereum.org/roadmap/fusaka/)
+- Vitalik Buterin, [A rollup-centric ethereum roadmap](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698) (2020)
+- EIPs: [4844](https://eips.ethereum.org/EIPS/eip-4844), [7516](https://eips.ethereum.org/EIPS/eip-7516), [7594](https://eips.ethereum.org/EIPS/eip-7594), [7607](https://eips.ethereum.org/EIPS/eip-7607), [7691](https://eips.ethereum.org/EIPS/eip-7691), [7732](https://eips.ethereum.org/EIPS/eip-7732), [7892](https://eips.ethereum.org/EIPS/eip-7892), [7910](https://eips.ethereum.org/EIPS/eip-7910), [7918](https://eips.ethereum.org/EIPS/eip-7918), [8070](https://eips.ethereum.org/EIPS/eip-8070)
+- [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs): PeerDAS parameters in `specs/fulu/`, the BPO schedule and blob retention period in `configs/mainnet.yaml`
+- OP Stack: [Transaction fees](https://docs.optimism.io/stack/transactions/fees)
+- Ethereum Foundation: [Protocol Priorities Update for 2026](https://blog.ethereum.org/2026/02/18/protocol-priorities-update-2026)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

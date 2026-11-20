@@ -1,0 +1,187 @@
+---
+title: The roadmap and how the protocol changes
+description: The big themes of Ethereum's roadmap, the upgrades from Frontier to Fusaka, what Glamsterdam and Hegotá are planning, and how a change makes its way from an EIP to mainnet.
+sources:
+  - https://epf.wiki/#/wiki/research/roadmap
+  - https://epf.wiki/#/wiki/protocol/history
+  - https://epf.wiki/#/wiki/dev/core-development
+  - https://epf.wiki/#/wiki/dev/pm
+  - https://epf.wiki/#/wiki/testing/overview
+  - https://epf.wiki/#/wiki/testing/hive
+  - https://epf.wiki/#/wiki/testing/kurtosis
+  - https://ethereum.org/roadmap/
+  - https://ethereum.org/ethereum-forks/
+  - https://ethereum.org/roadmap/glamsterdam/
+  - https://ethereum.org/roadmap/hegota/
+  - https://ethereum.org/developers/docs/networks/
+---
+
+Ethereum changes its rules about once or twice a year. For users, an upgrade is almost invisible. For contract developers, it can change the gas cost of an opcode, add new opcodes, raise a limit, or make an old assumption in your code no longer true.
+
+The [How Ethereum upgrades](../../basics/how-it-works/upgrades.mdx) page in the Basics section explains why no one can "order" an upgrade. This page goes deeper: what the roadmap contains, what past upgrades changed, and what steps a change goes through before it reaches mainnet, so you know where to follow along and what to prepare.
+
+## The six themes of the roadmap
+
+Ethereum has no official roadmap. The closest thing is a diagram that Vitalik Buterin updates from time to time, which splits the work into six groups with rhyming names. The table below summarizes the EPF wiki's roadmap page (updated May 2026), with outdated parts corrected.
+
+| Theme | Goal | Already on mainnet | Planned or in research |
+|---|---|---|---|
+| The Merge | Proof of stake, better consensus | Beacon Chain (2020), The Merge (2022), staking withdrawals (2023), validators holding up to 2,048 ETH (2025) | Single-slot **finality**, keeping the proposer secret until the block is out, post-quantum signatures |
+| The Surge | Scaling through rollups and data | Blobs (2024), PeerDAS and the BPOs (2025) | Full danksharding, more mature rollup proof systems |
+| The Scourge | Censorship resistance, less centralization from MEV and liquid staking | MEV-Boost (outside the protocol) | ePBS (Glamsterdam: running on Sepolia, no date yet for mainnet), inclusion lists (FOCIL, Hegotá), MEV burn |
+| The Verge | Verifying blocks with few resources, down to running on a phone | | Statelessness, so nodes don't need to keep the full state (formerly Verkle trees, a newer proposal uses binary trees, EIP-7864), SNARKs for the whole chain |
+| The Purge | Less data and technical debt | Restricting `SELFDESTRUCT` (2024), nodes allowed to drop pre-Merge blocks (July 2025) | Full history expiry (EIP-4444), state expiry |
+| The Splurge | Everything else: user experience, fee economics, the EVM | EIP-1559 (2021), EIP-7702 delegated accounts (2025) | Frame transactions (EIP-8141, Hegotá), multidimensional fees |
+
+The EPF page still lists data sampling as "in research", even though PeerDAS has been running since Fusaka. It also lists EIP-7702 as not done yet and calls delegation "temporary". In fact, EIP-7702 has been live since Pectra, and a delegation stays in place until the account owner changes it. EVM Object Format (EOF), also still on that list, was dropped from Fusaka in 2025 and isn't in Glamsterdam.
+
+<Callout type="info" title="Note">
+Besides the six-theme diagram, the Ethereum Foundation groups each year's work into a few priority tracks. In 2026 there are three: Scale (scaling both Layer 1 and blobs), Improve UX (user experience, account abstraction, interoperability between Layer 2s) and Harden the L1 (security, censorship resistance, testing).
+</Callout>
+
+## Past upgrades
+
+| Mainnet (UTC) | Upgrade | Main changes |
+|---|---|---|
+| July 30, 2015 | Frontier | Mainnet launches, running proof of work |
+| March 14, 2016 | Homestead | Leaves the experimental phase, adds `DELEGATECALL` (EIP-7) |
+| July 20, 2016 | DAO fork | Moves The DAO's funds to a refund contract. Ethereum Classic splits off |
+| October 18, 2016 | Tangerine Whistle | Raises the gas cost of heavy read and write opcodes after a series of denial-of-service attacks, the 63/64 rule (EIP-150) |
+| November 22, 2016 | Spurious Dragon | Cross-chain replay protection with the chain ID (EIP-155), contract code capped at 24,576 bytes (EIP-170) |
+| October 16, 2017 | Byzantium | `REVERT`, `STATICCALL`, precompiles for zk-SNARKs, a success status in receipts |
+| February 28, 2019 | Constantinople | `CREATE2` (EIP-1014), bit shift opcodes |
+| December 8, 2019 | Istanbul | Cheaper calldata (EIP-2028), `CHAINID`, higher cost for state-reading opcodes (EIP-1884) |
+| December 1, 2020 | Beacon Chain | The proof-of-stake chain launches, running in parallel |
+| April 15, 2021 | Berlin | Typed transactions (EIP-2718), cold and warm access (EIP-2929), access lists |
+| August 5, 2021 | London | EIP-1559: the base fee is burned. Smaller gas refunds (EIP-3529) |
+| October 27, 2021 | Altair | Sync committees for light clients |
+| September 15, 2022 | The Merge | Mining ends, full switch to proof of stake |
+| April 12, 2023 | Shapella | Staking withdrawals (EIP-4895), the `PUSH0` opcode |
+| March 13, 2024 | Dencun | Blobs (EIP-4844), transient storage, `MCOPY`, restricted `SELFDESTRUCT` |
+| May 7, 2025 | Pectra | Delegated accounts (EIP-7702), validators holding up to 2,048 ETH, blobs 6/9, BLS12-381 precompiles, a price floor for calldata |
+| December 3, 2025 | Fusaka | PeerDAS, BPOs, the `CLZ` opcode, the secp256r1 precompile, at most 2<sup>24</sup> gas per transaction |
+
+Fusaka was followed by two Blob Parameter Only forks, on December 9, 2025 and January 7, 2026 (see [Scaling and data availability](./scaling.mdx)). The table leaves out a few small upgrades from the mining era: Frontier Thawing (September 7, 2015), Muir Glacier (January 2, 2020), Arrow Glacier (December 9, 2021) and Gray Glacier (June 30, 2022), which mostly pushed back the "difficulty bomb". Bellatrix (September 6, 2022) was the consensus layer's preparation for The Merge.
+
+Looking back at the table, many upgrades changed the price of existing opcodes: EIP-150 (2016), EIP-1884 (2019), EIP-2929 (2021). EIP-1884 raised the price of `SLOAD`, so some contracts that read storage when receiving ETH, which only gets 2,300 gas, could stop working. That's why you shouldn't hard-code gas amounts in your code.
+
+## Being planned
+
+None of the changes in this section is running on mainnet (as of November 20, 2026).
+
+### Glamsterdam
+
+Glamsterdam combines Amsterdam (execution layer) with Gloas (consensus layer). It has been running on Sepolia since October 6, 2026, with no date yet for Hoodi or mainnet. Its list of changes is in its meta EIP, EIP-7773, which is in Review status. Its two headliners are ePBS and block-level access lists. The scheduled EIPs that contract developers should know about:
+
+| EIP | Expected change |
+|---|---|
+| 7732 | Proposer-builder separation built into the protocol (ePBS), with no need for MEV-Boost relays |
+| 7928 | Block-level access lists (BAL), so nodes can read data and run transactions in parallel |
+| 7954 | Maximum contract code size raised from 24 KiB to 64 KiB, and initcode from 48 KiB to 128 KiB |
+| 7708 | Every ETH transfer emits a log |
+| 7997 | A shared `CREATE2` factory contract, for deploying to the same address on many chains |
+| 7843 | A `SLOTNUM` opcode that returns the current slot number |
+| 2780, 7778, 7976, 7981, 8037, 8038 | Gas repricing: recalculating a transaction's fixed gas cost, raising the price of calldata, access lists, and creating and accessing state; gas refunds no longer subtracted when computing a block's gas |
+
+Besides the EIPs above, the list also includes changes to consensus, data formats and the networking protocol, such as a blob pool that only samples (EIP-8070).
+
+Glamsterdam was once expected on Hoodi on October 26, 2026 (the ACDE #248 agenda, October 22, 2026), but as of November 20, 2026, EIP-7773 lists no date for Hoodi. Before that meeting, the auditing firm ChainSecurity [published](https://www.chainsecurity.com/blog/glamsterdam-gas) a finding that, with the new gas accounting of EIP-8037 and EIP-8038, `gasleft()` can go up. Some deployed contracts that hard-code gas amounts or assume `gasleft()` only goes down may no longer be safe. In early 2026, the Ethereum Foundation was still aiming for Glamsterdam in the first half of the year.
+
+### Hegotá
+
+Hegotá combines Bogotá with Heze. Its meta EIP, EIP-8081, is still a draft. Only two changes have been scheduled so far:
+
+- **FOCIL** (EIP-7805), scheduled since February 2026: a committee of validators puts out a list of transactions that the block builder must include, so no single party can censor transactions on its own.
+- **Frame transactions** (EIP-8141), scheduled since August 27, 2026, with the text still a draft: an account decides for itself what counts as a valid transaction, including which kind of signature it uses.
+
+About twenty other EIPs are under consideration. Hegotá has no date yet.
+
+<Callout type="warn" title="Important">
+Scheduled doesn't mean certain. An EIP can be pulled from an upgrade at the last minute, as EOF was from Fusaka. Target dates also often slip. Only trust the activation table in the meta EIP and official announcements.
+</Callout>
+
+## From idea to mainnet
+
+**1. Idea.** Discussed in public on ethresear.ch, Ethereum Magicians or Ethereum's R&D Discord server.
+
+**2. EIP.** Once an idea is mature, it becomes an EIP, with a status as defined in EIP-1:
+
+| Status | Meaning |
+|---|---|
+| Draft | The first draft accepted into the EIP repository |
+| Review | The author invites feedback |
+| Last Call | The final round of feedback, usually 14 days |
+| Final | The text is fixed, only errors get corrected |
+| Stagnant | A Draft, Review or Last Call left untouched for more than 6 months |
+| Withdrawn | Withdrawn by the author |
+| Living | Updated indefinitely, like EIP-1 |
+
+This status says how mature the text is, not whether the change is live. EIP-7732 (ePBS) is in Last Call but isn't on mainnet.
+
+**3. Scheduling for an upgrade.** Under EIP-7723, for each upgrade, an EIP moves through stages: Proposed for Inclusion, Considered, Scheduled, then Included once it activates. It can be Declined at any stage. Each upgrade has a meta EIP that records these lists: Fusaka is EIP-7607, Glamsterdam is EIP-7773, Hegotá is EIP-8081.
+
+**4. All Core Devs calls.** Decisions are made in public calls: ACDE covers the execution layer and ACDC the consensus layer, alternating each week; ACDT covers testing. There are also topic-specific breakout calls. Agendas, recordings and summaries are in the [ethereum/pm](https://github.com/ethereum/pm) repository and on [Forkcast](https://forkcast.org).
+
+**5. Client teams working together.** Many independent teams write execution layer and consensus layer clients in many languages (see [Client software and APIs](./clients-and-apis.mdx)). They all follow the same specs, `ethereum/execution-specs` and `ethereum/consensus-specs`, which are written in Python so they can be run. Since late 2025, the execution layer test suite lives in the same repository as the spec.
+
+**6. Developer networks, then public testnets.** Each upgrade goes through many short-lived test networks named like `glamsterdam-devnet-0`, then the public testnets, then mainnet at a scheduled time.
+
+The main testing tools:
+
+- **Hive** spins up many clients at once and runs the same scenario on all of them, to catch where they behave differently.
+- **Kurtosis**, with ethPandaOps' `ethereum-package`, spins up a multi-client test network on your machine using Docker.
+- Test suites generated from the specs. Every client must produce the same results, because a single difference in how state transitions are computed is enough to split the network in two.
+
+### Current testnets
+
+| Network | For | Notes (November 2026) |
+|---|---|---|
+| Sepolia | App developers | Validators are run by client and testing teams. Usually gets upgrades first. Running Glamsterdam since October 6, 2026 |
+| Hoodi | Stakers, infrastructure operators, upgrade testing | Launched in March 2025, anyone can run a validator. Large state, slower to sync |
+| Ephemery | Quick tests | Resets to its first block every 28 days |
+| Holešky | Shut down | Shut down after the Fusaka test run (October 2025). Glamsterdam is now only scheduled for Sepolia and Hoodi |
+
+### Naming
+
+- Execution layer upgrades are named after cities that have hosted Devcon and Devconnect, in order: Shanghai, Cancun, Prague, Osaka, Amsterdam, Bogotá…
+- Consensus layer upgrades are named after a star, in alphabetical order: Altair, Bellatrix, Capella, Deneb, Electra, Fulu, Gloas, Heze…
+- Since The Merge, both layers upgrade at the same time, so the names are combined: Shapella, Dencun, Pectra, Fusaka, Glamsterdam, Hegotá.
+- Blob Parameter Only forks are numbered `bpo1`, `bpo2`…
+
+## What this means for your app
+
+- **Follow the right places.** The protocol announcements on the Ethereum Foundation blog, the meta EIP of the next upgrade, Forkcast, and the release notes of the RPC provider you use.
+- **Test on Sepolia as soon as an upgrade lands there.** Glamsterdam is already on Sepolia, so now is the time to retest your contracts there. Before an upgrade reaches Sepolia, test on anvil with `--hardfork` if Foundry supports it. Foundry 1.5.1 can run Osaka (Fusaka) but can't run Amsterdam yet.
+- **Read opcode and gas changes carefully.** Search your code for: hard-coded gas amounts (`call` with a fixed `gas`, `transfer`, `send`), assumptions that `gasleft()` only goes down, code size limits, and `SELFDESTRUCT`. Those are exactly the assumptions ChainSecurity's Glamsterdam finding targets.
+- **Compile for the right target chain.** In 2023, when the Solidity compiler switched its default to Shanghai, code with the `PUSH0` opcode couldn't be deployed to chains that hadn't upgraded yet. Set `evm_version` in `foundry.toml` to match the chain you deploy to. forge 1.5.1 defaults to `prague`, so to use Fusaka's `CLZ` you have to set `osaka`.
+- **Each Layer 2 upgrades on its own schedule.** Check opcodes, precompiles and limits on each chain.
+- **Don't rely on RPC nodes for distant history.** Since July 2025, nodes are allowed to drop pre-Merge blocks. At the time of writing, a major public RPC didn't return those blocks. If your app needs old history, use an archive service or index it yourself.
+- **Ask the node which upgrade it's on.** The `eth_config` RPC method (EIP-7910, required since Fusaka) returns the current and next configuration:
+
+```bash
+anvil --hardfork osaka   # run in another window
+cast rpc eth_config | jq '.current.blobSchedule, .current.precompiles.P256VERIFY, .next'
+```
+
+```json
+{
+  "baseFeeUpdateFraction": 5007716,
+  "max": 9,
+  "target": 6
+}
+"0x0000000000000000000000000000000000000100"
+null
+```
+
+anvil only simulates plain Osaka, without the BPOs, so blobs are 6/9. The secp256r1 precompile is at `0x100`, and `next` is `null` because no upgrade is scheduled. On a mainnet node, `current` will be BPO2's configuration, and `next` will show Glamsterdam once it has a date. (Checked with Foundry 1.5.1, November 2026.)
+
+## Sources
+
+- EPF wiki: [Ethereum Protocol Roadmap](https://epf.wiki/#/wiki/research/roadmap), [Protocol history](https://epf.wiki/#/wiki/protocol/history), [Core development](https://epf.wiki/#/wiki/dev/core-development), [Core development coordination](https://epf.wiki/#/wiki/dev/pm), [Testing](https://epf.wiki/#/wiki/testing/overview), [Hive](https://epf.wiki/#/wiki/testing/hive), [Kurtosis](https://epf.wiki/#/wiki/testing/kurtosis)
+- ethereum.org: [Ethereum roadmap](https://ethereum.org/roadmap/), [Timeline of all Ethereum forks](https://ethereum.org/ethereum-forks/), [Glamsterdam](https://ethereum.org/roadmap/glamsterdam/), [Hegotá](https://ethereum.org/roadmap/hegota/), [Networks](https://ethereum.org/developers/docs/networks/)
+- EIPs: [1](https://eips.ethereum.org/EIPS/eip-1), [1884](https://eips.ethereum.org/EIPS/eip-1884), [7600](https://eips.ethereum.org/EIPS/eip-7600), [7607](https://eips.ethereum.org/EIPS/eip-7607), [7723](https://eips.ethereum.org/EIPS/eip-7723), [7732](https://eips.ethereum.org/EIPS/eip-7732), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7805](https://eips.ethereum.org/EIPS/eip-7805), [7910](https://eips.ethereum.org/EIPS/eip-7910), [7954](https://eips.ethereum.org/EIPS/eip-7954), [8037](https://eips.ethereum.org/EIPS/eip-8037), [8081](https://eips.ethereum.org/EIPS/eip-8081), [8141](https://eips.ethereum.org/EIPS/eip-8141)
+- [ethereum/pm](https://github.com/ethereum/pm): the schedule and recordings of All Core Devs calls, including ACDE #248 (October 22, 2026)
+- [ethereum/execution-specs](https://github.com/ethereum/execution-specs), [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs), [ethereum/hive](https://github.com/ethereum/hive), [ethpandaops/ethereum-package](https://github.com/ethpandaops/ethereum-package)
+- Ethereum Foundation: [Protocol Priorities Update for 2026](https://blog.ethereum.org/2026/02/18/protocol-priorities-update-2026), [Holešky shutdown announcement](https://blog.ethereum.org/2025/09/01/holesky-shutdown-announcement), [Partial history expiry](https://blog.ethereum.org/2025/07/08/partial-history-exp)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

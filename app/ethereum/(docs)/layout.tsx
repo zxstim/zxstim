@@ -4,7 +4,7 @@ import { ethereumOptions } from "@/lib/layout.shared";
 import { sectionTab } from "@/lib/ethereum/sections";
 import { BackToHome } from "@/components/back-to-home";
 
-/** The wiki pages: sidebar with the four sections as tabs. */
+/** The wiki pages: sidebar with the sections as tabs. */
 export default function EthereumDocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <DocsLayout

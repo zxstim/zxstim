@@ -1,0 +1,182 @@
+---
+title: Peer-to-peer network
+description: Every Ethereum node joins two peer-to-peer networks at once, devp2p on the execution layer and libp2p on the consensus layer. How nodes find each other, how transactions and blocks spread, and why each node sees a different mempool.
+sources:
+  - https://epf.wiki/#/wiki/EL/devp2p
+  - https://epf.wiki/#/wiki/CL/cl-networking
+  - https://ethereum.org/developers/docs/networking-layer/
+  - https://ethereum.org/developers/docs/networking-layer/network-addresses/
+  - https://github.com/ethereum/devp2p
+  - https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/p2p-interface.md
+  - https://github.com/ethereum/consensus-specs/blob/master/specs/fulu/p2p-interface.md
+---
+
+Ethereum has no central server that takes in transactions or broadcasts blocks. Each [node](../../basics/how-it-works/nodes.mdx) connects to a few dozen **peers**, and they pass along to each other whatever they've just received. No node sees the whole network, but after just a few hops, a new block has reached almost every node.
+
+A node is made up of two pieces of software (see [Architecture: the two layers of a node](./architecture.mdx)), and each one joins its own peer-to-peer network, with its own node key, protocols and ports. The execution layer uses **devp2p**, a suite of protocols Ethereum wrote for itself and has used since mainnet launched in 2015. The consensus layer was born with the Beacon Chain in 2020, when the **libp2p** library (originally written for IPFS) had matured enough, so it uses libp2p. Since The Merge, the two networks split the work: the execution layer carries transactions, and the consensus layer carries blocks and **attestations**, the votes of **validators**.
+
+## Two networks in one node
+
+| | Execution layer | Consensus layer |
+|---|---|---|
+| Finding nodes | discv4 and discv5, over UDP | discv5, over UDP |
+| Transport | RLPx over TCP | libp2p: QUIC (over UDP), with TCP as a fallback |
+| Connection encryption | ECIES on the secp256k1 curve | TLS 1.3 with QUIC, Noise with TCP |
+| Data format | RLP, Snappy compression | SSZ, Snappy compression |
+| What it carries | Pending transactions; block history and state for nodes that are syncing | Blocks, attestations, blob data columns, slashing evidence |
+
+The two pieces of software talk to each other through the Engine API right on the machine (port `8551`), not over the peer-to-peer network. The execution layer no longer receives new blocks from other nodes: it gets them from its own node's consensus layer.
+
+## Finding peers
+
+A node that has just started up doesn't know anyone. It starts from a few **bootnodes** whose addresses are built into the software, asks them "which nodes do you know that are close to this ID?", then asks the nodes it just learned about. This way of searching follows the Kademlia algorithm:
+
+- Each node has a 32-byte **node ID**, which is the Keccak-256 **hash** of the node's secp256k1 public key.
+- The "distance" between two nodes is the XOR of their two IDs. It has nothing to do with geography.
+- Each node keeps a table of the nodes it has met, divided into buckets by distance, with at most 16 nodes per bucket.
+
+Node discovery runs over UDP because it's just short request and response packets. discv4 is the old version, which every execution layer client understands. discv5 encrypts its packets, makes unknown nodes prove their identity with a `WHOAREYOU` challenge packet, and exchanges ENR records. The consensus layer only uses discv5. On the execution layer, many clients run both side by side. Geth, for example, turns both on by default.
+
+### ENR: a node's business card
+
+The **Ethereum Node Record** (ENR, EIP-778) is a business card that the node signs itself: IP address, ports, public key, and a sequence number that goes up each time the record changes. The record is an RLP list of at most 300 bytes. Its text form starts with `enr:`, followed by that list encoded in base64. ENR replaces two older formats, `enode://` and multiaddr.
+
+Take the sample record from EIP-778, drop the `enr:` prefix and decode the base64url, then read it with `cast`:
+
+```bash
+cast from-rlp 0xf884b8407098ad865b00a582051940cb9cf36836572411a47278783077011599ed5cd16b76f2635f4e234738f30813a89eb9137e3e3df5266e3a1f11df72ecf1145ccb9c01826964827634826970847f00000189736563703235366b31a103ca634cae0d49acb401d8a4c6b6fe8c55b70d115bf400769cc1400f3258cd31388375647082765f
+# ["0x7098…5ccb9c","0x01","0x6964","0x7634","0x6970","0x7f000001",
+#  "0x736563703235366b31","0x03ca…cd3138","0x756470","0x765f"]
+```
+
+The first element is the signature, then comes the sequence number `1`, then the key-value pairs: `id` is `v4`, `ip` is `127.0.0.1`, `secp256k1` is the 33-byte compressed public key, and `udp` is `0x765f`, which is port 30303 (`cast to-dec 0x765f`). The node ID is the hash of the full 64-byte public key:
+
+```bash
+# Test private key published in EIP-778. Everyone knows it, so never use it for real.
+cast wallet public-key --private-key 0xb71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291 | xargs cast keccak
+# 0xa448f24c6d18e575453db13171562b71999873db5b286df957af199ec94617f7
+```
+
+Each layer adds its own keys to the ENR, so a node can skip nodes on a different network before connecting to them. The execution layer adds `eth`, which holds the **fork ID** (EIP-2124). The consensus layer adds `eth2` (the current and next upgrade), `attnets` (the attestation subnets the node follows), and, since Fusaka, `cgc` (the number of blob column groups the node keeps) and `nfd` (the ID of the next upgrade).
+
+## Execution layer: devp2p
+
+Once two nodes have found each other, they open a TCP connection and do an **RLPx** handshake: they exchange temporary keys using ECIES on secp256k1, then encrypt every message frame with AES. The first message is `Hello`, which lists the subprotocols each side supports. The two sides use the protocols they have in common, at the highest version both support. An RLPx message can be at most about 16.7 MiB.
+
+The two main subprotocols:
+
+- **eth** exchanges pending transactions, and lets syncing nodes download block headers, block bodies and receipts. Its first message, `Status`, gives the network, the genesis block and the fork ID, so two nodes on different networks or different upgrades disconnect right away.
+- **snap** helps new nodes sync quickly. A node picks a block near the tip of the chain, downloads that block's accounts and storage slots range by range, each range with a Merkle proof, rebuilds the state trie itself, then patches the parts that changed while it was downloading. This is Geth's default sync mode.
+
+Since Fusaka, every execution layer client must support **eth/69** (EIP-7642). `Status` drops the total difficulty field, which has been meaningless since The Merge, and adds the range of blocks the node still serves. Receipts sent over the network drop the bloom field, since the receiving node can recompute it. Mainnet currently uses eth/69 and snap/1.
+
+The devp2p spec has been written up to eth/72. The new versions are on the list of networking EIPs for Glamsterdam, the upgrade that has been running on Sepolia since October 6, 2026, with no date yet for Hoodi or mainnet:
+
+- **eth/70** (EIP-7975): downloads a block's receipts in several parts, because higher gas limits can make a block's receipt list bigger than the maximum message size.
+- **eth/71** (EIP-8159): exchanges block-level access lists (EIP-7928), which Glamsterdam also introduces.
+- **eth/72** (EIP-8070): a "sparse" blob mempool. See the blob section below.
+- **snap/2** (EIP-8189): patches the state using block-level access lists instead of re-downloading individual trie nodes.
+
+The old block broadcast messages (`NewBlock`, `NewBlockHashes`) have been unused since The Merge. Nodes must ignore them.
+
+## Consensus layer: libp2p
+
+The consensus layer spec requires clients to support both QUIC and TCP, and since July 2026 it treats QUIC as the main transport. Each connection carries two kinds of exchange.
+
+**Gossip by topic** (gossipsub). Each kind of message has a **topic**, such as `/eth2/<fork_digest>/beacon_block/ssz_snappy`. The upgrade's identifier is part of the topic name, so at each upgrade, nodes switch to the new topics automatically. For each topic, a node keeps a "mesh" of about 8 peers (anywhere from 6 to 12) and sends them full messages. Other peers are only told the message's ID, and any that are missing it ask for it. A node checks each message before passing it on, and lowers the score of any peer that sends bad messages.
+
+| Topic | Contents |
+|---|---|
+| `beacon_block` | New blocks, with the full execution payload |
+| `beacon_attestation_{subnet_id}` | Individual attestations, split across 64 **subnets** |
+| `beacon_aggregate_and_proof` | Each **committee**'s aggregated attestations |
+| `data_column_sidecar_{subnet_id}` | Blob data columns, on 128 subnets (since Fusaka) |
+| `voluntary_exit`, `proposer_slashing`, `attester_slashing` | Exits from the validator role, slashing evidence |
+| `sync_committee_{subnet_id}`, `bls_to_execution_change` | The sync committee that serves light clients; moving a validator's withdrawal rights to an Ethereum address |
+
+**Request and response** (req/resp). A node asks one specific peer: `Status`, `BeaconBlocksByRange`, `BeaconBlocksByRoot`, `DataColumnSidecarsByRoot`, `Ping`, `GetMetaData`, `Goodbye`. Each kind is its own libp2p protocol, such as `/eth2/beacon_chain/req/beacon_blocks_by_range/2/ssz_snappy`. New nodes use these requests to download past blocks.
+
+## Default ports
+
+| Software | Port | Used for | Open to the internet |
+|---|---|---|---|
+| Geth (execution layer) | `30303` TCP and UDP | RLPx; discv4, discv5 | Should be open |
+| Lighthouse, Teku, Nimbus | `9000` TCP and UDP | libp2p over TCP; discv5 | Should be open |
+| Lighthouse, Teku | `9001` UDP | libp2p over QUIC | Should be open |
+| Prysm | `13000` TCP and UDP, `12000` UDP | libp2p over TCP and QUIC; discv5 | Should be open |
+| Execution layer clients | `8545` | JSON-RPC for apps | No |
+| Execution layer clients | `8551` | Engine API, authenticated with a JWT | Never |
+
+These ports can be changed with command-line flags. A node without open ports still runs, but it only has the connections it dials out itself, so it ends up with fewer peers. To see who your node is connected to: Geth has `admin_peers` and `admin_nodeInfo` (the `admin` API has to be enabled), and the Beacon API has `/eth/v1/node/peers` and `/eth/v1/node/identity`.
+
+## How a transaction spreads
+
+1. The wallet signs the transaction, then calls `eth_sendRawTransaction` on a node, usually one run by an RPC provider.
+2. The node checks the signature, that the nonce isn't lower than the account's current nonce, that the balance covers the gas limit times the max fee plus the value being sent, and that the gas limit covers the base gas cost. If it's valid, the transaction goes into the node's **mempool** (the queue of waiting transactions).
+3. The node sends the full transaction to a small share of its peers (Geth picks the square root of its number of peers), and only announces the hash, type and size (`NewPooledTransactionHashes`) to the rest. Any peer that doesn't have it yet asks back with `GetPooledTransactions`.
+4. Blob transactions, and with Geth also transactions larger than 4 KiB, are never sent in full. They're only announced by hash, then downloaded on request.
+5. Each node that receives the transaction does the same, and doesn't send it back to the node it came from.
+6. When the time comes, a **block builder** takes transactions from its own mempool. See [From mempool to block](./from-mempool-to-block.mdx).
+
+## How a block spreads
+
+Each **slot** lasts 12 seconds:
+
+1. At the start of the slot, the **proposer** signs the block, publishes it on the `beacon_block` topic, and publishes the blob data columns on their matching subnets.
+2. Each node that receives the block only does a quick check: right slot, right proposer, valid BLS signature, known parent block. If it passes, the node forwards it right away, without running the transactions yet. That way the block isn't held up at each hop.
+3. At the same time, the consensus layer hands the execution payload to the execution layer through `engine_newPayload`. The execution layer runs every transaction, compares the state root, then removes the transactions that made it into the block from the mempool.
+4. Around the 4th second (a third of the way into the slot), the validators in the slot's committees vote for the head of the chain they see and send their attestations to their subnet. Around the 8th second, each committee's **aggregators** send the aggregate to `beacon_aggregate_and_proof`.
+
+A block that arrives after the 4th second might not get any votes, and the next slot's proposer can build directly on its parent block, which drops the late block from the chain. That's why the peer-to-peer network has to be fast. See also [Consensus](./consensus.mdx).
+
+This sequence is how mainnet works today. Glamsterdam (running on Sepolia, no date yet for mainnet) introduces ePBS (EIP-7732): the consensus layer block and the execution payload are separated and published at two different times, and the attestation deadline moves up to around the 3rd second.
+
+## Which way blob data travels
+
+Before it goes into a block, a blob transaction sits in the execution layer's mempool, with its full blobs, and is only downloaded on request (step 4 in the transaction section above). Since Fusaka, the sender has to include a KZG proof for every cell of the blob (see [Cryptography](./cryptography.mdx)).
+
+Once a blob is in a block, the consensus layer doesn't send the full blob. With **PeerDAS** (EIP-7594), each blob is extended to double its size with an erasure code, then cut into 128 cells. The cells at the same position across all the blobs in the block make up a column, and each column travels on its own subnet:
+
+- Each node keeps at least 4 columns, chosen based on its node ID, and announces this number in its ENR with the `cgc` key.
+- Each slot, a node samples at least 8 columns, about 1/8 of the blob data. Having half of the columns is enough to rebuild all of it.
+- Nodes attached to validators with a combined 4,096 ETH or more have to keep every column. They're called **supernodes**.
+- The consensus layer also asks the execution layer's mempool (`engine_getBlobsV2`). If all the blobs are already there, it builds the columns itself instead of waiting to download them.
+
+The Glamsterdam list includes two more improvements to this path. With eth/72 (EIP-8070), each execution layer node only downloads full blobs with a 15% probability, and otherwise only downloads the cells for the columns its consensus layer keeps. EIP-8136 lets nodes send each other only the cells a column is missing, instead of the whole column. The details are in [Scaling and data availability](./scaling.mdx).
+
+## Why each node sees a different mempool
+
+The mempool isn't a shared database. Each node has a mempool of its own:
+
+- **News spreads gradually.** Transactions reach nodes at different times, and may never reach some nodes at all.
+- **Each client has its own limits.** With its default settings, Geth holds at most 5,120 transactions that are ready to run and 1,024 transactions waiting on a missing nonce. When it's full, the transactions paying the lowest fees get pushed out first.
+- **There are private channels.** Some transactions are sent straight to block builders and never enter the public mempool.
+
+So a transaction you've seen can disappear:
+
+- **Replaced** by a transaction from the same sender, with the same nonce and a higher fee. Geth requires a fee increase of at least 10%, or 100% for blob transactions.
+- **Pushed out** when the mempool is full, especially once the base fee has risen above the transaction's max fee.
+- **Expired.** Geth drops transactions waiting on a missing nonce if the account makes no progress for 3 hours.
+- **A different node.** The node restarts, or the app switches to a different RPC provider.
+- **The block containing it is dropped** when the chain **reorganizes** (a reorg). The transaction usually goes back into the mempool, but it may be replaced before it gets into a new block.
+
+## What this means for your app
+
+- **"Sent" doesn't mean "propagated".** `eth_sendRawTransaction` returns the hash as soon as one node accepts the transaction. Sending the same signed transaction to several RPC providers does no harm: it has the same hash, and it only goes into a block once.
+- **Track by sender and nonce, not just by hash.** A transaction can be replaced by one with a different hash. Only treat a transaction as "dropped" once its nonce has been used by another transaction.
+- **Don't ask several different nodes for the `pending` nonce.** Each node answers based on its own mempool. An app that sends many transactions in a row should manage nonces itself.
+- **Anyone can read the public mempool.** A token swap can be front-run or sandwiched by someone else. See MEV in [From mempool to block](./from-mempool-to-block.mdx).
+- **Pick a wait level that fits the amount.** A `latest` block can still be replaced. A `finalized` block has reached **finality**: usually after 64 to 96 slots, that is, two to three **epochs**, about 13 to 19 minutes.
+- **If you send blobs, use a library updated for Fusaka**, because the transaction has to include a proof for every cell. Price blob fees high enough from the start: with Geth, replacing a blob transaction costs double the fee.
+- **If you run your own node, open the P2P ports** to get more peers, and never expose `8545` or `8551` to the internet.
+
+## Sources
+
+- EPF wiki: [DevP2P](https://epf.wiki/#/wiki/EL/devp2p), [Networking](https://epf.wiki/#/wiki/CL/cl-networking)
+- ethereum.org: [Networking layer](https://ethereum.org/developers/docs/networking-layer/), [Network addresses](https://ethereum.org/developers/docs/networking-layer/network-addresses/)
+- [ethereum/devp2p](https://github.com/ethereum/devp2p): the specs for discv4, discv5, ENR, RLPx, eth and snap
+- consensus-specs: [p2p-interface (Phase 0)](https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/p2p-interface.md), [p2p-interface (Fulu)](https://github.com/ethereum/consensus-specs/blob/master/specs/fulu/p2p-interface.md)
+- EIPs: [778](https://eips.ethereum.org/EIPS/eip-778), [2124](https://eips.ethereum.org/EIPS/eip-2124), [4844](https://eips.ethereum.org/EIPS/eip-4844), [7594](https://eips.ethereum.org/EIPS/eip-7594), [7607](https://eips.ethereum.org/EIPS/eip-7607), [7642](https://eips.ethereum.org/EIPS/eip-7642), [7732](https://eips.ethereum.org/EIPS/eip-7732), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7928](https://eips.ethereum.org/EIPS/eip-7928), [7975](https://eips.ethereum.org/EIPS/eip-7975), [8070](https://eips.ethereum.org/EIPS/eip-8070), [8136](https://eips.ethereum.org/EIPS/eip-8136), [8159](https://eips.ethereum.org/EIPS/eip-8159), [8189](https://eips.ethereum.org/EIPS/eip-8189)
+- The [go-ethereum](https://github.com/ethereum/go-ethereum) source code (mempool settings, how transactions are broadcast, default ports) and the [Lighthouse](https://lighthouse-book.sigmaprime.io/advanced_networking.html), Teku and Prysm docs on ports, read in November 2026. `cast` commands checked with Foundry 1.5.1, November 2026.
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

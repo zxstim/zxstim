@@ -1,0 +1,209 @@
+---
+title: Client software and APIs
+description: The execution layer and consensus layer clients that run mainnet, why client diversity matters, how to call JSON-RPC and the Beacon API, and when to run your own node instead of using an RPC provider.
+sources:
+  - https://epf.wiki/#/wiki/EL/el-clients
+  - https://epf.wiki/#/wiki/CL/cl-clients
+  - https://epf.wiki/#/wiki/EL/JSON-RPC
+  - https://epf.wiki/#/wiki/CL/beacon-api
+  - https://epf.wiki/#/wiki/testing/incidents
+  - https://epf.wiki/#/wiki/research/history-expiry/history-expiry
+  - https://ethereum.org/developers/docs/nodes-and-clients/
+  - https://ethereum.org/developers/docs/nodes-and-clients/client-diversity/
+  - https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/
+  - https://ethereum.org/developers/docs/nodes-and-clients/nodes-as-a-service/
+  - https://ethereum.org/developers/docs/nodes-and-clients/archive-nodes/
+  - https://ethereum.org/developers/docs/apis/json-rpc/
+  - https://github.com/ethereum/execution-apis
+  - https://github.com/ethereum/beacon-APIs
+---
+
+Ethereum is defined by a specification, not by a program. Many independent teams write software to that same specification, in many different languages. Your app talks to one of those clients over JSON-RPC, usually through a library such as viem, and usually through a provider's machines.
+
+This page introduces those clients, explains why a network running many different clients is a safety mechanism, then goes into the JSON-RPC methods you'll use every day. The [Architecture: the two layers of a node](./architecture.mdx) page explains why each node has two layers.
+
+## Execution layer clients
+
+| Client | Language | Developed by | Notes |
+|---|---|---|---|
+| Geth | Go | Ethereum Foundation (EF) | The oldest client still maintained |
+| Nethermind | C# (.NET) | Nethermind | |
+| Besu | Java | An open-source Linux Foundation project, started by Consensys | Can also be used for private chains |
+| Erigon | Go | Erigon | Forked from Geth, optimized for archive nodes, has its own built-in consensus layer (Caplin) |
+| Reth | Rust | Paradigm | Stable 1.0 release since June 2024 |
+| ethrex | Rust | LambdaClass | The newest. ethereum.org lists it as supporting mainnet, while the EPF wiki still lists it as in development |
+
+EthereumJS (TypeScript) and the execution layer version of Nimbus (Nim) are in development and not yet used on mainnet.
+
+## Consensus layer clients
+
+| Client | Language | Developed by |
+|---|---|---|
+| Lighthouse | Rust | Sigma Prime |
+| Prysm | Go | Offchain Labs (formerly Prysmatic Labs) |
+| Teku | Java | Consensys |
+| Nimbus | Nim | Status. Lightweight, runs on low-spec machines |
+| Lodestar | TypeScript | ChainSafe |
+| Grandine | Rust | The Grandine team |
+
+Each consensus layer client comes with its own validator client. This page doesn't give each client's usage share because the numbers change all the time. You can see current figures at [clientdiversity.org](https://clientdiversity.org) and [supermajority.info](https://supermajority.info).
+
+## Why client diversity matters
+
+Every client follows the same specification, but each has its own bugs. When a client has a bug, the consequences depend on how much ETH is staked by the validators running it, because **attestation** votes are weighted by staked ETH. The two key thresholds are 1/3 and 2/3, because it takes votes from 2/3 of all staked ETH for a **checkpoint** to be **justified**, as the [Blocks](../../basics/how-it-works/blocks.mdx) page describes.
+
+| Share of the buggy client | What happens |
+|---|---|
+| Under 1/3 | The nodes running it split off or stop. The rest keep producing blocks and still reach **finality**. Validators on the buggy client lose rewards and get small penalties for being offline, until it's fixed |
+| Over 1/3 | The rest don't have the 2/3 needed to justify checkpoints. The chain still produces blocks but loses finality. When finality is delayed by more than 4 **epochs**, the inactivity leak kicks in, until the side that's still active gets back to 2/3 |
+| Over 2/3 | The buggy client has enough votes on its own to bring a wrong branch to finality. According to ethereum.org, validators on that branch are stuck: to return to the correct branch they would have to accept **slashing**, or withdraw and stake again, which is both slow and costly |
+
+The execution layer is the same. If the execution client used by most validators accepts an invalid block, their consensus layer will vote for that block. That's why ethereum.org recommends that no client, at either layer, should go above 1/3.
+
+Incidents that have happened, according to the EPF wiki and incident reports:
+
+- **2016, the Shanghai denial-of-service attacks.** The attacker exploited underpriced opcodes to force Geth to read the disk tens of thousands of times per block. Other clients didn't have this weakness, so the network kept running, and the two upgrades that followed, Tangerine Whistle and Spurious Dragon, raised the price of the exploited opcodes.
+- **August 27, 2021, a chain split at block 13,107,518**, when Ethereum still used proof of work. A memory-handling bug in Geth made nodes that hadn't updated to version 1.10.8 (released three days earlier) compute a different state root and follow a minority branch. Because the majority had updated, the correct branch won.
+- **May 11 and 12, 2023, mainnet lost finality twice**, for about 25 minutes and about an hour. Prysm and Teku were overloaded while processing old attestations. According to an analysis on ethresear.ch, participation dropped to about 31% at one point. Other clients kept running, so blocks were still produced. Prysm 4.0.4 and Teku 23.5.0 fixed the bug.
+- **February 24, 2025, the Holesky testnet.** When Pectra activated, Geth, Nethermind and Besu had the wrong deposit contract address configured, so they accepted an invalid block. The nodes running these three clients were a supermajority, so the wrong branch was justified, and Holesky lost finality for nearly two weeks, until March 10, 2025. EIP-7910 uses this incident as its main example when proposing the `eth_config` method, covered later on this page.
+- **Early September 2025, Reth.** A bug in updating the state trie made some Reth nodes compute the wrong state root and stop. Reth is a minority client, so the network wasn't affected.
+
+<Callout type="info" title="Note">
+The Holesky incident was a real case of "over 2/3", fortunately on a testnet. For apps, the lesson is: if your RPC provider runs only one client, you inherit every bug that client has.
+</Callout>
+
+## JSON-RPC for app developers
+
+The execution layer exposes **JSON-RPC**, specified in `ethereum/execution-apis`. Each request is a JSON object sent over HTTP, WebSocket or IPC. By default, Geth listens for HTTP on port 8545. The `eth_`, `net_` and `web3_` method groups are common standards. The `debug_`, `trace_`, `txpool_` and `admin_` groups vary by client, and `admin_` should never be exposed publicly.
+
+### Block tags
+
+Many methods take a block parameter: a block number, a block hash (EIP-1898), or a tag.
+
+| Tag | Meaning | When to use it |
+|---|---|---|
+| `latest` | The head of the chain according to the consensus layer's fork choice rule. Can be replaced even when the network is working normally | Display, estimates |
+| `safe` | A block considered safe from being reversed as long as most validators are honest and the network isn't unusually delayed. How it's computed depends on the consensus layer client: usually the block of the most recent justified checkpoint, and newer specs add the fast confirmation rule | Moderate amounts, when you need something faster than `finalized` |
+| `finalized` | A block that has reached finality. Reversing it would burn at least 1/3 of all staked ETH. About 13 to 19 minutes behind `latest` | Crediting deposits, shipping goods, withdrawals to another chain |
+| `pending` | A template block the node builds from its own mempool. Different on every node | Rarely needed |
+| `earliest` | The lowest block the node still has. Under the current spec, not necessarily the chain's first block | Rare |
+
+### The methods you'll use most
+
+| Method | What it does | What to know |
+|---|---|---|
+| `eth_call` | Runs a call against a block's state, without creating a transaction and without fees | Every `view` function goes through this. By default, Geth limits each call to 50 million gas and 5 seconds |
+| `eth_estimateGas` | Finds the smallest amount of gas the transaction needs to succeed on the current state | The state can change before the transaction makes it into a block, so add a margin. Since Fusaka, a transaction that uses more than 16,777,216 gas is invalid, so bigger operations have to be split up |
+| `eth_sendRawTransaction` | Sends a signed transaction and immediately returns the transaction hash | Having a hash doesn't mean the transaction will make it into a block. Watch for the receipt |
+| `eth_getLogs` | Finds **logs** by block range, address and topic | Providers usually limit the number of blocks per query or the number of results, each at its own level: split up the block range. Use `blockHash` (EIP-234) to get exactly one block |
+| `eth_getProof` | Returns the account and storage slots with Merkle proofs (EIP-1186) | You can verify the result yourself against the state root in the block header, without trusting the provider. Under EIP-1186, storage keys are 32-byte strings: some nodes reject short forms like `0x0` |
+| `eth_config` | The configuration of the current and next upgrade: chain ID, activation time, blob parameters, the list of precompiles and system contracts (EIP-7910) | Every client must support it since Fusaka. Use it to check that a node is ready for the next upgrade |
+
+A **full node** only keeps the state of recent blocks, usually 128 blocks. Calling `eth_call` or `eth_getProof` on older blocks needs an **archive node**.
+
+<Callout type="warn" title="Important">
+Glamsterdam has been running on Sepolia since October 6, 2026, with no date yet for Hoodi or mainnet. Two things to know if you test on Sepolia:
+
+- **Every ETH transfer emits a log** (EIP-7708), from the address `0xff…fe`, with the same topic as the ERC-20 `Transfer` event. Indexers that filter only by topic, and not by contract address, will mistake them for token transfers.
+- **Gas prices differ from mainnet.** Glamsterdam changes the base cost of a transaction (EIP-2780), the cost of creating and accessing state (EIP-8037, EIP-8038) and the price of calldata (EIP-7976). `eth_estimateGas` results from Sepolia can't be reused for mainnet.
+</Callout>
+
+Call it directly with `curl` to see what a request looks like:
+
+```bash
+export RPC=http://127.0.0.1:8545   # anvil, your own node, or a provider's URL
+
+# The most recent finalized block. false: only fetch the transaction hashes
+curl -s $RPC -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"eth_getBlockByNumber","params":["finalized",false]}'
+```
+
+The result looks like `{"jsonrpc":"2.0","id":1,"result":{...}}`, or has an `error` field instead of `result` if something went wrong. For day-to-day work, Foundry's `cast` is more concise:
+
+```bash
+export TOKEN=0x...   # the address of an ERC-20 token contract
+export USER=0x...    # an address that holds that token
+export TO=0x...      # a recipient address
+
+# eth_call: USER's token balance at the safe block
+cast call $TOKEN "balanceOf(address)(uint256)" $USER --block safe --rpc-url $RPC
+
+# eth_estimateGas: how much gas it takes to transfer 1000 of the token's smallest units from USER to TO
+cast estimate $TOKEN "transfer(address,uint256)" $TO 1000 --from $USER --rpc-url $RPC
+
+# eth_getLogs: the token's Transfer events over 1,000 blocks
+cast logs --from-block 23000000 --to-block 23000999 --address $TOKEN \
+  "Transfer(address indexed,address indexed,uint256)" --rpc-url $RPC
+
+# eth_getProof: the contract's account and storage slot 0, with proofs
+cast proof $TOKEN 0 --block finalized --rpc-url $RPC
+
+# eth_config: the current and next upgrade configuration
+cast rpc eth_config --rpc-url $RPC
+
+# eth_sendRawTransaction: send an already-signed transaction, for example one made by cast mktx
+cast publish $SIGNED_TX --rpc-url $RPC
+```
+
+The commands above were tested with cast 1.5.1 on anvil in November 2026. Results on mainnet change with every block, so they aren't printed here.
+
+## Beacon API
+
+The consensus layer exposes the **Beacon API**, a REST API specified in `ethereum/beacon-APIs`. Validator clients use it to receive their duties and submit signatures. Apps usually use it to track finality, look up validator information, or, for Layer 2s and indexers, to fetch blob data.
+
+```bash
+export BEACON=http://127.0.0.1:5052   # Lighthouse's default port when --http is enabled
+
+# The current justified and finalized checkpoints
+curl -s $BEACON/eth/v1/beacon/states/head/finality_checkpoints
+
+# Whether the node has finished syncing
+curl -s $BEACON/eth/v1/node/syncing
+
+# The blobs of the latest block
+curl -s $BEACON/eth/v1/beacon/blobs/head
+```
+
+The paths above come from the Beacon API spec. Since Fusaka, only nodes that keep every data column are required to answer requests for blobs. The network only has to keep blob data for 4,096 epochs, about 18 days. If your app needs blobs for longer, you have to store them yourself.
+
+## Running your own node or using an RPC provider
+
+| | RPC provider | Your own node |
+|---|---|---|
+| Trust | You trust them to answer correctly and not hide your transactions | The node checks every block itself |
+| Privacy | They see your IP address and every wallet address you ask about | No one sees anything |
+| Limits | Request limits, `eth_getLogs` limits, possibly usage-based pricing | You set them. In Geth, `--rpc.rangelimit` by default puts no limit on the number of blocks |
+| Methods | Many offer archive nodes and `debug_`, `trace_` | You have to enable them yourself, and an archive node needs far more disk space |
+| Effort | Almost none | Update before every upgrade, keep an eye on the disk |
+
+A full node, as recommended by EIP-7870, needs a 4 TB NVMe SSD, 32 GB of RAM, a 4-core, 8-thread CPU, and a network connection of 50 Mbit/s down and 15 Mbit/s up. The [Nodes](../../basics/how-it-works/nodes.mdx) page has the full table.
+
+There are in-between options: use two providers that run two different clients and compare results for important operations, verify results with `eth_getProof`, or use a light client such as Helios. Light clients rely on the **sync committee**, 512 validators chosen at random about every 27 hours to sign the headers of new blocks.
+
+## Syncing a new node
+
+- **Execution layer.** The default is **snap sync**: download recent state from other nodes and check it against the state root, then process each new block from there. **Full sync** reruns every transaction from the first block, which takes days to weeks.
+- **Consensus layer.** **Checkpoint sync**: download a recently finalized state from a Beacon node you trust, then keep verifying from there, instead of starting from 2020, so it usually takes only a few minutes. Lighthouse takes that node's address through the `--checkpoint-sync-url` flag. Compare the checkpoint's hash with a second source, such as a block explorer.
+- **Old history.** According to the EPF wiki, clients are rolling out the dropping of block data from before The Merge (the first phase of EIP-4444). A full node may no longer have old blocks and receipts, so `eth_getLogs` over very old block ranges may return nothing.
+
+## What this means for your app
+
+- **Pick the block tag by risk.** UIs use `latest`. For crediting deposits or shipping goods, wait for `finalized`.
+- **Read logs in pages.** Split `eth_getLogs` into small ranges, save the last block you've read, and handle logs with `removed: true` when a block is replaced.
+- **Don't fully trust `eth_estimateGas`.** Add a margin, and rerun `eth_call` just before sending.
+- **Don't depend on a single source.** For large balances or irreversible operations, compare results from two providers, or verify with `eth_getProof`.
+- **Check the network before signing.** Check the chain ID, and use `eth_config` to see whether the node is ready for the next upgrade.
+- **Store the blobs you need.** Blob data expires after about 18 days.
+- **Filter logs by contract address too**, not just by topic. Starting with Glamsterdam, ETH transfers also emit `Transfer` logs.
+- **If you run your own node:** only expose `eth_`, `net_` and `web3_` to apps, close off `admin_` and `debug_`, and use a minority client when you can.
+
+## Sources
+
+- EPF wiki: [Execution clients](https://epf.wiki/#/wiki/EL/el-clients), [Consensus clients](https://epf.wiki/#/wiki/CL/cl-clients), [JSON-RPC](https://epf.wiki/#/wiki/EL/JSON-RPC), [Beacon API](https://epf.wiki/#/wiki/CL/beacon-api), [Incidents](https://epf.wiki/#/wiki/testing/incidents), [History expiry](https://epf.wiki/#/wiki/research/history-expiry/history-expiry)
+- ethereum.org: [Nodes and clients](https://ethereum.org/developers/docs/nodes-and-clients/), [Client diversity](https://ethereum.org/developers/docs/nodes-and-clients/client-diversity/), [Run a node](https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/), [Nodes as a service](https://ethereum.org/developers/docs/nodes-and-clients/nodes-as-a-service/), [Archive nodes](https://ethereum.org/developers/docs/nodes-and-clients/archive-nodes/), [JSON-RPC API](https://ethereum.org/developers/docs/apis/json-rpc/)
+- Specs: [ethereum/execution-apis](https://github.com/ethereum/execution-apis) (JSON-RPC), [ethereum/beacon-APIs](https://github.com/ethereum/beacon-APIs), [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs)
+- EIPs: [234](https://eips.ethereum.org/EIPS/eip-234), [1186](https://eips.ethereum.org/EIPS/eip-1186), [1898](https://eips.ethereum.org/EIPS/eip-1898), [2780](https://eips.ethereum.org/EIPS/eip-2780), [4444](https://eips.ethereum.org/EIPS/eip-4444), [7708](https://eips.ethereum.org/EIPS/eip-7708), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7825](https://eips.ethereum.org/EIPS/eip-7825), [7870](https://eips.ethereum.org/EIPS/eip-7870), [7910](https://eips.ethereum.org/EIPS/eip-7910), [7976](https://eips.ethereum.org/EIPS/eip-7976), [8037](https://eips.ethereum.org/EIPS/eip-8037), [8038](https://eips.ethereum.org/EIPS/eip-8038)
+- Incident reports: [Geth, chain split, August 2021](https://github.com/ethereum/go-ethereum/blob/master/docs/postmortems/2021-08-22-split-postmortem.md), [loss of finality, May 2023 (ethresear.ch)](https://ethresear.ch/t/cascading-network-effects-on-ethereums-finality/15871), [Holesky, February 2025 (Sigma Prime)](https://sigmaprime.io/blog/pectra-holesky-incident/)
+- Source code of Geth (`cmd/utils/flags.go`, `eth/ethconfig/config.go`) and Lighthouse (`beacon_node/src/cli.rs`), read on November 20, 2026, for the flags and default values mentioned on this page
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

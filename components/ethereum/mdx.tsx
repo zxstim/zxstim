@@ -25,9 +25,11 @@ import { TokenScene } from "@/components/ethereum/iso/token-scene";
 import { UpgradeScene } from "@/components/ethereum/iso/upgrade-scene";
 import { UserOpScene } from "@/components/ethereum/iso/user-op-scene";
 import { ValidatorsScene } from "@/components/ethereum/iso/validators-scene";
+import { SeedScene } from "@/components/ethereum/iso/seed-scene";
+import { EvmScene } from "@/components/ethereum/iso/evm-scene";
 
 /**
- * MDX components only the Ethereum wiki uses: the section cards and the 25
+ * MDX components only the Ethereum wiki uses: the section cards and the 27
  * isometric explainers. Passed by the /ethereum page alone, so /writing and
  * /docs don't bundle the animations. A component used in content but missing
  * here fails the prerender, so the build catches it.
@@ -59,4 +61,6 @@ export const ethereumMdxComponents = {
   UpgradeScene,
   UserOpScene,
   ValidatorsScene,
+  SeedScene,
+  EvmScene,
 } satisfies MDXComponents;

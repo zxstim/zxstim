@@ -1,0 +1,205 @@
+---
+title: EVM
+description: The Ethereum Virtual Machine, the computer every node runs identically. Ethereum as a state machine, bytecode, the stack, memory, storage, the gas cost of each opcode, calls between contracts, and why writing to storage is expensive.
+sources:
+  - https://epf.wiki/#/wiki/EL/evm
+  - https://epf.wiki/#/wiki/EL/precompiled-contracts
+  - https://ethereum.org/developers/docs/evm/
+  - https://www.evm.codes/
+  - https://github.com/ethereum/execution-specs
+---
+
+Every Ethereum node processes transactions with the same program: the **Ethereum Virtual Machine** (EVM). Given the same starting state and the same transactions, every node must reach the same result, down to the byte. Otherwise, nodes would disagree about who has what balance, and the blockchain would split in two.
+
+That requirement gives the EVM three properties:
+
+- **Deterministic.** No true random numbers, no reading files, no network calls. A contract only sees the transaction, the current block and the chain's state.
+- **Isolated.** A contract can only read and write its own storage. To affect another contract, it has to call that contract.
+- **Metered per opcode.** Each opcode costs a fixed amount of [gas](../../basics/how-it-works/gas.mdx). When the gas runs out, execution stops, so an infinite loop can't freeze the network.
+
+## Ethereum is a state machine
+
+In computer science, a **state machine** describes a system with three things: the states it can be in, the inputs, and a **state transition function** that takes the current state and an input and returns the new state:
+
+```text
+Υ(S, I) = S'      S: current state, I: input, S': new state
+```
+
+Take the [token vending machine](../building/token-vending-machine.mdx) from the Building apps part as an example. State: the machine holds 1,000,000 XU, and Alice has 0 XU. Input: Alice sends 0.1 ETH. New state: the machine holds 999,900 XU and 0.1 ETH, and Alice has 100 XU. If Alice sends 0 ETH, the state transition function returns exactly the old state, because the transaction is rejected.
+
+Ethereum is a state machine like that, at the scale of the whole network:
+
+- The **state** is the **world state**: a mapping from 20-byte addresses to the state of the account at each address (nonce, balance, code, storage). [State and data structures](./state.mdx) explains how it's stored.
+- The **inputs** are transactions. Transactions are grouped into blocks, and each block moves the world state to a new state. The blockchain is the chain of those transitions.
+- The **state transition function** is the EVM.
+
+There are two kinds of accounts. An **externally owned account** (EOA), controlled by a key, has no code, unless it has delegated under [EIP-7702](../../basics/using-ethereum/eip-7702.mdx). A **contract account** has EVM code, and that code is the smart contract.
+
+The EVM is a **virtual machine** for the same reason the Java virtual machine is: source code is compiled to bytecode for an abstract machine, then each node's software runs that bytecode on its own hardware. Each client implements the EVM from the same spec (execution-specs), in its own language. One example is revm, the Rust implementation that Reth and Foundry use.
+
+## A stack machine
+
+The EVM has no registers like a CPU. Each opcode takes its inputs from the top of the **stack** and puts its result back there. Each stack item is 256 bits (32 bytes) wide, which fits the values Ethereum uses most: balances, and Keccak-256 hashes.
+
+The stack is last in, first out: whatever you push goes on top, and a pop takes the top item. Popping from an empty stack is an error, and the call stops. The stack holds at most 1,024 items, but opcodes can only reach the top 16 (the opcodes `DUP1` to `DUP16` and `SWAP1` to `SWAP16`). Each contract call gets a fresh stack.
+
+<Callout type="info" title="Note">
+The 16-item limit is the root of the "Stack too deep" error when compiling Solidity: a function has too many local variables and parameters at once. The usual fixes are grouping variables into a struct, splitting the function into smaller ones, or compiling through the IR (`via_ir = true` in `foundry.toml`).
+</Callout>
+
+## Bytecode and the program counter
+
+Contracts are stored on-chain as **bytecode**: a sequence of bytes, usually written in hexadecimal. Each byte is an **opcode**, or data attached to the opcode before it. Currently only the opcodes `PUSH1` to `PUSH32` carry data: `PUSH1` takes the 1 byte after it, `PUSH32` takes 32 bytes. Each opcode has a readable name, and bytecode written with those names is called EVM assembly.
+
+The **program counter** holds the position of the next opcode to run. For example, a program that adds 6 and 7:
+
+```text
+offset   bytecode  assembly
+0x00     60 06     PUSH1 0x06
+0x02     60 07     PUSH1 0x07
+0x04     01        ADD          stack is left with 0x0d (13)
+```
+
+There's no opcode at positions `0x01` and `0x03`, because those hold the data `06` and `07`. The `JUMP` and `JUMPI` (conditional jump) opcodes set the program counter to a position marked with `JUMPDEST`. Solidity uses them for `if`, loops and internal function calls.
+
+With jumps, the EVM can run any algorithm, including infinite loops. Gas prevents that: each transaction can only run as many steps as its gas pays for. That's why the EVM is called "quasi-Turing-complete".
+
+## How one line of Solidity runs
+
+Take the line `count = count + 1;`, where `count` is a state variable in storage slot 0. Leaving out the extra code the compiler generates, the core is six opcodes:
+
+```text
+5f      PUSH0       push 0 (the slot number) onto the stack
+54      SLOAD       read slot 0 from storage
+60 01   PUSH1 0x01  push 1 onto the stack
+01      ADD         add the top two numbers
+5f      PUSH0       push 0 (the slot number) onto the stack
+55      SSTORE      write to slot 0 in storage
+```
+
+<EvmScene />
+
+| Opcode | Gas | Why |
+|---|---|---|
+| `PUSH0` | 2 | |
+| `SLOAD` | 2,100 | First read of this slot in the transaction |
+| `PUSH1` | 3 | |
+| `ADD` | 3 | |
+| `PUSH0` | 2 | |
+| `SSTORE` | 2,900 | Changes a nonzero slot to another nonzero value |
+| **Total** | **5,010** | |
+
+When these exact six opcodes run in a contract on anvil, Foundry's local devnet, the transaction costs 26,010 gas: the 21,000 base gas every transaction pays, plus the 5,010 gas above. The two opcodes that touch storage account for 5,000 of the 5,010.
+
+## Where data lives
+
+| Where | How long it lives | Cost | Notes |
+|---|---|---|---|
+| Stack | One call | 2–3 gas per opcode | 1,024 items, only the top 16 reachable |
+| **Memory** | One call | 3 gas per 32 bytes, getting more expensive as it grows | A byte array, wiped when the call ends |
+| **Storage** | Forever | Read: 2,100 the first time, 100 after that. Write to a slot that's currently 0: 20,000. Change a nonzero slot: 2,900. When writing, add 2,100 if it's the first time the slot is touched | Each contract has 2<sup>256</sup> slots of 32 bytes each, 0 by default |
+| **Transient storage** | Until the end of the transaction | 100 gas (`TLOAD`, `TSTORE`) | Since Cancun (EIP-1153). Good for reentrancy locks |
+| **Calldata** | During the transaction | 4 gas per zero byte, 16 gas per nonzero byte | Input data, read-only |
+| Code | Forever, can't be changed | 200 gas per byte at deployment | At most 24,576 bytes (EIP-170) |
+| **Logs** | Forever, in receipts | 375 gas, plus 375 per topic and 8 per byte | Contracts can't read them back. These are Solidity's events |
+
+### Memory
+
+Memory is a byte array, all zeros at first, created fresh for each call. `MSTORE` takes an offset and a 32-byte value from the stack, then writes the value at that offset. `MSTORE8` writes 1 byte, `MLOAD` reads 32 bytes onto the stack, and `MSIZE` tells you how far memory has expanded. There's no opcode that reads 1 byte: you have to read all 32 bytes and then pick out the byte you need.
+
+Memory expands in 32-byte words, and the first time you touch a new word you pay an expansion fee. With `a` as the number of 32-byte words, the total fee is `3·a + a²/512` gas. The squared term means a few kilobytes are cheap, but 1 MiB already costs about 2.2 million gas, and 3 MiB (about 19.2 million gas) exceeds a transaction's 16,777,216 gas limit.
+
+### Calldata
+
+Calldata is the call's input data, and it's read-only. `CALLDATALOAD` reads 32 bytes from an offset onto the stack, while `CALLDATACOPY` copies a section of calldata into memory.
+
+### Storage
+
+Storage is an account's permanent key-value store: 2<sup>256</sup> slots of 32 bytes each, all zeros at first. It isn't part of the EVM: it belongs to the account that's running. The account holds a **storage root** pointing to its own Merkle-Patricia trie containing the slots. `SSTORE` takes a slot number and a value from the stack and writes the value. `SLOAD` takes a slot number and puts that slot's value on the stack.
+
+Only an account's own code can read and write its storage. An EOA that has delegated under EIP-7702 runs the delegated code on its own storage. Solidity saves storage by packing several small variables into the same slot.
+
+The cost of reading and writing storage depends on whether the slot has already been touched in the transaction. The first time is a **cold** access, which is expensive. Later ones are **warm** accesses, which are cheap (EIP-2929). The reason: the first time, the node may have to read the data from disk, while later it's already in the cache. Other contracts' addresses are counted as cold or warm the same way.
+
+Clearing a slot back to 0 refunds 4,800 gas, but the total refund in a transaction can't exceed 1/5 of the gas used (EIP-3529).
+
+## Calls between contracts
+
+- **`CALL`** calls another contract, and can send ETH along. The called contract runs with its own storage.
+- **`STATICCALL`** makes the same kind of call, but forbids any state change. Solidity uses it when calling another contract's `view` functions.
+- **`DELEGATECALL`** runs another contract's code **on your own storage**, and keeps `msg.sender` unchanged. This is the foundation of upgradeable (proxy) contracts. Accounts delegated under [EIP-7702](../../basics/using-ethereum/eip-7702.mdx) rely on the same idea: running another contract's code on the account's own state.
+
+Each call runs in its own frame. If that frame **reverts**, every change in the frame is undone, and the caller gets back "failure" and decides for itself what to do next. A caller can pass at most 63/64 of its remaining gas to the callee (EIP-150), so a chain of nested calls can't go infinitely deep.
+
+Calling out also hands over control: the other contract can call back into your contract before your function finishes. That's a reentrancy attack.
+
+## ABI: how a function gets called
+
+The EVM doesn't know what a "function" is. A transaction sent to a contract only carries a string of bytes, the calldata. Under a convention called the **ABI** (Application Binary Interface), the first 4 bytes of the calldata are the **function selector**: the first 4 bytes of the Keccak-256 hash of the function signature. The arguments follow, each taking 32 bytes.
+
+```bash
+cast sig "buy()"           # 0xa6f2ae3a
+cast sig "ZeroPayment()"   # 0x8f28ea88
+```
+
+The code Solidity generates compares the first 4 bytes with each function's selector, then jumps to the matching function. Custom errors are encoded the same way, so `cast` or viem can read the error name `ZeroPayment` out of the revert data. You'll see this in [Token vending machine](../building/token-vending-machine.mdx).
+
+## Precompiled contracts
+
+Some computations would be too expensive written in bytecode, so they're built straight into the node software, at fixed addresses. These are **precompiled contracts** (precompiles). Contracts call them just like a normal contract.
+
+| Address | What it does | Since |
+|---|---|---|
+| `0x01` | `ecrecover`: recovers the address from a secp256k1 signature | Frontier (2015) |
+| `0x02`, `0x03` | SHA-256 and RIPEMD-160 hashing | Frontier |
+| `0x04` | Copies data | Frontier |
+| `0x05` | Modular exponentiation (modexp) | Byzantium (2017) |
+| `0x06`–`0x08` | Operations on the BN254 curve, used to verify zk-SNARK proofs | Byzantium |
+| `0x09` | The BLAKE2 compression function | Istanbul (2019) |
+| `0x0a` | Verifies the KZG commitment of a blob | Cancun (2024) |
+| `0x0b`–`0x11` | Operations on the BLS12-381 curve (EIP-2537) | Pectra (2025) |
+| `0x100` | Verifies secp256r1 signatures, the kind used by passkeys and the security chips in phones (EIP-7951) | Fusaka (2025) |
+
+## Limits to know
+
+- Contract code can be at most 24,576 bytes (EIP-170), and init code at most 49,152 bytes (EIP-3860). Larger contracts have to be split up.
+- Since Fusaka, a transaction can use at most 16,777,216 gas (2<sup>24</sup>, EIP-7825), even though the gas limit for a whole block is much larger: 60 million at the end of 2025, and being raised gradually.
+- Since Cancun, `SELFDESTRUCT` has almost no effect (EIP-6780). It can only delete a contract created in the same transaction.
+
+## Recent changes
+
+- **Cancun** (March 2024): transient storage (`TLOAD`, `TSTORE`), the `MCOPY` memory copy opcode, opcodes for reading blobs, and a restricted `SELFDESTRUCT`.
+- **Pectra** (May 2025): BLS12-381 precompiles, EIP-7702 delegated accounts, and a floor price for calldata in data-heavy transactions (EIP-7623).
+- **Fusaka** (December 2025): the `CLZ` opcode that counts leading zero bits (EIP-7939), the secp256r1 precompile, and the per-transaction gas limit.
+
+A bigger change to the bytecode format, the EVM Object Format (EOF), was once planned for Fusaka but was pulled in 2025.
+
+The gas tables on this page are correct for mainnet today (Fusaka rules). The next upgrade, **Glamsterdam**, has been live on the Sepolia testnet since October 6, 2026, but has no date yet for mainnet. Its list of changes (EIP-7773) includes several that touch the EVM:
+
+- Higher gas costs for creating new state (EIP-8037) and for reading and writing state (EIP-8038). The 20,000 and 2,100 figures above will change. The audit firm ChainSecurity has [pointed out](https://www.chainsecurity.com/blog/glamsterdam-gas) that under the new accounting, `gasleft()` can go up. Contracts that hard-code gas amounts, or assume `gasleft()` only goes down, may no longer be safe. See also [The roadmap and how the protocol changes](./roadmap.mdx).
+- The contract code limit rises from 24 KiB to 64 KiB, and the init code limit from 48 KiB to 128 KiB (EIP-7954).
+- Every ETH transfer emits a log (EIP-7708), so apps can track where ETH goes without tracing every call.
+- The `DUPN`, `SWAPN` and `EXCHANGE` opcodes reach deeper than 16 stack items (EIP-8024).
+- Gas refunds are no longer subtracted when counting gas toward the block gas limit (EIP-7778).
+
+So on Sepolia, the gas you measure may already differ from the tables on this page.
+
+## What this means for your app
+
+- **Read storage once.** If a function uses the same state variable several times, copy it into a local variable.
+- **Write as few storage slots as possible.** Put small variables (`uint64`, `address`, `bool`) next to each other so Solidity packs them into one 32-byte slot.
+- **Declare values that never change as `constant` or `immutable`.** They live in the code and don't cost an `SLOAD`.
+- **Emit events for display-only data.** History and activity logs don't need to be in storage.
+- **New storage slots are the most expensive.** The first time someone receives a token, the contract has to write a new slot (20,000 gas). New users always pay more in fees than existing ones.
+- **Everything is public.** Anyone can read your storage with `cast storage`, including `private` variables.
+- **Calling out hands over control.** Update state first, call out after (the checks-effects-interactions pattern).
+
+## Sources
+
+- EPF wiki: [The Ethereum Virtual Machine](https://epf.wiki/#/wiki/EL/evm), [Precompiled contracts](https://epf.wiki/#/wiki/EL/precompiled-contracts)
+- [evm.codes](https://www.evm.codes/): the opcode table and gas costs, with a playground for running bytecode
+- [ethereum/execution-specs](https://github.com/ethereum/execution-specs): the execution layer spec, written in Python
+- ethereum.org: [Ethereum Virtual Machine (EVM)](https://ethereum.org/developers/docs/evm/)
+- EIPs: [150](https://eips.ethereum.org/EIPS/eip-150), [170](https://eips.ethereum.org/EIPS/eip-170), [1153](https://eips.ethereum.org/EIPS/eip-1153), [2929](https://eips.ethereum.org/EIPS/eip-2929), [3529](https://eips.ethereum.org/EIPS/eip-3529), [3860](https://eips.ethereum.org/EIPS/eip-3860), [6780](https://eips.ethereum.org/EIPS/eip-6780), [7623](https://eips.ethereum.org/EIPS/eip-7623), [7825](https://eips.ethereum.org/EIPS/eip-7825), [7939](https://eips.ethereum.org/EIPS/eip-7939), [7951](https://eips.ethereum.org/EIPS/eip-7951)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

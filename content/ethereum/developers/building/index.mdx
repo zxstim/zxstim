@@ -1,0 +1,25 @@
+---
+title: Building apps
+description: One project from start to finish. Write a token vending machine in Solidity, test it with Foundry, then build a web frontend with wagmi and viem.
+---
+
+The fastest way to learn is to build something that works. This section walks through exactly one project, from an empty folder to a web app: a **token vending machine**.
+
+It works like a vending machine on the street: you put money in, and the machine hands you the goods. Here you send ETH to the machine's address, and the machine gives you back a token called **XU** (*xu* is Vietnamese for "coin") at a fixed rate: 1 ETH buys 1,000 XU. The machine has limited stock, reports an error when it runs out, and only the machine's owner can withdraw the ETH it has collected.
+
+The project is small, but it touches most of what you'll meet when building a real app: receiving ETH, ERC-20 tokens, access control, events, custom errors, testing, deployment, and a web frontend that calls the contract.
+
+## Reading order
+
+1. [Your development environment](./environment.mdx): install Foundry and create the project, with a prompt so an AI assistant can set up the project with you.
+2. [Solidity for programmers](./solidity.mdx): what's the same as, and what's different from, the language you already use.
+3. [Token vending machine](./token-vending-machine.mdx): write the contract, write the tests, and try it on a local test network.
+4. [Deployment and web frontend](./deploy-and-frontend.mdx): sample code to put the machine on Sepolia and build a page for buying XU with wagmi and viem, with a prompt so an AI assistant can build the frontend with you.
+
+## What you need
+
+- You know how to use the command line (terminal) and Git.
+- You've programmed in some language. The web frontend uses TypeScript and React.
+- No money needed: everything runs on a local test network, and then on a testnet with free ETH.
+
+The code on these pages was tested with Foundry, Solidity 0.8 and OpenZeppelin Contracts 5.6 in November 2026.

@@ -1,0 +1,5 @@
+{
+  "title": "Building apps",
+  "defaultOpen": true,
+  "pages": ["index", "environment", "solidity", "token-vending-machine", "deploy-and-frontend"]
+}

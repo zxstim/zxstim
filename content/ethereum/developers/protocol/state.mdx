@@ -1,0 +1,250 @@
+---
+title: State and data structures
+description: The balance, code and storage of every account live in a Merkle-Patricia trie, summed up by a 32-byte hash in every block, so anyone can verify data without trusting an RPC node. Plus the two encodings, RLP and SSZ, and the changes being researched.
+sources:
+  - https://epf.wiki/#/wiki/EL/data-structures
+  - https://epf.wiki/#/wiki/EL/el-data-structures-summary
+  - https://epf.wiki/#/wiki/EL/RLP
+  - https://epf.wiki/#/wiki/CL/SSZ
+  - https://epf.wiki/#/wiki/CL/merkleization
+  - https://epf.wiki/#/wiki/research/history-expiry/history-expiry
+  - https://ethereum.org/developers/docs/accounts/
+  - https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/
+  - https://ethereum.org/developers/docs/data-structures-and-encoding/rlp/
+  - https://ethereum.org/developers/docs/data-structures-and-encoding/ssz/
+  - https://ethereum.org/roadmap/statelessness/
+  - https://ethereum.org/roadmap/verkle-trees/
+---
+
+After every block, every Ethereum node holds the same snapshot: the balance, nonce, code and storage of every account. That's the **state**. Nodes don't send each other the whole snapshot to compare. They compare a 32-byte hash in the block header: the **state root**.
+
+This page explains how the state is organized so that one hash can sum it all up, how to use that to prove a balance without trusting anyone, and the two ways Ethereum encodes data into bytes. How transactions change the state is covered in [EVM](./evm.mdx).
+
+## An account has four fields
+
+The state is a mapping from 20-byte addresses to accounts. Each account has exactly four fields:
+
+| Field | Meaning |
+|---|---|
+| `nonce` | For an **externally owned account** (EOA): the number of transactions it has sent. For a contract: the number of contracts it has created |
+| `balance` | The balance, in wei (1 ETH = 10<sup>18</sup> wei) |
+| `storageRoot` | The root of the account's own storage trie |
+| `codeHash` | The Keccak-256 hash of the code. An account with no code carries the hash of the empty string, `0xc5d2…a470` |
+
+No field says "this is a contract". A contract account is simply an account that has code. Since Pectra (2025), an EOA that has delegated under [EIP-7702](../../basics/using-ethereum/eip-7702.mdx) also has code: 23 bytes, made of `0xef0100` followed by the address of the contract it delegates to. So an EOA's `codeHash` can change.
+
+Each contract's **storage** has 2<sup>256</sup> slots of 32 bytes each. Slots that haven't been written are 0 by default and take up no space: the trie only holds nonzero slots. Writing to a new slot adds a leaf to the trie, so it's very expensive, as [EVM](./evm.mdx#where-data-lives) explained. Glamsterdam raises the cost of creating new state (EIP-8037) and changes the cost of accessing state (EIP-8038), so on Sepolia those numbers may already differ from mainnet.
+
+## The Merkle-Patricia trie
+
+This structure combines two ideas.
+
+- **Merkle tree.** Each parent node is the hash of its children. Change one byte in a leaf, and the hash of every node on the path up to the root changes. So the root is a "fingerprint" of all the data: two trees with the same root hold the same data.
+- **Patricia trie** (radix trie). The key is read one character at a time to choose a branch, and shared stretches of keys are merged so the trie doesn't get too deep.
+
+Ethereum combines the two into the **Merkle-Patricia trie** (MPT). The key is read half a byte at a time, that is, one hex digit at a time, so each node has up to 16 branches. There are three kinds of **trie nodes** (not to be confused with network nodes):
+
+- **Branch node**: 17 elements, made of 16 pointers for the 16 hex digits and one place for a value.
+- **Extension node**: a shared stretch of key, then a pointer to the next node. It replaces a chain of branch nodes that each have only one child.
+- **Leaf**: the rest of the key, and the value.
+
+Each trie node is encoded with RLP (see below). A parent node points to a child by the child's Keccak-256 hash. A child shorter than 32 bytes is embedded directly in the parent. The hash of the root node is the root of the trie.
+
+The execution layer uses this trie four times:
+
+| Trie | Key | Value | Lifetime |
+|---|---|---|---|
+| State | `keccak256(address)` | `rlp([nonce, balance, storageRoot, codeHash])` | One shared trie, updated after every block |
+| Storage | `keccak256(slot number, 32 bytes)` | The RLP of the value, with leading zero bytes removed | One trie per account, its root stored in `storageRoot` |
+| Transactions | `rlp(index in the block)` | The encoded transaction | One trie per block, built fresh |
+| Receipts | `rlp(index in the block)` | The encoded receipt | One trie per block, built fresh |
+
+Keys in the state trie and the storage tries are hashed before they go into the trie. That way an attacker can't pick keys that create a very deep branch and slow down every node.
+
+## The block header commits to everything
+
+The execution layer's block header holds the roots of those tries, along with a few other commitments:
+
+| Field | Commits to |
+|---|---|
+| `stateRoot` | The entire state, after running all the transactions in the block |
+| `transactionsRoot` | The list of transactions, in order |
+| `receiptsRoot` | The receipt of each transaction |
+| `logsBloom` | The Bloom filter of all the logs in the block |
+| `withdrawalsRoot` | Withdrawals from the consensus layer to the execution layer (Shanghai, EIP-4895) |
+| `parentBeaconBlockRoot` | The SSZ root of the parent block on the consensus layer (Dencun, EIP-4788) |
+
+When a node receives a block, it reruns every transaction on its own copy of the state, recomputes the roots and compares them with the block header. If a single bit is off, the block is rejected. The state itself isn't in the block, only its root is.
+
+The table above is correct for mainnet today (Fusaka rules). The Glamsterdam upgrade has been live on the Sepolia testnet since October 6, 2026, but has no date yet for Hoodi or mainnet. It adds a `block_access_list_hash` field to the block header: the hash of the **block-level access list** (EIP-7928), which records every account and storage slot the block touches, along with their values after execution. Nodes use this list to read from disk and check transactions in parallel.
+
+## Receipts, logs and Bloom filters
+
+Each transaction produces a **receipt**. Besides the transaction type byte, a receipt has four things: success or failure, the cumulative gas used in the block up to and including this transaction, a Bloom filter, and a list of **logs**. [Transactions](./transactions.mdx) explains receipts from the sender's side.
+
+Each log is a compiled Solidity event. It contains the address of the contract that emitted it, 0 to 4 **topics** of 32 bytes each, and a data section. The first topic is usually the hash of the event signature:
+
+```bash
+cast sig-event "Transfer(address,address,uint256)"
+# 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+```
+
+`indexed` parameters become topics, and the rest goes into the data. Contracts can't read logs. Only off-chain software can, through `eth_getLogs`.
+
+The **logs Bloom filter** is a 2,048-bit (256-byte) array. For the address and each topic of every log, the node takes the Keccak-256 hash and sets 3 bits chosen by the hash. The block's filter is the OR of the filters of all the receipts in the block.
+
+To find out whether a block might contain a token's `Transfer` event, you only need to check 6 bits: the 3 bits for the token's address and the 3 bits for the `Transfer` topic. If any of them is 0, the event is definitely not there. If all 6 are 1, it *might* be there, and you have to read the receipts to be sure. The more logs a block has, the fuller the filter gets and the more false positives it gives. EIP-7668 proposes removing this filter entirely, and it's on the list being considered for the Hegotá upgrade.
+
+## Merkle proofs: verifying without trust
+
+Because each parent node is the hash of its children, to prove that a leaf belongs to the trie you only need to provide the trie nodes on the path from the root to the leaf. The verifier hashes back up from the leaf. If the result is exactly the state root they already trust, the value in the leaf is genuine. They don't need to hold the whole trie, or trust whoever provided the proof. That's a **Merkle proof**.
+
+- **Light clients** only follow the consensus layer's block headers, signed by a **sync committee** of 512 validators. The committee changes every 256 **epochs**, about 27 hours. Through an SSZ proof, a light client gets the execution layer's state root, then checks each balance and each storage slot that an untrusted RPC node returns. Helios is a light client that does exactly this.
+- **Bridges and rollups** prove to a contract on another chain that a storage slot on Ethereum holds a certain value, as long as that contract knows a trusted block hash. On Ethereum itself, contracts can read the hashes of the last 8,191 blocks (EIP-2935, Pectra) and the consensus layer's block roots (EIP-4788), so they can check proofs on their own too.
+- **`eth_getProof`** (EIP-1186) is the RPC method that returns an account together with a proof, for both the account and any storage slots you ask about.
+
+### Try it with anvil
+
+Start `anvil`, Foundry's local devnet, then run this in another window:
+
+```bash
+# Send 1 ETH from test account 0 to account 1 to get a new block.
+# anvil publishes this key for everyone: never use it on a real network.
+cast send --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+  0x70997970C51812dc3A010C7d01b50e0d17dc79C8 --value 1ether
+
+cast proof 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
+```
+
+The output, shortened and with line breaks added for readability:
+
+```json
+{
+  "address": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+  "balance": "0x21e27c1806e59a40000",
+  "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470",
+  "nonce": "0x0",
+  "storageHash": "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+  "accountProof": ["0xf90131a032d89d41…", "0xf873a030314e565e…"],
+  "storageProof": []
+}
+```
+
+`accountProof` is the list of trie nodes on the path from the root to the leaf. Hashing the first node must give exactly the block's state root:
+
+```bash
+cast keccak $(cast proof 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 | jq -r '.accountProof[0]')
+# 0x485378290f4c5f024877cb78416b1f0af7b8670aee46adf931c31c6a8c8845ee
+cast block latest -f stateRoot
+# 0x485378290f4c5f024877cb78416b1f0af7b8670aee46adf931c31c6a8c8845ee
+```
+
+The last node is the leaf. Decoding it gives two parts: the rest of the key, and the RLP-encoded account.
+
+```bash
+cast from-rlp $(cast proof 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 | jq -r '.accountProof[-1]')
+# output (shortened):
+# ["0x30314e565e0574cb412563df634608d76f5c59d9f817e85966100ec1d48005c0",
+#  "0xf84e808a021e27c1806e59a40000a056e81f17…b421a0c5d24601…a470"]
+```
+
+The full key is `keccak256(address)` = `0x00314e56…05c0`. The root node used the first hex digit (`0`) to pick a branch. The leaf holds the remaining 63 digits, plus a leading half-byte `3`, which means "this is a leaf, and the key part has an odd number of digits". The second part is decoded in the RLP section just below.
+
+The hashes on your machine may differ if your Foundry version is different (these commands were checked with Foundry 1.5.1, November 2026). What matters is that the two hashes printed by the first pair of commands are equal: the hash of the first node is the block's state root.
+
+Anvil only has a few accounts, so the proof only has 2 nodes. The trie on mainnet is much bigger, and each branch node carries up to 16 hashes. EIP-7864 estimates that a proof for one leaf in a trie of 2<sup>32</sup> elements weighs about 3,840 bytes.
+
+<Callout type="info" title="Note">
+Full nodes usually only return proofs for recent blocks. According to ethereum.org, Geth keeps the state of the last 128 blocks by default. For a proof on an old block, you need an archive node.
+</Callout>
+
+## Encoding: RLP on the execution layer, SSZ on the consensus layer
+
+Hashes are computed over bytes, so every node must encode the same data into exactly the same bytes. JSON can't do that: one object can be written many ways, differing in whitespace and key order.
+
+### RLP
+
+**RLP** (Recursive Length Prefix) only knows two things: byte strings and lists. It knows nothing about integers, text or booleans. The protocol sets its own conventions. Integers are written big-endian with leading zero bytes removed, so the number 0 is the empty string.
+
+| Data | Encoding |
+|---|---|
+| A single byte from `0x00` to `0x7f` | That byte, unchanged |
+| A string 0 to 55 bytes long | The byte `0x80` plus the length, then the string |
+| A longer string | The byte `0xb7` plus the number of bytes in the length, then the length, then the string |
+| A list whose payload is 0 to 55 bytes long | The byte `0xc0` plus the length, then the encoded items |
+| A longer list | The byte `0xf7` plus the number of bytes in the length, then the length, then the payload |
+
+The first byte tells you right away what kind of item you're reading. Try it with `cast to-rlp`:
+
+```bash
+cast to-rlp 0x0401                      # the number 1025
+# 0x820401
+cast to-rlp '["0x636174","0x646f67"]'   # the list ["cat", "dog"]
+# 0xc88363617483646f67
+cast to-rlp '["0x","0x021e27c1806e59a40000","0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421","0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"]'
+# 0xf84e808a021e27c1806e59a40000a056e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421a0c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+```
+
+The last command encodes exactly the account in the leaf from the previous section. Broken down piece by piece:
+
+```text
+f8 4e                       long list (0xf7 + 1: the length takes 1 byte), payload 0x4e = 78 bytes
+80                          nonce = 0 (empty string)
+8a 021e27c1806e59a40000     balance: 10-byte string = 10,001 ETH in wei
+a0 56e81f17…b421            storageRoot: 32-byte string, the root of an empty trie
+a0 c5d24601…a470            codeHash: 32-byte string, the hash of empty code
+```
+
+### SSZ
+
+The consensus layer uses **SSZ** (Simple Serialize). It differs from RLP in four ways:
+
+- **It's typed.** `uint64`, `boolean`, `Vector`, `List`, `Container`… Because the types are known in advance, fixed-length parts don't need a length prefix. Variable-length parts are pointed to by a 4-byte offset.
+- **Integers are little-endian and full width.** A `uint64` of 1025 is `0x0104000000000000` (8 bytes), while RLP writes `0x820401`.
+- **You can read a single field directly** without decoding the whole object.
+- **Merkleization is built in.** The `hash_tree_root` function splits the data into 32-byte chunks and hashes them in pairs with SHA-256 until a single root remains. Each field has a fixed position in the tree, called its **generalized index**, so a proof for any field is short and easy to check. Light clients rely on this.
+
+The execution layer hashes with Keccak-256, the consensus layer with SHA-256. There's a proposal to move execution layer blocks to SSZ (EIP-7807), but it was declined for Hegotá. As of November 2026, transactions, receipts and the state trie still use RLP.
+
+## History: not every node keeps it
+
+To check a new block, a node needs the current state, not the history (the headers, bodies and receipts of old blocks). Yet until recently, every full node still had to keep and serve the entire history from the very first block.
+
+**EIP-4444** proposes letting nodes delete old history and stop serving it over the peer-to-peer network. The EIP is still a Draft, but the first steps have been taken:
+
+- **Since July 8, 2025**, every execution client supports deleting pre-Merge history (before block 15,537,394). According to the Ethereum Foundation, this saves about 300 to 500 GB. At the time, most clients only deleted it when the operator turned it on, while Nethermind turned it on by default for newly syncing nodes.
+- **Fusaka** requires clients to support the `eth/69` network protocol (EIP-7642). Each node tells the others which block its history starts from.
+- Old history is still available in ERA files, stored and shared by many parties. Every block header since the first block is still kept.
+- Gradually deleting post-Merge history as well is still being designed.
+
+## How state will change
+
+The long-term goal is **statelessness**: nodes that don't need to hold the whole state. Each block would come with proofs for the part of the state it touches, and nodes would check the block using those proofs instead of their own disk. The Merkle-Patricia trie isn't a good fit for this. Its proofs are large, because each level carries up to 15 sibling hashes. It also uses RLP and Keccak, which are slow to prove with ZK, and it keeps code separate from the trie.
+
+Two directions have been proposed. Both are still research, not scheduled for any upgrade:
+
+| | Verkle trees (EIP-6800) | Binary tree (EIP-7864) |
+|---|---|---|
+| Idea | A 256-way tree that uses vector commitments instead of hashes, so proofs are very small | A single binary tree for accounts, code and storage. A hash function that's friendly to ZK proving |
+| EIP status (November 2026) | Stagnant: no longer updated | Draft: in development. The hash function isn't settled yet (the draft uses BLAKE3, other candidates are Keccak and Poseidon2) |
+
+ethereum.org and the EPF wiki still present Verkle trees as the main plan. Neither appears in the EIP lists for Glamsterdam (EIP-7773) or Hegotá (EIP-8081, a draft with no date). A transition, if it happens, would have to copy the entire state into the new structure.
+
+## What this means for your app
+
+- **Don't blindly trust RPC nodes.** For important data, such as balances a bridge or a custody system relies on, check the proof from `eth_getProof` against a state root you trust, or run your own node or light client.
+- **Compute the right slot number before asking for a storage proof.** Ordinary variables usually sit in slots in declaration order. A mapping entry sits in a slot hashed from the key and the mapping's slot number: `cast index address <address> <slot>` computes it for you.
+- **Logs are cheap, but contracts can't read them.** Use them for display-only data and off-chain indexing. Don't treat the Bloom filter as a definite answer: it only rules blocks out.
+- **ETH transfers don't leave a log on their own.** A transfer from an EOA shows up in the transaction list, but a transfer from inside a contract only shows up if you trace the transaction. Glamsterdam makes every ETH transfer emit a `Transfer` log (EIP-7708). That upgrade has been live on Sepolia since October 6, 2026, with no date yet for Hoodi or mainnet, so don't rely on this log on mainnet.
+- **Pre-Merge history may be gone.** If your app needs logs or receipts from before block 15,537,394, check whether your RPC provider still keeps them, or read them from ERA files. Proofs for old blocks need an archive node.
+- **Don't hard-code how your contract verifies proofs.** If your contract verifies Merkle-Patricia proofs, make the verifier replaceable. The state trie may change in the future.
+
+## Sources
+
+- EPF wiki: [Data Structures in Execution Layer](https://epf.wiki/#/wiki/EL/data-structures), [EL Data Structures summary](https://epf.wiki/#/wiki/EL/el-data-structures-summary), [RLP](https://epf.wiki/#/wiki/EL/RLP), [SSZ](https://epf.wiki/#/wiki/CL/SSZ), [Merkleization](https://epf.wiki/#/wiki/CL/merkleization), [History Expiry](https://epf.wiki/#/wiki/research/history-expiry/history-expiry)
+- ethereum.org: [Ethereum accounts](https://ethereum.org/developers/docs/accounts/), [Merkle Patricia Trie](https://ethereum.org/developers/docs/data-structures-and-encoding/patricia-merkle-trie/), [RLP](https://ethereum.org/developers/docs/data-structures-and-encoding/rlp/), [SSZ](https://ethereum.org/developers/docs/data-structures-and-encoding/ssz/), [Statelessness](https://ethereum.org/roadmap/statelessness/)
+- Specs: [ethereum/execution-specs](https://github.com/ethereum/execution-specs) (tries, Bloom filters), [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs) (SSZ, the light client protocol)
+- EIPs: [1186](https://eips.ethereum.org/EIPS/eip-1186), [2935](https://eips.ethereum.org/EIPS/eip-2935), [4444](https://eips.ethereum.org/EIPS/eip-4444), [4788](https://eips.ethereum.org/EIPS/eip-4788), [4895](https://eips.ethereum.org/EIPS/eip-4895), [6800](https://eips.ethereum.org/EIPS/eip-6800), [7642](https://eips.ethereum.org/EIPS/eip-7642), [7668](https://eips.ethereum.org/EIPS/eip-7668), [7702](https://eips.ethereum.org/EIPS/eip-7702), [7708](https://eips.ethereum.org/EIPS/eip-7708), [7773](https://eips.ethereum.org/EIPS/eip-7773), [7807](https://eips.ethereum.org/EIPS/eip-7807), [7864](https://eips.ethereum.org/EIPS/eip-7864), [7928](https://eips.ethereum.org/EIPS/eip-7928), [8037](https://eips.ethereum.org/EIPS/eip-8037), [8038](https://eips.ethereum.org/EIPS/eip-8038), [8081](https://eips.ethereum.org/EIPS/eip-8081)
+- Ethereum Foundation: [Partial history expiry announcement](https://blog.ethereum.org/2025/07/08/partial-history-exp) (July 8, 2025)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

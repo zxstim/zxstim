@@ -1,0 +1,238 @@
+---
+title: Cryptography
+description: The cryptographic tools Ethereum uses and where you run into them when building apps. Keccak-256, secp256k1 signatures, message signing with EIP-191 and EIP-712, validator BLS, KZG commitments for blobs, secp256r1 for passkeys, and the risk from quantum computers.
+sources:
+  - https://epf.wiki/#/wiki/Cryptography/intro
+  - https://epf.wiki/#/wiki/Cryptography/keccak256
+  - https://epf.wiki/#/wiki/Cryptography/ecdsa
+  - https://epf.wiki/#/wiki/Cryptography/bls
+  - https://epf.wiki/#/wiki/Cryptography/KZG
+  - https://epf.wiki/#/wiki/Cryptography/post-quantum-cryptography
+  - https://ethereum.org/developers/docs/accounts/
+  - https://ethereum.org/developers/docs/transactions/
+  - https://ethereum.org/roadmap/danksharding/
+  - https://ethereum.org/roadmap/security/quantum-resistance/
+---
+
+Ethereum doesn't invent its own cryptography. It combines a few well-studied tools, each for one job. The [Addresses and keys](../../basics/how-it-works/addresses-and-keys.mdx) and [Digital signatures](../../basics/how-it-works/digital-signatures.mdx) pages explain the ideas. This page covers the details app developers run into every day: which hash function to use, what a signature looks like, how to sign messages safely, and what's about to change.
+
+| Tool | Used for | You run into it when |
+|---|---|---|
+| Keccak-256 | Addresses, function selectors, storage slot positions, transaction hashes, the state trie | Almost all the time |
+| SHA-256 | The consensus layer, blob versioned hashes | Working with blobs or consensus layer data |
+| ECDSA on secp256k1 | Signatures of regular accounts | Signing transactions, signing messages, checking signatures in a contract |
+| BLS12-381 | **Validator** signatures | Staking, bridges that read consensus layer data |
+| KZG | Commitments for blob data | Sending blobs, building a Layer 2 |
+| ECDSA on secp256r1 | Passkeys, the secure chip in phones | **Smart wallets** that sign in with a passkey |
+
+The commands on this page were checked with Foundry 1.5.1 in November 2026.
+
+## Keccak-256, not SHA3-256
+
+Almost every **hash** in Ethereum is Keccak-256. Keccak won NIST's SHA-3 competition in 2012. Before finalizing the SHA-3 standard (FIPS 202, August 2015), NIST changed how data is **padded**: SHA3-256 adds two domain separation bits, so the first padding byte is `0x06`, while the original Keccak uses `0x01`. Ethereum had picked Keccak before that change. So for the same input, the two functions give completely different results:
+
+```bash
+cast keccak ""
+# 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+
+printf '' | openssl dgst -sha3-256   # requires OpenSSL 3 or later
+# SHA3-256(stdin)= a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a
+```
+
+The value `0xc5d2…a470` is worth remembering: it's the hash of the empty string, and also the `EXTCODEHASH` of an account that exists but has no code.
+
+Two common mix-ups:
+
+- The EVM opcode `KECCAK256` (byte `0x20`) used to be called `SHA3`. Off-chain, use the Keccak function from an Ethereum library (`keccak256` in viem or ethers), not the SHA3-256 from a standard library such as Python's `hashlib.sha3_256`.
+- The consensus layer uses SHA-256, not Keccak: SSZ Merkle roots, blob versioned hashes and gossip message IDs are all SHA-256.
+
+## secp256k1 signatures
+
+A private key is a 256-bit number. A public key is a point on the secp256k1 curve, written as 64 bytes (the x and y coordinates). The address is the last 20 bytes of the Keccak-256 hash of the public key. Try it with anvil's account 0:
+
+```bash
+# Anvil's test key: public, everyone knows it. Never send real funds to it.
+K=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+cast wallet public-key --private-key $K | xargs cast keccak
+# 0xc1ffd3cfee2d9e5cd67643f8f39fd6e51aad88f6f4ce6ab8827279cfffb92266
+cast wallet address --private-key $K
+# 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266   (the last 20 bytes of the line above)
+```
+
+An **ECDSA** signature has three parts: `r` and `s`, 32 bytes each, and `v`, one byte. Two points on the curve could match `r`, and `v` says which one. That's how anyone can **recover** the public key, and then the address, from just the signature and the hash of the content. That's why Ethereum transactions have no "sender" field: every node works out the sender from the signature. Contracts do the same through the **precompile** `ecrecover` at address `0x01`, which costs 3,000 gas.
+
+- Newer transactions (types 1 to 4) store `yParity` as 0 or 1. Legacy transactions use a `v` of 27 or 28, or `chainId × 2 + 35` (or `+ 36`) under EIP-155. Putting the chain ID into the signature means a transaction signed for one network can't be replayed on another.
+- Each signature needs a secret one-time number. Leaking this number, or reusing it for two messages, leaks the private key. Today's libraries derive it deterministically from the key and the message (RFC 6979), so signing the same message twice gives the same signature. This is one reason never to write your own signing code.
+
+## Signing messages in a dapp
+
+A **dapp** often asks the wallet to sign a message instead of a transaction: to log in, to place an off-chain order, or to grant a spending allowance without paying gas. ERC-191 says all data signed this way starts with the byte `0x19`, followed by a version byte. Thanks to the `0x19` byte, signed data can never match a valid transaction.
+
+### `personal_sign`: free-form text
+
+Version `0x45` (the letter `E`) is the `personal_sign` style that every wallet supports. The wallet joins the prefix `"\x19Ethereum Signed Message:\n"`, the message length in bytes, and the message, then hashes the result with Keccak-256 before signing:
+
+```bash
+cast wallet sign --private-key $K "Hello, café"
+# 0x7dfa023144e2a38c87f8306abc78518b4ebe2336543f1b7ace9ddbcf3b67278b722467795aca2b8fd01b1ce7e5ec26aab5ab877a28af123ece5758a4a2c1be281c
+# r = 0x7dfa…67278b (32 bytes), s = 0x7224…c1be28 (32 bytes), v = 0x1c = 28
+cast hash-message "Hello, café"
+# 0x4b8f2d625fdf81f7bbd1ad1f75c01d11b69ebac2fecb53a6b3c5ff46f18680fb
+cast wallet verify --address 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 "Hello, café" 0x7dfa023144e2a38c87f8306abc78518b4ebe2336543f1b7ace9ddbcf3b67278b722467795aca2b8fd01b1ce7e5ec26aab5ab877a28af123ece5758a4a2c1be281c
+# Validation succeeded. Address 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 signed this message.
+```
+
+The string "Hello, café" has 11 characters but 12 bytes, because "é" takes 2 bytes in UTF-8. The prefix says `12`, not `11`.
+
+<Callout type="warn" title="Important">
+An accented letter can be stored in two ways: precomposed (NFC, where "é" is a single character) and decomposed (NFD, a plain "e" followed by a separate combining accent). The two forms look exactly the same but have different bytes. In NFD form, the message above is 13 bytes long and gives a different hash, so the signature won't match. Languages with many diacritics, such as Vietnamese, run into this often. Normalize text to NFC (`text.normalize("NFC")` in JavaScript) before signing and before verifying a signature.
+</Callout>
+
+### EIP-712: structured data
+
+Free-form text is hard to read and easy to abuse. EIP-712 (version `0x01`) lets a wallet sign a structure with explicit types, so the wallet can show each field for the user to read. The signed hash is:
+
+```text
+keccak256(0x19 ‖ 0x01 ‖ domainSeparator ‖ hashStruct(message))
+```
+
+`domainSeparator` is the hash of the **domain**: the app's name, version, `chainId`, and the address of the contract that will verify the signature. So a signature for this contract on this network can't be used on another contract or another network. The classic example is ERC-2612's `Permit`: the token owner signs to let another address spend their tokens, without sending an `approve` transaction. The `permit.json` file below uses `chainId` 31337, anvil's chain ID:
+
+```json
+{
+  "types": {
+    "EIP712Domain": [
+      { "name": "name", "type": "string" },
+      { "name": "version", "type": "string" },
+      { "name": "chainId", "type": "uint256" },
+      { "name": "verifyingContract", "type": "address" }
+    ],
+    "Permit": [
+      { "name": "owner", "type": "address" },
+      { "name": "spender", "type": "address" },
+      { "name": "value", "type": "uint256" },
+      { "name": "nonce", "type": "uint256" },
+      { "name": "deadline", "type": "uint256" }
+    ]
+  },
+  "primaryType": "Permit",
+  "domain": {
+    "name": "Demo Token",
+    "version": "1",
+    "chainId": 31337,
+    "verifyingContract": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  },
+  "message": {
+    "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    "spender": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    "value": "1000000000000000000",
+    "nonce": 0,
+    "deadline": 1893456000
+  }
+}
+```
+
+```bash
+cast wallet sign --private-key $K --data --from-file permit.json
+# 0xeb33999bf84349ef0ddaa838ec2613ed2131a7570900d2fe7c26fa42609b39340f2f0e7b51b4d60a0d3e75f74c2c8afb401bdd26034ed331ff2d7a6f94d6219e1c
+```
+
+If you compute `domainSeparator` and `hashStruct` yourself with `cast abi-encode` and `cast keccak`, then sign the final hash with `cast wallet sign --no-hash`, you get exactly this signature.
+
+EIP-712 doesn't protect against **replay attacks** on its own. The message itself must carry a `nonce` and a `deadline`, and the contract must mark used nonces.
+
+<Callout type="error" title="Caution">
+A `Permit` signature is worth as much as an `approve`: whoever holds it can submit it to the token contract, then take tokens up to the allowance. Phishing sites like to ask for this kind of signature because the victim never sees a transaction. If your app asks for a signature, make sure the wallet clearly shows `spender`, `value` and `deadline`. The ERC-7730 standard helps wallets do **clear signing**: showing those fields in readable words.
+</Callout>
+
+### Verifying signatures in a contract
+
+The `ecrecover` precompile has three traps:
+
+- **Errors don't revert.** The precompile returns empty output, and Solidity's `ecrecover` function returns the zero address. If your `signer` variable was never set (so it's also zero), a garbage signature will be "valid".
+- **Malleable signatures.** For every signature `(r, s, v)`, the signature `(r, n − s, v')`, with `v'` flipped between 27 and 28, is also valid, where `n` is the order of the curve. EIP-2 (Homestead, 2016) requires transactions to have `s ≤ n/2`, but deliberately lets `ecrecover` accept a high `s`. The two calls below return the same address:
+
+  ```bash
+  # Run `anvil` in another window first.
+  H=0x4b8f2d625fdf81f7bbd1ad1f75c01d11b69ebac2fecb53a6b3c5ff46f18680fb
+  R=0x7dfa023144e2a38c87f8306abc78518b4ebe2336543f1b7ace9ddbcf3b67278b
+  cast call 0x0000000000000000000000000000000000000001 $(cast abi-encode "f(bytes32,uint8,bytes32,bytes32)" $H 28 $R 0x722467795aca2b8fd01b1ce7e5ec26aab5ab877a28af123ece5758a4a2c1be28)
+  # 0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266
+  cast call 0x0000000000000000000000000000000000000001 $(cast abi-encode "f(bytes32,uint8,bytes32,bytes32)" $H 27 $R 0x8ddb9886a535d4702fe4e3181a13d9540503556c86998dfcf17b05e82d748319)
+  # 0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266
+  ```
+
+  So don't use the signature itself as the key for preventing reuse. Use a nonce.
+- **Contracts can't produce ECDSA signatures.** Smart wallets confirm signatures through ERC-1271's `isValidSignature(bytes32,bytes)` function, which returns `0x1626ba7e` if the signature is valid.
+
+OpenZeppelin's `ECDSA` library rejects a high `s` and reverts when recovery gives the zero address. OpenZeppelin's `SignatureChecker` handles both regular accounts and smart wallets.
+
+## BLS12-381: validator signatures
+
+In each **epoch**, every validator votes once, so each **slot** carries a great many signatures. With ECDSA, blocks would fill up with signatures. The consensus layer uses **BLS** signatures on the BLS12-381 curve because BLS signatures can be **aggregated**:
+
+- Public keys are 48 bytes, signatures 96 bytes.
+- The signatures of a whole **committee** on the same content combine into one 96-byte signature, plus a bit list showing who signed. To verify it, a node adds up the public keys and does a single pairing check.
+- BLS signing is deterministic and doesn't need a secret one-time number like ECDSA.
+- To block attacks that slip a fake key into the aggregation, each validator must sign with its own key when it deposits, proving it holds that key.
+- What gets signed is always the SSZ root of the data mixed with a **domain** for each kind of duty and each upgrade, so a signature for one duty can't be reused for another.
+
+Verifying a BLS signature is much slower than ECDSA, so transactions still use ECDSA. Since Pectra (May 2025), contracts can call BLS12-381 operations through the precompiles `0x0b` to `0x11` (EIP-2537), for example to verify validator signatures in a bridge.
+
+## KZG: commitments for blobs
+
+A blob holds 4,096 numbers of 32 bytes each, 128 KiB in total. KZG treats these numbers as the values of a polynomial and compresses the whole blob into a 48-byte **commitment**. After that, anyone who holds the blob can prove "the polynomial at point z has value y" with a 48-byte proof, and the verifier doesn't need the whole blob.
+
+- A blob transaction only contains the **versioned hash**: the byte `0x01` followed by the last 31 bytes of the SHA-256 of the commitment. Contracts read it with the `BLOBHASH` opcode, but can't read the blob's contents.
+- To prove part of a blob's contents to a contract, call the precompile `0x0a` (50,000 gas) with the versioned hash, the point, the value, the commitment and the proof.
+- Since Fusaka, the sender attaches 128 proofs per blob, one for each cell, so nodes can check each column separately (see [Peer-to-peer network](./peer-to-peer.mdx) and [Scaling and data availability](./scaling.mdx)).
+- Nodes only have to keep blobs for 4,096 epochs, about 18 days.
+
+KZG needs a set of parameters computed from a secret number that no one may know. These parameters came from a **trusted setup** ceremony open to everyone, which ran for 208 days, from January 13, 2023 to August 8, 2023, with 141,416 contributions. Each person mixed in their own randomness and then deleted it. As long as one person did it right, no one can rebuild the secret number.
+
+## secp256r1 and passkeys
+
+Passkeys, the iPhone's Secure Enclave chip and Android's keystore sign with ECDSA on a different curve: secp256r1, also called P-256. Fusaka added the `P256VERIFY` precompile at address `0x100` (EIP-7951), costing 6,900 gas, so [smart wallets](../../basics/using-ethereum/smart-wallets.mdx) can verify passkey signatures on-chain. It differs from `ecrecover` in four ways:
+
+- **It only verifies, it doesn't recover.** The input is 160 bytes: the hash, `r`, `s`, and the x and y coordinates of the public key. The wallet has to store the public key itself.
+- **Failure returns empty output**, not 0, and doesn't revert. Success returns 32 bytes with the value 1. Always check the length of the result.
+- **It doesn't block a high `s`.** P-256 signatures are malleable by design, so the app has to block it itself if needed. OpenZeppelin's `P256` library does this.
+- **A passkey doesn't sign the transaction hash directly.** Under the WebAuthn standard, it signs the device's authenticator data joined with the SHA-256 of a JSON snippet that contains a "challenge". The contract has to rebuild exactly that data, as OpenZeppelin's `WebAuthn` library does.
+
+Many Layer 2s already had a precompile at the same address with the same format, under RIP-7212, but it charges 3,450 gas.
+
+## Quantum computers
+
+Shor's algorithm on a large enough quantum computer would break everything based on elliptic curves: ECDSA on secp256k1 and secp256r1, BLS, KZG. Hash functions like Keccak are only weakened, not broken. No machine is powerful enough yet, and estimates of when one will be vary widely.
+
+For a regular account, the address is just a hash of the public key. The public key is only exposed when the account signs its first transaction, because anyone can recover it from the signature.
+
+The directions below are all **research and plans**, not yet on mainnet (November 2026):
+
+- **Validators:** replace BLS with hash-based signatures (leanXMSS), which are much larger, then aggregate them with a small zk virtual machine (leanVM). The Ethereum Foundation's [pq.ethereum.org](https://pq.ethereum.org) site (updated June 27, 2026) estimates that the protocol upgrade work could be done around 2029, and says clearly that the roadmap still depends on community decisions.
+- **Blobs:** replace KZG with hash-based commitments (STARK-style) or lattice-based ones. Both are still being researched.
+- **Accounts:** let each account change how it signs on its own through **account abstraction**, instead of switching the whole network at once. EIP-8141 (**frame transactions**) has been scheduled for Hegotá (EIP-8081) but is still in Draft status, and Hegotá has no activation date yet. The proposal for an ML-DSA signature verification precompile (EIP-8355) was dropped from Hegotá.
+
+NIST standardized two kinds of post-quantum signatures in August 2024: ML-DSA (FIPS 204, lattice-based) and SLH-DSA (FIPS 205, hash-based).
+
+## What this means for your app
+
+- **Use Keccak-256, not SHA3-256**, when computing addresses, function selectors or storage slot positions off-chain.
+- **Don't write your own cryptography code.** Use viem or ethers off-chain, and OpenZeppelin in contracts.
+- **Sign messages that carry value with EIP-712**, with `chainId`, `verifyingContract`, `nonce` and `deadline`. Keep `personal_sign` for text meant for people to read, like a sign-in message.
+- **Normalize accented text (such as Vietnamese) to NFC** before signing and before verifying.
+- **Verify signatures with `SignatureChecker`**, so smart wallets (ERC-1271) can sign in too. If you have to call `ecrecover` directly, block a high `s` and block the zero address.
+- **For passkeys:** store the public key, check the length of the result from `0x100`, and block a high `s`.
+- **For blobs:** contracts only see the versioned hash. Store the data yourself if you need it for longer than about 18 days.
+- **Leave a way to change how you authenticate.** Smart wallets and upgradeable contracts will have an easier time switching to post-quantum signatures. Nothing needs to be done urgently yet.
+
+## Sources
+
+- EPF wiki: [Cryptography](https://epf.wiki/#/wiki/Cryptography/intro), [Keccak256](https://epf.wiki/#/wiki/Cryptography/keccak256), [ECDSA](https://epf.wiki/#/wiki/Cryptography/ecdsa), [BLS](https://epf.wiki/#/wiki/Cryptography/bls), [KZG](https://epf.wiki/#/wiki/Cryptography/KZG), [Post-Quantum Cryptography](https://epf.wiki/#/wiki/Cryptography/post-quantum-cryptography)
+- ethereum.org: [Accounts](https://ethereum.org/developers/docs/accounts/), [Transactions](https://ethereum.org/developers/docs/transactions/), [Danksharding](https://ethereum.org/roadmap/danksharding/), [Post-quantum cryptography](https://ethereum.org/roadmap/security/quantum-resistance/)
+- EIPs and ERCs: [2](https://eips.ethereum.org/EIPS/eip-2), [155](https://eips.ethereum.org/EIPS/eip-155), [191](https://eips.ethereum.org/EIPS/eip-191), [712](https://eips.ethereum.org/EIPS/eip-712), [1052](https://eips.ethereum.org/EIPS/eip-1052), [1271](https://eips.ethereum.org/EIPS/eip-1271), [2537](https://eips.ethereum.org/EIPS/eip-2537), [2612](https://eips.ethereum.org/EIPS/eip-2612), [4844](https://eips.ethereum.org/EIPS/eip-4844), [7594](https://eips.ethereum.org/EIPS/eip-7594), [7951](https://eips.ethereum.org/EIPS/eip-7951), [8081](https://eips.ethereum.org/EIPS/eip-8081), [8141](https://eips.ethereum.org/EIPS/eip-8141)
+- [consensus-specs, Phase 0](https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md): the BLS suite used for validators and deposit signatures
+- Ethereum Foundation: [Wrapping up the KZG Ceremony](https://blog.ethereum.org/2024/01/23/kzg-wrap) (January 2024), [pq.ethereum.org](https://pq.ethereum.org) (read in November 2026)
+- [OpenZeppelin Contracts v5.6.1](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.6.1/contracts/utils/cryptography): `ECDSA`, `SignatureChecker`, `P256`, `WebAuthn`
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.

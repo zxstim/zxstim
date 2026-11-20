@@ -97,6 +97,7 @@
   /* Ethereum wiki section colours (keep in step with SECTION_HEX in lib/ethereum/sections.tsx) */
   --section-basics: #2563eb;
   --section-investors: #d97706;
+  --section-developers: #7c3aed;
   --section-enterprise: #059669;
   --section-government: #e11d48;
 }
@@ -135,6 +136,7 @@
   --sidebar-ring: oklch(0.556 0 0);
   --section-basics: #60a5fa;
   --section-investors: #fbbf24;
+  --section-developers: #a78bfa;
   --section-enterprise: #34d399;
   --section-government: #fb7185;
 }
@@ -149,4 +151,22 @@
   html {
     @apply font-mono;
   }
+}
+
+/* Shiki writes an empty line of a plain-text code block as
+   <span class="line"><span></span></span>. Fumadocs' `.line:empty` rule misses
+   that shape, so blank lines in ```text blocks collapsed to nothing. */
+.shiki .line:has(> span:only-child:empty) {
+  height: 1lh;
+}
+
+/* A prompt readers copy into their AI app (<div className="ai-prompt"> around
+   a ```text block in the Ethereum wiki): wrap long lines instead of scrolling
+   sideways on phones. */
+.ai-prompt pre {
+  width: 100%;
+}
+.ai-prompt .line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }

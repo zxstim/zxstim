@@ -1,0 +1,300 @@
+---
+title: Token vending machine
+description: Write a token vending machine contract that gives you XU tokens at a fixed rate when you send it ETH. Test it with Foundry, then try it on a local anvil network.
+sources:
+  - https://docs.openzeppelin.com/contracts/5.x/erc20
+  - https://eips.ethereum.org/EIPS/eip-20
+  - https://www.getfoundry.sh/
+---
+
+On this page you write the project's main contract. The token vending machine follows four rules:
+
+1. 1 ETH buys 1,000 XU. The rate is fixed, written right into the code.
+2. To buy, call the `buy()` function, or simply send ETH to the machine's address.
+3. The machine only sells the XU it has. When it's sold out, it refuses.
+4. Only the machine's owner can withdraw the ETH it has collected.
+
+You need a Foundry project with OpenZeppelin Contracts installed. If you don't have one yet, follow [Your development environment](./environment.mdx).
+
+<Callout type="warn" title="Important">
+This project is for learning and only runs on test networks. Selling tokens to other people for real money may be subject to legal regulation. If you plan to do it for real, look into the rules that currently apply.
+</Callout>
+
+## Step 1: Write the contract
+
+Create the file `src/VendingMachine.sol`:
+
+```solidity title="src/VendingMachine.sol"
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+/// @title Token vending machine
+/// @notice Send ETH to the machine and get XU tokens back at a fixed rate.
+contract VendingMachine is ERC20, Ownable {
+    /// 1 ETH buys 1,000 XU. ETH and XU both have 18 decimals,
+    /// so we only need to multiply the amount in wei by 1,000.
+    uint256 public constant TOKENS_PER_ETH = 1000;
+
+    event Sold(address indexed buyer, uint256 ethPaid, uint256 tokensOut);
+    event Withdrawn(address indexed to, uint256 amount);
+
+    error ZeroPayment();
+    error SoldOut(uint256 requested, uint256 available);
+    error WithdrawFailed();
+
+    /// @param initialStock the XU loaded into the machine at the start (in the smallest unit)
+    constructor(uint256 initialStock) ERC20("Xu", "XU") Ownable(msg.sender) {
+        _mint(address(this), initialStock);
+    }
+
+    /// Sending ETH straight to the machine's address is also a purchase.
+    receive() external payable {
+        buy();
+    }
+
+    /// Buy XU with the ETH sent along with the call.
+    function buy() public payable returns (uint256 amount) {
+        if (msg.value == 0) revert ZeroPayment();
+        amount = msg.value * TOKENS_PER_ETH;
+        uint256 available = stock();
+        if (amount > available) revert SoldOut(amount, available);
+        _transfer(address(this), msg.sender, amount);
+        emit Sold(msg.sender, msg.value, amount);
+    }
+
+    /// The XU left in the machine.
+    function stock() public view returns (uint256) {
+        return balanceOf(address(this));
+    }
+
+    /// The owner withdraws all the ETH collected.
+    function withdraw(address payable to) external onlyOwner {
+        uint256 amount = address(this).balance;
+        (bool ok,) = to.call{value: amount}("");
+        if (!ok) revert WithdrawFailed();
+        emit Withdrawn(to, amount);
+    }
+}
+```
+
+What each part does:
+
+- **`is ERC20, Ownable`**: the machine is both the XU token and something with an owner. `ERC20("Xu", "XU")` sets the token's name and symbol, following the **ERC-20** standard that every wallet understands. `Ownable(msg.sender)` makes whoever deploys the contract its owner.
+- **The stock sits inside the machine.** The constructor creates `initialStock` XU and credits them to the contract's own balance (`address(this)`). So the remaining stock is simply the machine's own XU balance, the `stock()` function.
+- **The rate needs no division.** XU has 18 decimals just like ETH, so the number of XU's smallest units equals the number of wei times 1,000. Send 0.1 ETH (10<sup>17</sup> wei) and you get 10<sup>20</sup> units, which is 100 XU.
+- **`receive()` calls `buy()`**, so sending plain ETH to the machine is also a purchase.
+- **The order inside `buy()`**: check first (was any ETH sent, is there enough stock), then transfer the tokens, then emit the `Sold` event. `_transfer` is an internal OpenZeppelin function that doesn't call out to any other contract, so there's no risk of being called back.
+- **`withdraw`** has `onlyOwner` from `Ownable`: anyone else who calls it gets refused. The ETH is sent with `call`, and the result is always checked.
+- **Custom errors carry data.** `SoldOut(requested, available)` tells the frontend how much the buyer wanted and how much the machine has left, so it can show a clear message.
+
+Run `forge build` to compile.
+
+## Step 2: Write the tests
+
+Tests in Foundry are Solidity contracts. Every function whose name starts with `test` is a test, and `setUp()` runs again before each test. Create the file `test/VendingMachine.t.sol`:
+
+```solidity title="test/VendingMachine.t.sol"
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Test} from "forge-std/Test.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {VendingMachine} from "../src/VendingMachine.sol";
+
+contract VendingMachineTest is Test {
+    VendingMachine machine;
+    address alice = makeAddr("alice");
+    address cashbox = makeAddr("cashbox");
+
+    function setUp() public {
+        // Load 1 million XU into the machine. `ether` here just means "times 10^18".
+        machine = new VendingMachine(1_000_000 ether);
+        vm.deal(alice, 10 ether);
+    }
+
+    function test_Buy() public {
+        vm.prank(alice);
+        machine.buy{value: 1 ether}();
+
+        assertEq(machine.balanceOf(alice), 1_000 ether);
+        assertEq(address(machine).balance, 1 ether);
+    }
+
+    function test_SendEthDirectly() public {
+        vm.prank(alice);
+        (bool ok,) = address(machine).call{value: 0.5 ether}("");
+
+        assertTrue(ok);
+        assertEq(machine.balanceOf(alice), 500 ether);
+    }
+
+    function test_EmitsSold() public {
+        vm.expectEmit(address(machine));
+        emit VendingMachine.Sold(alice, 1 ether, 1_000 ether);
+
+        vm.prank(alice);
+        machine.buy{value: 1 ether}();
+    }
+
+    function test_RevertWhen_ZeroPayment() public {
+        vm.prank(alice);
+        vm.expectRevert(VendingMachine.ZeroPayment.selector);
+        machine.buy();
+    }
+
+    function test_RevertWhen_SoldOut() public {
+        VendingMachine small = new VendingMachine(500 ether);
+
+        vm.prank(alice);
+        vm.expectRevert(abi.encodeWithSelector(VendingMachine.SoldOut.selector, 1_000 ether, 500 ether));
+        small.buy{value: 1 ether}();
+    }
+
+    function test_OwnerWithdraws() public {
+        vm.prank(alice);
+        machine.buy{value: 2 ether}();
+
+        machine.withdraw(payable(cashbox));
+
+        assertEq(cashbox.balance, 2 ether);
+        assertEq(address(machine).balance, 0);
+    }
+
+    function test_RevertWhen_StrangerWithdraws() public {
+        vm.prank(alice);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, alice));
+        machine.withdraw(payable(alice));
+    }
+
+    function testFuzz_Buy(uint256 paid) public {
+        paid = bound(paid, 1, 1_000 ether); // at most, exactly enough to empty the machine
+        vm.deal(alice, paid);
+
+        vm.prank(alice);
+        uint256 got = machine.buy{value: paid}();
+
+        assertEq(got, paid * 1_000);
+        assertEq(machine.balanceOf(alice) + machine.stock(), 1_000_000 ether);
+    }
+}
+```
+
+The tests use **cheatcodes**: special Foundry commands, only available while tests run, for controlling the environment.
+
+| Cheatcode | What it does |
+|---|---|
+| `makeAddr("alice")` | Creates a named address, so results are easy to read |
+| `vm.deal(alice, 10 ether)` | Sets an address's ETH balance |
+| `vm.prank(alice)` | The next call is sent as if from `alice` |
+| `vm.expectRevert(...)` | The next call must fail, with exactly this error |
+| `vm.expectEmit(address(machine))` | The next call must emit exactly the event `emit`ted on the line right after this one |
+| `bound(x, min, max)` | Forces a random number into a valid range |
+
+The last test takes a parameter, so Foundry runs it 256 times with different random values. That's a **fuzz test**. Instead of checking only a few examples you thought of, it checks a property that must always hold: the buyer's XU plus the XU left in the machine always equals the starting stock.
+
+Run:
+
+```bash
+forge test
+```
+
+```text
+Ran 8 tests for test/VendingMachine.t.sol:VendingMachineTest
+[PASS] testFuzz_Buy(uint256) (runs: 256, μ: 55091, ~: 54718)
+[PASS] test_Buy() (gas: 52101)
+[PASS] test_EmitsSold() (gas: 52748)
+[PASS] test_OwnerWithdraws() (gas: 92212)
+[PASS] test_RevertWhen_SoldOut() (gas: 1237817)
+[PASS] test_RevertWhen_StrangerWithdraws() (gas: 14972)
+[PASS] test_RevertWhen_ZeroPayment() (gas: 11276)
+[PASS] test_SendEthDirectly() (gas: 51383)
+Suite result: ok. 8 passed; 0 failed; 0 skipped
+```
+
+The gas numbers on your computer may differ slightly, depending on the compiler version.
+
+<Callout type="idea" title="Tip">
+To find out whether your tests really protect you, break the contract on purpose. Delete the line `if (amount > available) revert SoldOut(...)` and run `forge test` again: which test fails, and why? Hint: OpenZeppelin still blocks transfers above the balance, but with a different error.
+</Callout>
+
+## Step 3: Try it on anvil
+
+Open a terminal window and run the local chain:
+
+```bash
+anvil
+```
+
+anvil prints 10 test accounts with their private keys, then waits at `http://127.0.0.1:8545`. Open a second window, in the project folder, and deploy the machine with 1 million XU:
+
+```bash
+# The key of the first test account that anvil prints.
+# Everyone knows this key: only use it on anvil.
+export ANVIL_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+export RPC=http://127.0.0.1:8545
+
+forge create src/VendingMachine.sol:VendingMachine \
+  --rpc-url $RPC --private-key $ANVIL_KEY --broadcast \
+  --constructor-args 1000000ether
+```
+
+```text
+Deployer: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+Deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+```
+
+A contract's address is computed from the deployer's address and their transaction count, so on a freshly started anvil you'll see exactly this address. Send 0.1 ETH to the machine, then look at the result:
+
+```bash
+export MACHINE=0x5FbDB2315678afecb367f032d93F642f64180aa3
+
+# Send 0.1 ETH straight to the machine: receive() will call buy()
+cast send $MACHINE --value 0.1ether --rpc-url $RPC --private-key $ANVIL_KEY
+
+# Your XU, and the XU left in the machine
+cast call $MACHINE "balanceOf(address)(uint256)" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --rpc-url $RPC
+cast call $MACHINE "stock()(uint256)" --rpc-url $RPC
+```
+
+```text
+100000000000000000000 [1e20]
+999900000000000000000000 [9.999e23]
+```
+
+10<sup>20</sup> units is 100 XU (`cast from-wei 100000000000000000000` prints `100.000000000000000000`), and the machine has 999,900 XU left.
+
+Now try buying without sending any ETH:
+
+```bash
+cast send $MACHINE "buy()" --rpc-url $RPC --private-key $ANVIL_KEY
+```
+
+```text
+Error: Failed to estimate gas: server returned an error response: error code 3:
+execution reverted: custom error 0x8f28ea88, data: "0x8f28ea88": ZeroPayment
+```
+
+The transaction is rejected as early as gas estimation, before it's sent, so you don't pay a fee. `0x8f28ea88` is the selector of the `ZeroPayment` error: the [EVM](../protocol/evm.mdx#abi-how-a-function-gets-called) page explains where this number comes from.
+
+<Callout type="info" title="Note">
+Try sending 0.1 ETH once more and watch the `gasUsed` line that `cast send` prints. In the test run done while writing this page, the first send cost 53,203 gas and the second 36,103 gas. The difference of 17,100 gas is exactly 20,000 minus 2,900: the first time, the contract has to write a new storage slot (your XU balance goes from zero to nonzero), while the second time it only changes a slot that already exists.
+</Callout>
+
+## What's still missing
+
+The machine works, but it isn't ready for real users yet:
+
+- **The rate is fixed in the code.** Changing the price means deploying a new contract. If you let the owner change the price, buyers need protection against the price being changed right before their transaction.
+- **There's no frontend yet.** Ordinary users don't type `cast send`.
+- **It only runs on your computer.** It needs to be deployed to a testnet so other people can use it.
+
+The [Deployment and web frontend](./deploy-and-frontend.mdx) page has sample code for the last two: putting the machine on Sepolia, and building a web page for buying XU with wagmi and viem.
+
+## Read next
+
+- [Deployment and web frontend](./deploy-and-frontend.mdx): put the machine on Sepolia and build a page for buying XU.
+- [EVM](../protocol/evm.mdx): why writing to storage is expensive, and where function selectors and error selectors come from.
+- [Solidity for programmers](./solidity.mdx)

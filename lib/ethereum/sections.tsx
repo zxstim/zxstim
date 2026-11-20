@@ -6,8 +6,8 @@ import { ethereum as source } from '@/lib/source';
 
 /**
  * The Ethereum wiki's sections are the root folders of `content/ethereum`
- * (`"root": true` in their meta.json): Basics, Investors, Enterprise,
- * Government. Fumadocs shows them as the dropdown at the top of the sidebar; the
+ * (`"root": true` in their meta.json): Basics, Investors, Developers,
+ * Enterprise, Government. Fumadocs shows them as the dropdown at the top of the sidebar; the
  * intro page lists them as cards. Each has a colour, `--section-<folder>` in
  * `app/globals.css`.
  */
@@ -64,6 +64,7 @@ export function getSections(): Section[] {
 export const SECTION_HEX: Record<string, string> = {
   basics: '#60a5fa',
   investors: '#fbbf24',
+  developers: '#a78bfa',
   enterprise: '#34d399',
   government: '#fb7185',
 };

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   DocsBody,
@@ -12,11 +13,12 @@ import { createRelativeLink } from "fumadocs-ui/mdx";
 import { ethereum } from "@/lib/source";
 import { getMDXComponents } from "@/components/mdx";
 import { ethereumMdxComponents } from "@/components/ethereum/mdx";
-import { getPageMarkdownUrl } from "@/lib/ethereum/llms";
+import { contentLicense, getPageMarkdownUrl } from "@/lib/ethereum/llms";
 import { buildMetadata } from "@/lib/ethereum/metadata";
 import { pageTrail } from "@/lib/ethereum/sections";
 
 const GITHUB_CONTENT = "https://github.com/zxstim/zxstim/blob/main/content/ethereum";
+const ATTRIBUTION = "/ethereum/attribution";
 
 export default async function Page(props: PageProps<"/ethereum/[...slug]">) {
   const { slug } = await props.params;
@@ -46,6 +48,24 @@ export default async function Page(props: PageProps<"/ethereum/[...slug]">) {
           })}
         />
       </DocsBody>
+      <p className="mt-8 border-t pt-4 text-xs text-fd-muted-foreground">
+        Content licensed under{" "}
+        <a href={contentLicense.url} className="underline underline-offset-2 hover:text-fd-foreground">
+          {contentLicense.name}
+        </a>
+        . Some pages are adapted from ethereum.org (CC BY 4.0) and the EPF wiki (CC BY-SA 4.0); each
+        page lists its sources.
+        {page.url !== ATTRIBUTION && (
+          <>
+            {" "}
+            See{" "}
+            <Link href={ATTRIBUTION} className="underline underline-offset-2 hover:text-fd-foreground">
+              Attribution
+            </Link>
+            .
+          </>
+        )}
+      </p>
     </DocsPage>
   );
 }

@@ -1,0 +1,33 @@
+---
+title: Developers
+description: Ethereum from an engineer's point of view. Understand the EVM and the protocol, then write a Solidity contract yourself with Foundry and build a web frontend with wagmi and viem.
+---
+
+This section is for people who already know how to program but know nothing about Ethereum. If you've never used a wallet, skim [Getting started](../basics/getting-started/index.mdx) and [How Ethereum works](../basics/how-it-works/index.mdx) first. The pages here don't re-explain what's already covered there.
+
+The section has two parts. You can read them side by side.
+
+## Understanding the protocol
+
+[Understanding the protocol](./protocol/index.mdx) explains Ethereum from the inside, written briefly for engineers: the EVM, state, transactions, consensus, the peer-to-peer network, cryptography. Each page ends with a "What this means for your app" section and points to deeper material on the EPF wiki of the Ethereum Protocol Fellowship program.
+
+## Building apps
+
+[Building apps](./building/index.mdx) walks through a single project from start to finish: a **token vending machine**. You send ETH, and the machine sends back tokens. You'll write the contract in Solidity, test it with Foundry, deploy it to a testnet, then build a web frontend with wagmi and viem.
+
+The first page includes a ready-made prompt you can paste into your AI assistant, so it can build the project with you step by step.
+
+## Tools
+
+Latest versions as of November 2026:
+
+| Task | Tool |
+|---|---|
+| Contract language | Solidity 0.8 (latest release 0.8.39) |
+| Compile, test, deploy | Foundry 1.10: `forge`, `cast`, `anvil` |
+| Ready-made contracts (tokens, access control) | OpenZeppelin Contracts 5.6 |
+| Web frontend | wagmi 3 and viem 2 |
+
+<Callout type="warn" title="Important">
+While learning, only use a local devnet (anvil) and testnets. Never use the private key or recovery phrase of a wallet that holds real money in a programming project.
+</Callout>

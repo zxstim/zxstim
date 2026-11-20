@@ -1,0 +1,26 @@
+---
+title: Understanding the protocol
+description: Ethereum from the inside, written briefly for engineers. Eleven pages on the EVM, state, transactions, consensus, networking, cryptography and the roadmap, each showing what it means for your app.
+---
+
+The most complete documentation of Ethereum's internals is the [EPF wiki](https://epf.wiki) of the Ethereum Protocol Fellowship program: more than a hundred pages, written for people who want to work on the protocol. This part is adapted from the EPF wiki and ethereum.org's developer docs, condensed to what an app developer needs to know.
+
+Both sources are out of date in places, so every number, date and upgrade status in these pages was checked against the EIPs and specs in November 2026. Each page ends with a **What this means for your app** section, then a **Sources** section that links to the EPF and ethereum.org pages for anyone who wants to go deeper.
+
+## Reading order
+
+| # | Page | What you'll understand |
+|---|---|---|
+| 1 | [Architecture: the two layers of a node](./architecture.mdx) | The execution layer, the consensus layer, the Engine API between them, and how a block moves through a node |
+| 2 | [EVM](./evm.mdx) | The virtual machine that runs contracts: bytecode, the stack, memory, storage, the gas cost of each opcode |
+| 3 | [State and data structures](./state.mdx) | Accounts, the Merkle-Patricia trie, receipts and logs, Merkle proofs, RLP and SSZ |
+| 4 | [Transactions](./transactions.mdx) | The fields and five transaction types, EIP-1559 fees, the nonce, receipts, and signing a transaction yourself |
+| 5 | [From mempool to block](./from-mempool-to-block.mdx) | Who puts transactions into blocks, MEV, MEV-Boost, and how to protect users from sandwich attacks |
+| 6 | [Consensus](./consensus.mdx) | Gasper, slots and epochs, finality, and when to treat a transaction as done |
+| 7 | [Peer-to-peer network](./peer-to-peer.mdx) | The two networks inside a node, devp2p and libp2p, and how transactions and blocks spread |
+| 8 | [Cryptography](./cryptography.mdx) | Keccak, ECDSA and BLS signatures, signing messages in an app, KZG commitments |
+| 9 | [Scaling and data availability](./scaling.mdx) | Blobs, PeerDAS, and what makes up a Layer 2's fees |
+| 10 | [Client software and APIs](./clients-and-apis.mdx) | The clients, why diversity matters, JSON-RPC and the Beacon API, running your own node or using a provider |
+| 11 | [The roadmap and how the protocol changes](./roadmap.mdx) | Past upgrades, Glamsterdam and Hegotá, and how an EIP makes it to mainnet |
+
+The [How Ethereum works](../../basics/how-it-works/index.mdx) part of the Basics section explains the same topics for non-programmers. If a concept here is still unfamiliar, read the matching page there first.

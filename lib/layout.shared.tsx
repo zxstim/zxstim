@@ -17,7 +17,7 @@ export function ethereumOptions(): BaseLayoutProps {
       url: "/ethereum",
     },
     links: [
-      // CC BY 4.0 attribution for the content adapted from ethereum.org
+      // licence and attribution for the content adapted from ethereum.org and the EPF wiki
       { text: "Attribution", url: "/ethereum/attribution" },
     ],
     githubUrl: "https://github.com/zxstim/zxstim",

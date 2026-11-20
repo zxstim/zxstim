@@ -1,0 +1,163 @@
+---
+title: Consensus
+description: How Ethereum picks the head of the chain every slot and finalizes blocks every epoch. Gasper, committees and attestations, rewards and penalties, checkpoint sync, and when your app should treat a transaction as done.
+sources:
+  - https://epf.wiki/#/wiki/CL/overview
+  - https://epf.wiki/#/wiki/CL/gasper
+  - https://epf.wiki/#/wiki/CL/syncing
+  - https://epf.wiki/#/wiki/research/SSF
+  - https://epf.wiki/#/wiki/research/FCR/FCR
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/attestations/
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/rewards-and-penalties/
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/weak-subjectivity/
+  - https://ethereum.org/developers/docs/consensus-mechanisms/pos/block-proposal/
+  - https://ethereum.org/roadmap/security/
+  - https://github.com/ethereum/consensus-specs
+---
+
+The [Consensus](../../basics/how-it-works/consensus.mdx) page in the Basics section explains why an open network needs a consensus mechanism, and why Ethereum uses proof of stake. This page goes into how it runs: who votes when, how the votes are counted, and from there, the question every app has to answer: **when is a transaction considered done?**
+
+Consensus lives in the consensus layer software of each node (see [Architecture: the two layers of a node](./architecture.mdx)). Who takes part in voting, and how much they stake, is covered in [Validators](../../basics/how-it-works/validators.mdx).
+
+## Gasper: two protocols combined
+
+Ethereum's consensus is called **Gasper**. It combines two parts that do two different jobs:
+
+| | LMD-GHOST | Casper FFG |
+|---|---|---|
+| Job | **Fork choice**: where the head of the chain is | Finalizing blocks: which part of the chain can no longer be reversed |
+| Rhythm | Every slot | Every epoch |
+| Result | The `latest` block, which can change | The `finalized` block, which can only be reversed if at least 1/3 of the stake is slashed |
+| When the network has problems | Keeps running, and the chain keeps producing blocks | Can stop finalizing, until 2/3 is back |
+
+This combination gives Ethereum both things: the chain never stops producing blocks, and behind the head of the chain there's always a part of history that has been firmly finalized.
+
+## Slots, epochs and committees
+
+Time is split into 12-second **slots**. 32 slots make up an **epoch**, which lasts 6.4 minutes. Each slot has at most one block. A slot can be empty if the proposer is absent.
+
+In each epoch, every active validator casts exactly one vote, called an **attestation**. So that nobody has to process a million votes at once, validators are shuffled and then spread evenly across the 32 slots. Within each slot, they're split again into 1 to 64 **committees**, each aiming for at least 128 members. In each committee, about 16 members are chosen to aggregate the whole committee's BLS signatures into a single signature.
+
+| Time in the slot | What happens |
+|---|---|
+| 0 seconds | The proposer broadcasts the block |
+| 4 seconds | Members of this slot's committees vote for the block they see as the head of the chain |
+| 8 seconds | Aggregators broadcast the aggregated signatures, for the next slot's proposer to include in its block |
+| 12 seconds | The next slot begins |
+
+An attestation contains three votes:
+
+- **Head**: the newest block the voter sees. This vote is used by LMD-GHOST.
+- **Source** and **target**: two **checkpoints**. The target is the checkpoint of the current epoch, and the source is the most recent justified checkpoint. This pair is used by Casper FFG.
+
+There's also the **sync committee**: 512 validators, replaced every 256 epochs (about 27 hours), who sign the head of the chain every slot so light clients can follow the chain without downloading all of it.
+
+## Who proposes a block
+
+The proposer for each slot is chosen at random, with a probability proportional to the validator's **effective balance**.
+
+- **The source of randomness is RANDAO.** Each proposer contributes a BLS signature over the epoch number. Nobody else can guess that signature before it's published. The contributions are gradually mixed into a shared value. A proposer can influence it slightly by skipping its slot, but loses the proposal reward by doing so.
+- **The schedule is known one epoch ahead.** The value used to pick proposers for epoch N is fixed at the end of epoch N − 2. Since Fusaka (EIP-7917), the proposer schedule for the current epoch and the next one is computed in advance and stored in the beacon state. Before that, the next epoch's schedule could still change if someone's effective balance changed. Smart contracts can verify this schedule through the beacon block root (EIP-4788). Preconfirmation protocols for rollups that rely on Layer 1 proposers need exactly that.
+- **At most 2,048 ETH.** Since Pectra (May 2025, EIP-7251), a validator's maximum effective balance is 2,048 ETH instead of 32 ETH, if the validator uses `0x02` withdrawal credentials. The minimum to activate is still 32 ETH. The larger the effective balance, the more often a validator is chosen to propose and the more its votes weigh.
+
+## LMD-GHOST: choosing the head
+
+When there are two branches, each node runs LMD-GHOST itself. Starting from the most recent justified checkpoint, at each fork it picks the child branch with more total stake behind its head votes, until it reaches the newest block. Only each validator's **latest** vote counts (the "LMD" part: latest message driven).
+
+When the network is working normally, each slot has just one block, and fork choice has almost nothing to do. It matters when blocks arrive late, when the network is split, or when someone cheats.
+
+- **An edge for on-time blocks** (proposer boost). A block that arrives before the 4th second of its slot, that is, before the voting deadline, gets extra weight equal to 40% of the weight of one slot's committees. This counters attacks that hold a block back and release it late.
+- **Late blocks can be dropped.** Under some conditions, the spec lets the next slot's proposer build directly on the parent block, skipping a late block that received less than 20% of the committee's votes. So now and then the newest block gets replaced. That's why the `latest` block can't be trusted for anything important.
+
+## Casper FFG: checkpoints, justification, finality
+
+A **checkpoint** is the block in the first slot of each epoch. If that slot is empty, the checkpoint is the nearest block before it. Finalization only looks at checkpoints.
+
+1. Each validator casts one FFG vote per epoch, linking a source to a target.
+2. When the votes linking the same source to the same target add up to **at least 2/3 of the total active effective balance**, the target is **justified**.
+3. When two consecutive checkpoints are both justified, and the later one uses the earlier one as its source, the earlier checkpoint reaches **finality**, and so does every block before it.
+
+Votes are added up as blocks include them in the chain, but justification and finality are only computed at the boundary between two epochs.
+
+<Callout type="warn" title="Important">
+There's no 2/3 rule for individual blocks. Each block only gets head votes from that slot's committees, about 1/32 of the validators. The 2/3 threshold applies to checkpoints, and is computed over the votes of the whole epoch.
+</Callout>
+
+**How long does it take?** In the best case, a checkpoint block reaches finality after 2 epochs, that is, 64 slots or 12.8 minutes. A transaction right after a checkpoint has to wait for the next checkpoint to be finalized: up to about 95 slots, almost 19 minutes. On average it's about 16 minutes. The [Blocks](../../basics/how-it-works/blocks.mdx#when-can-a-block-no-longer-be-reversed) page in the Basics section has an animation of this process.
+
+**Why can't it be reversed?** For two conflicting checkpoints to both reach finality, each side needs the votes of 2/3 of the stake, so validators holding at least 1/3 of the stake would have to vote for both. That's an offense that gets slashed, and anyone can prove it with those very signatures. So reversing a finalized block costs at least 1/3 of all staked ETH.
+
+## Rewards, penalties and slashing
+
+Each validator's reward is proportional to its effective balance, and inversely proportional to the square root of the total stake. The maximum reward is split up by weight:
+
+| Duty | Weight (out of 64) | If wrong or missed |
+|---|---|---|
+| Correct, timely source vote | 14 | Penalized about as much as it would have earned |
+| Correct, timely target vote | 26 | Penalized about as much as it would have earned |
+| Correct, timely head vote | 14 | Only the reward is lost |
+| Sync committee participation | 2 | Penalized |
+| Proposing a block | 8 | Only the reward is lost |
+
+**Slashing** is reserved for three offenses that an honest validator can almost never commit: signing two different blocks for the same slot, casting two different votes with the same target epoch, and casting a vote that "surrounds" its own earlier vote (an earlier source and a later target). Once caught:
+
+- The validator immediately loses 1/4,096 of its effective balance (since Pectra): 0.0078 ETH at 32 ETH, 0.5 ETH at 2,048 ETH. It's forced out of the network, and can only withdraw its funds after 8,192 epochs, about 36 days.
+- Halfway through that period (around day 18) comes the **correlation penalty**: the share deducted is 3 times the share of the stake slashed during the roughly 36 days around that point. A validator that slipped up by accident loses very little. If 1/3 of the stake is slashed together, meaning a real attack, they lose everything.
+
+**Inactivity leak.** If more than 4 epochs pass without any checkpoint reaching finality, the protocol goes into emergency mode. Nobody earns attestation rewards anymore. Anyone who doesn't cast a correct target vote is docked an amount that grows the longer they're absent. Once the balances of the absent group have shrunk enough for the active group to make up 2/3 again, checkpoints get finalized again. This has happened: on May 11 and 12, 2023, mainnet lost finality twice, for about 25 minutes and then about 64 minutes, because of bugs in two consensus layer clients. Blocks kept coming the whole time, and the second outage lasted long enough for the inactivity leak to kick in.
+
+## Checkpoint sync and weak subjectivity
+
+With proof of work, a new node can download everything from the very first block and check it all itself. With proof of stake, that isn't safe. Validators that have already withdrawn all their stake can sign a different history with nothing left to lose. A node that's already following the real chain will ignore that fake history, but a brand-new node can't tell the difference.
+
+The solution is **weak subjectivity**: a new node starts from a recent checkpoint, taken from a trusted source, then rejects any history that conflicts with that checkpoint. This is **checkpoint sync**, the recommended way to start a new node. The node downloads the state at the checkpoint, follows the head of the chain from there, and backfills the older history later.
+
+- Compare the checkpoint's hash against several independent sources: a friend's node, block explorers, public checkpoint providers.
+- The checkpoint has to be recent enough. With mainnet's current parameters, the formula in the spec gives about 3,532 epochs, roughly 15.7 days. A node that's been off for longer than that should resync from a new checkpoint. Glamsterdam, once it launches, will let validators enter and exit faster, so according to the spec this window will shrink to about a week.
+
+## In research: faster finality
+
+- **Single-slot finality** is a long-running line of research. According to ethereum.org, it evolved into three-slot finality (3SF), then into Minimmit, a consensus protocol in the Lean Ethereum program launched in July 2025. The draft roadmap aims for finality measured in seconds around 2029, but no upgrade has been given this job yet.
+- **The Fast Confirmation Rule** (FCR) doesn't need a network upgrade: each node applies it by itself. If the network is stable and no more than 25% of the stake is dishonest, in the good case it confirms that a block won't be replaced after just 1 to 2 slots. FCR was added to the consensus layer spec in April 2026. Support in client software still varies: some clients already have an option to turn it on, others are still working on it.
+- **10-second slots** (EIP-8198) are being considered for the Hegotá upgrade, but aren't scheduled yet.
+
+## What this means for your app
+
+JSON-RPC has three levels of certainty. The consensus layer tells the execution layer which blocks are `safe` and `finalized` through `engine_forkchoiceUpdated`, so you can ask for all three over regular RPC:
+
+```bash
+cast block-number latest    --rpc-url $RPC   # head of the chain, can be replaced
+cast block-number safe      --rpc-url $RPC   # unlikely to be replaced if the network is normal
+cast block-number finalized --rpc-url $RPC   # can only be reversed if 1/3 of the stake is slashed
+```
+
+| Level | Meaning | Behind the head | Use for |
+|---|---|---|---|
+| `latest` | The newest block the node sees | 0 | Display, estimates, small transactions |
+| `safe` | Won't be replaced if the majority is honest and the network is in sync | A few slots if the client uses FCR, about 6 to 13 minutes if not | Most things that need moderate certainty |
+| `finalized` | Has reached finality | About 13 to 19 minutes | Exchange deposits, bridges, real-world deliveries |
+
+<Callout type="idea" title="Tip">
+When testing on anvil, `safe` lags 32 blocks and `finalized` lags 64 blocks behind `latest` (anvil 1.5.1, checked November 2026). That lets you test logic that waits for finality without a real network.
+</Callout>
+
+- **Pick the level based on how much money could be lost.** Counting a few extra blocks after `latest` gives no economic guarantee. For anything that can't be undone, wait for `finalized`.
+- **Show users the right status.** "Included in a block" and "finalized" are two different states. Don't lump them together as "done".
+- **Understand `safe` on the node you use.** The spec now defines `safe` using the Fast Confirmation Rule. A client that hasn't turned that rule on returns the block of the most recent justified checkpoint instead, which lags much further behind. Ask your RPC provider.
+- **Handle chain reorganizations.** An indexer that reads events at `latest` has to handle logs that get pulled back (`removed: true`), or only index up to `safe` or `finalized`.
+- **Monitor finalization.** If `finalized` stops moving for more than a few epochs, raise an alert and pause large withdrawals, instead of letting the app hang.
+- **Don't hardcode 12 seconds.** The time between two blocks is a multiple of 12 seconds because of empty slots, and the slot length may change in the future (EIP-8198). Glamsterdam is expected to add a `SLOTNUM` opcode (EIP-7843) so contracts can read the slot number directly.
+
+## Sources
+
+- EPF wiki: [Consensus layer overview](https://epf.wiki/#/wiki/CL/overview), [Gasper](https://epf.wiki/#/wiki/CL/gasper), [Syncing](https://epf.wiki/#/wiki/CL/syncing), [Single slot finality](https://epf.wiki/#/wiki/research/SSF), [Fast Confirmation Rule](https://epf.wiki/#/wiki/research/FCR/FCR)
+- ethereum.org: [Proof-of-stake (PoS)](https://ethereum.org/developers/docs/consensus-mechanisms/pos/), [Gasper](https://ethereum.org/developers/docs/consensus-mechanisms/pos/gasper/), [Attestations](https://ethereum.org/developers/docs/consensus-mechanisms/pos/attestations/), [Proof-of-stake rewards and penalties](https://ethereum.org/developers/docs/consensus-mechanisms/pos/rewards-and-penalties/), [Weak subjectivity](https://ethereum.org/developers/docs/consensus-mechanisms/pos/weak-subjectivity/), [Block proposal](https://ethereum.org/developers/docs/consensus-mechanisms/pos/block-proposal/), [A more secure Ethereum](https://ethereum.org/roadmap/security/)
+- [ethereum/consensus-specs](https://github.com/ethereum/consensus-specs): `phase0/fork-choice.md`, `phase0/fast-confirmation.md`, `altair/beacon-chain.md`, `electra/beacon-chain.md`, `electra/weak-subjectivity.md`, `configs/mainnet.yaml`
+- [ethereum/execution-apis](https://github.com/ethereum/execution-apis): defines the `latest`, `safe` and `finalized` levels
+- Thomas Thiery, [Cascading Network Effects on Ethereum's Finality](https://ethresear.ch/t/cascading-network-effects-on-ethereums-finality/15871): an analysis of the two losses of finality in May 2023
+- Papers: [Gasper](https://arxiv.org/abs/2003.03052), [Casper FFG](https://arxiv.org/abs/1710.09437), [Fast Confirmation Rule](https://arxiv.org/abs/2405.00549)
+- EIPs: [4788](https://eips.ethereum.org/EIPS/eip-4788), [7251](https://eips.ethereum.org/EIPS/eip-7251), [7843](https://eips.ethereum.org/EIPS/eip-7843), [7917](https://eips.ethereum.org/EIPS/eip-7917), [8198](https://eips.ethereum.org/EIPS/eip-8198)
+
+This page is adapted from the [EPF wiki](https://epf.wiki) (licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)) and [ethereum.org](https://ethereum.org) (licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)): condensed, reorganized and updated.
